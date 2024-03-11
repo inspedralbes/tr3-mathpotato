@@ -6,33 +6,35 @@ on:
     branches: ["action"]
       
 jobs:
-  tests:
+  Pujar-a-produccio-amb-SCP:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      
+      - uses: actions/checkout@v4
+      
+      - name: Install Node.js
+        uses: actions/setup-node@v4
         with:
-          php-version: '8.0'
+          node-version: '20.x'
+ 
+      - name: Pujant laravel  
+        uses: burnett01/rsync-deployments@7.0.0
+        with:
+          switches: -avzr --delete
+          path: back/laravel/
+          remote_path: ${{ secrets.REMOTE_TARGET }}back/laravel
+          remote_host: ${{ secrets.PROD_HOST }}
+          remote_user: ${{ secrets.PROD_USER }}
+          remote_key: ${{ secrets.PROD_KEY }} 
 
-      - name: Install Dependencies
-        run: |
-          cd ./back/laravel
-          composer update
-          composer install --no-interaction --no-suggest --prefer-dist --optimize-autoloader --no-progress --no-scripts
-
-      - name: Generate Application Key
-        run: | 
-          cd ./back/laravel
-          php artisan key:generate
-
-      - name: Laravel Producció
-        run: |
-          echo "${{secrets.PROD_KEY}}" > ~/prod_key.pem
-          chmod 600 ~/prod_key.pem
-          cd ./back/laravel
-          npm install
-          scp -r -o stricthostkeychecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" ./back/laravel/* ${{secrets.PROD_USER}}@${{secrets.PROD_HOST}}:/home/a21rublormar/web/laravelmathpotato.daw.inspedralbes.cat/public_html/back/laravel/
+     
+      - name: Npm install i composer install a prod
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_KEY }}
+          command_timeout: 30m
+          script: | 
+            ls && cd ${{ secrets.REMOTE_TARGET }}/back/laravel && composer install 
+      - run: echo "🍏 This job's status is ${{ job.status }}."
