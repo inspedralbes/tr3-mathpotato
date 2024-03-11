@@ -1,0 +1,27 @@
+version: '3'
+services:
+  app:
+    image: php:8.0
+    ports:
+      - 8000:8000
+    volumes:
+      - ./back/api-laravel:/app
+    working_dir: /app
+    depends_on:
+      - db
+    command: bash -c "apt-get update -y \ && apt-get install -y openssl zip unzip git libonig-dev \ && apt-get install -y libpq-dev && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && docker-php-ext-install pdo mbstring pdo_mysql && composer install && php artisan key:generate && php artisan migrate && php artisan serve"
+  node:
+    image: node:14
+    ports:
+      - 5175:5175
+    volumes:
+      - ./back/node:/app
+    working_dir: /app
+    command: bash -c "npm install && node node.js"
+  db:
+    image: mysql
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=papata
+      - MYSQL_DATABASE=Potato
