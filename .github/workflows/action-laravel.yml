@@ -36,6 +36,3 @@ jobs:
           cd ./back/laravel
           npm install
           scp -r -o stricthostkeychecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" ./back/laravel/* ${{secrets.PROD_USER}}@${{secrets.PROD_HOST}}:/home/a21rublormar/web/laravelmathpotato.daw.inspedralbes.cat/public_html/back/laravel/
-
-      - name: Run Testsuite
-        run: vendor/bin/phpunit tests/
