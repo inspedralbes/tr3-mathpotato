@@ -1,0 +1,34 @@
+name: Laravel Tests
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v4
+        with:
+          php-version: '8.0'
+
+      - name: Install Dependencies
+        run: |
+          cd ./back/laravel
+          composer install --no-interaction --no-suggest --prefer-dist --optimize-autoloader --no-progress --no-scripts
+
+      - name: Generate Application Key
+        run: php artisan key:generate
+
+      - name: Laravel Producció
+        run: |
+          echo "${{secrets.PROD_KEY}}" > ~/prod_key.pem
+          chmod 600 ~/prod_key.pem
+          cd ./back/laravel
+          npm install
+          scp -r -o stricthostkeychecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" ./back/laravel/* ${{secrets.PROD_USER}}@${{secrets.PROD_HOST}}:/home/a21rublormar/web/laravelmathpotato.daw.inspedralbes.cat/public_html/back/laravel/
