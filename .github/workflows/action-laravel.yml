@@ -26,6 +26,7 @@ jobs:
 
       - name: Generate Application Key
         run: | 
+          chmod 600 ./back/laravel/.env
           cd ./back/laravel
           php artisan key:generate
 
