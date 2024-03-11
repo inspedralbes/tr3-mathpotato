@@ -26,7 +26,8 @@ jobs:
 
       - name: Generate Application Key
         run: | 
-        ls -l ./back/laravel 
+        cd ./back/laravel
+        ls -la 
         php artisan key:generate
 
       - name: Laravel Producció
