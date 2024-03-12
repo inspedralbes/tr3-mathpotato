@@ -11,17 +11,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Pujant laravel  
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Pujant Node.js
         uses: burnett01/rsync-deployments@7.0.0
         with:
           switches: -avzr --delete
-          path: back/laravel/
-          remote_path: ${{ secrets.REMOTE_TARGET }}back/laravel/
+          path: back/node/
+          remote_path: ${{ secrets.REMOTE_TARGET }}back/node/
           remote_host: ${{ secrets.PROD_HOST }}
           remote_user: ${{ secrets.PROD_USER }}
           remote_key: ${{ secrets.PROD_KEY }} 
 
-     
+      - name: Pujant laravel  
+        uses: burnett01/rsync-deployments@7.0.0
+        with:
+          switches: -avzr --delete
+          path: back/api-laravel/
+          remote_path: ${{ secrets.REMOTE_TARGET }}back/api-laravel/
+          remote_host: ${{ secrets.PROD_HOST }}
+          remote_user: ${{ secrets.PROD_USER }}
+          remote_key: ${{ secrets.PROD_KEY }} 
+
       - name: Npm install i composer install a prod
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -30,5 +44,5 @@ jobs:
           key: ${{ secrets.PROD_KEY }}
           command_timeout: 30m
           script: | 
-            ls && cd ${{ secrets.REMOTE_TARGET }}back/laravel && composer install 
+            ls && cd ${{ secrets.REMOTE_TARGET }}back/node && npm install && cd ../laravel && composer install 
       - run: echo "🍏 This job's status is ${{ job.status }}."
