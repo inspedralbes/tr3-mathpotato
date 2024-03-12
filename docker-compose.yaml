@@ -9,7 +9,7 @@ services:
     working_dir: /app
     depends_on:
       - db
-    command: bash -c "apt-get update -y \ && apt-get install -y openssl zip unzip git libonig-dev \ && apt-get install -y libpq-dev && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && docker-php-ext-install pdo mbstring pdo_mysql && composer install && php artisan key:generate && php artisan migrate && php artisan serve"
+    command: bash -c "apt-get update -y \ && apt-get install -y openssl zip unzip git libonig-dev \ && apt-get install -y libpq-dev && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && docker-php-ext-install pdo mbstring pdo_mysql && composer install && php artisan key:generate && php artisan migrate && php artisan serve --host=0.0.0.0"
   node:
     image: node:14
     ports:
