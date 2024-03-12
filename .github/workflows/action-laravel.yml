@@ -54,7 +54,7 @@ jobs:
           remote_user: ${{ secrets.PROD_USER }}
           remote_key: ${{ secrets.PROD_KEY }} 
 
-      - name: Npm install i composer install a producció
+      - name: Npm install i composer install a prod
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.PROD_HOST }}
