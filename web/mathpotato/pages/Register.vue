@@ -99,6 +99,7 @@ export default {
             password: '',
             passwordConfirmation: '',
             imatgeSeleccionada: '1',
+            tutorial: true,
 
         };
     },
@@ -132,7 +133,8 @@ export default {
                 "email": this.email,
                 "password": CryptoJS.SHA256(this.password).toString(),
                 "password_confirmation": CryptoJS.SHA256(this.passwordConfirmation).toString(),
-                "foto_perfil": this.imatgeSeleccionada
+                "foto_perfil": this.imatgeSeleccionada,
+                "tutorial": this.tutorial
             };
             socket.emit('register', user);
         }

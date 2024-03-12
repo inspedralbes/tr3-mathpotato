@@ -2,17 +2,17 @@ import { defineStore } from 'pinia';
 
 export const useAppStore = defineStore('app', {
     state: () => ({
-        infoGame: {            
+        infoGame: {
             rooms: {
                 gameRooms: [
                     {
-                         users: [
-                            {username: '', id: '', bomba: false, image: './assets/Icon_2.png'}
+                        users: [
+                            { username: '', id: '', bomba: false, image: './assets/Icon_2.png' }
                         ]
                     },
-                ],   
-                }
-            }, 
+                ],
+            }
+        },
         guestInfo: {
             username: '',
             id: '',
@@ -22,11 +22,12 @@ export const useAppStore = defineStore('app', {
             email: '',
             lost: false,
             win: false,
+            tutorial: true
         },
-        users:[],
+        users: [],
         pregunta: {
-            id_pregunta:"", 
-            pregunta:""
+            id_pregunta: "",
+            pregunta: ""
         },
         respostaAnterior: true,
         timer: 0,
@@ -34,53 +35,53 @@ export const useAppStore = defineStore('app', {
         gameWinner: false,
         error: "",
         ranking: []
-        
-    }), 
+
+    }),
     actions: {
-        setRoomName(roomGame){
+        setRoomName(roomGame) {
             this.infoGame.rooms.gameRooms[0].roomName = roomGame;
             console.log(this.infoGame.rooms.gameRooms[0].roomName);
         },
-        setGameStarted(gameStarted){
+        setGameStarted(gameStarted) {
             this.gameStarted = gameStarted;
-        
+
         },
-        getGameStarted(){
+        getGameStarted() {
             return this.gameStarted;
         },
-        setGameRooms(gameRooms){
+        setGameRooms(gameRooms) {
             this.infoGame.rooms.gameRooms = gameRooms;
             console.log(this.infoGame.rooms.gameRooms);
         },
-        getGameRooms(){
+        getGameRooms() {
             return this.infoGame.rooms.gameRooms;
         },
-        getRoomName(){
+        getRoomName() {
             return this.infoGame.rooms.gameRooms[0].roomName;
         },
-        setUsersInRoom(users){
+        setUsersInRoom(users) {
             this.infoGame.rooms.gameRooms[0].users = users;
             console.log(this.infoGame.rooms.gameRooms[0].users);
         },
-        getUsersInRoom(){
+        getUsersInRoom() {
             return this.infoGame.rooms.gameRooms[0].users;
         },
-        updateUsersOnDisconnectInRoom({roomName, users }) {
-            if(this.infoGame.rooms.hasOwnProperty(roomName)){
+        updateUsersOnDisconnectInRoom({ roomName, users }) {
+            if (this.infoGame.rooms.hasOwnProperty(roomName)) {
                 this.infoGame.rooms[roomName].users = users;
                 console.log('Usuarios en la sala ${roomName} actualizados: ', users);
             }
         },
-        setUsers(users){
+        setUsers(users) {
             this.users = users;
             console.log(this.users);
-        },     
-        getUsers(){
+        },
+        getUsers() {
             return this.users;
-        },    
+        },
         updateUsersOnDisconnect(users) {
             this.setUsers(users);
-        },    
+        },
         setGuestInfo(data) {
             this.guestInfo.username = data.username;
             this.guestInfo.id = data.id;
@@ -88,11 +89,12 @@ export const useAppStore = defineStore('app', {
             this.guestInfo.email = data.email;
             this.guestInfo.win = false;
             this.guestInfo.lost = false;
+            this.guestInfo.tutorial = data.tutorial;
 
             console.log('*infoGuest*');
             console.log(this.guestInfo.username);
             console.log(this.guestInfo.id);
-            
+
         },
         getGuestInfo() {
             return this.guestInfo;
@@ -100,56 +102,56 @@ export const useAppStore = defineStore('app', {
         clearGuestInfo() {
             this.guestInfo.username = '';
             this.guestInfo.id = '';
-        }, 
-        
-        setPregunta(pregunta){
-            this.pregunta.id_pregunta=pregunta.id_pregunta;
-            this.pregunta.pregunta=pregunta.pregunta
         },
-        getPregunta(){
-            return this.pregunta;  
+
+        setPregunta(pregunta) {
+            this.pregunta.id_pregunta = pregunta.id_pregunta;
+            this.pregunta.pregunta = pregunta.pregunta
         },
-        setRespostaAnterior(resposta){
+        getPregunta() {
+            return this.pregunta;
+        },
+        setRespostaAnterior(resposta) {
             this.respostaAnterior = resposta;
         },
-        getRespostaAnterior(){
+        getRespostaAnterior() {
             return this.respostaAnterior;
         },
-        setTimer(timerValue){
+        setTimer(timerValue) {
             this.timer = timerValue;
         },
-        getTimer(){
+        getTimer() {
             return this.timer;
         },
-        setError(error){
-            this.error=error;
+        setError(error) {
+            this.error = error;
         },
-        getError(){
+        getError() {
             return this.error;
         },
-        setGuestImage(image){
+        setGuestImage(image) {
             console.log('Imagen: ', image);
             this.guestInfo.image = image;
         },
-        setRanking(ranking){
+        setRanking(ranking) {
             this.ranking = ranking;
         },
-        getRanking(){
+        getRanking() {
             return this.ranking;
         },
-        setWin(){
+        setWin() {
             this.guestInfo.win = true;
         },
-        getWin(){
+        getWin() {
             return this.guestInfo.win;
         },
-        setLost(){
+        setLost() {
             this.guestInfo.lost = true;
         },
-        getLost(){
+        getLost() {
             return this.guestInfo.lost;
         },
-        clearGuestInfo(){
+        clearGuestInfo() {
             this.guestInfo.username = '';
             this.guestInfo.id = '';
             this.guestInfo.bomba = false;
@@ -159,7 +161,7 @@ export const useAppStore = defineStore('app', {
             this.guestInfo.lost = false;
             this.guestInfo.win = false;
         }
-        
+
         // setGameWinner(gameWinner){
         //     this.gameWinner = gameWinner;
         // },

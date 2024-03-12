@@ -9,8 +9,9 @@ use Illuminate\Support\Facades\Hash;
 
 class usuariosController extends Controller
 {
-    public function register(Request $request) {
-        try{
+    public function register(Request $request)
+    {
+        try {
             $validator = $request->validate([
                 'username' => 'required|string|max:50',
                 'email' => 'required|string|email|unique:usuarios',
@@ -27,14 +28,14 @@ class usuariosController extends Controller
                 $usuario->email = $request->email;
                 $usuario->password = Hash::make($request->password);
                 $usuario->foto_perfil = $request->foto_perfil;
-               
+
                 $usuario->save();
-        
+
                 return response()->json([
                     'status' => 1,
                     'message' => 'usuari creat correctament'
                 ]);
-            } 
+            }
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 0,
@@ -43,15 +44,16 @@ class usuariosController extends Controller
         }
     }
 
-    public function login(Request $request){
+    public function login(Request $request)
+    {
         $request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string|min:6',
         ]);
-    
+
         // Cambia la línea siguiente para asignar el resultado de la consulta a $usuario
         $usuario = Usuarios::where("email", "=", $request->email)->first();
-    
+
         if ($usuario) {
             if (Hash::check($request->password, $usuario->password)) {
                 return response()->json([
@@ -73,11 +75,12 @@ class usuariosController extends Controller
             ]);
         }
     }
-    public function logout(){
-       
+    public function logout()
+    {
     }
-    public function changeIcon(Request $request){
-       $request->validate([
+    public function changeIcon(Request $request)
+    {
+        $request->validate([
             'foto_perfil' => [
                 'required',
                 Rule::in(['1', '2', '3', '4', '5', '6', '7', '8', '9']),
@@ -93,23 +96,25 @@ class usuariosController extends Controller
         ]);
     }
 
-    public function ranking() {
+    public function ranking()
+    {
         $usuarios = Usuarios::orderBy('num_victorias', 'desc')->limit(20)->get();
-    
+
         foreach ($usuarios as $usuario) {
             $totalGames = $usuario->num_victorias + $usuario->num_derrotas;
             $usuario->victory_percentage = $totalGames > 0 ? ($usuario->num_victorias / $totalGames) * 100 : 0;
         }
-    
+
         // Sort by victory percentage
         $usuarios = $usuarios->sortByDesc('victory_percentage');
-    
+
         return response()->json([
             'ranking' => $usuarios->values() // Reset keys after sorting
         ]);
     }
 
-    public function updateDerrotas(Request $request){
+    public function updateDerrotas(Request $request)
+    {
         $request->validate([
             'email' => 'required|string|email',
         ]);
@@ -122,7 +127,8 @@ class usuariosController extends Controller
         ]);
     }
 
-    public function updateVictorias(Request $request){
+    public function updateVictorias(Request $request)
+    {
         $request->validate([
             'email' => 'required|string|email',
         ]);
