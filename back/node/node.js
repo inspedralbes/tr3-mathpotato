@@ -13,7 +13,6 @@ const app = express();
 var gameRooms = [];
 var lastRoom = 0;
 
-
 app.use(cors());
 const server = createServer(app);
 
