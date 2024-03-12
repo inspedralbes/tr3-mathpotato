@@ -205,3 +205,4 @@ input[type="radio"]:checked+label>img {
     color: white;
 
 }</style>
+../socket.js

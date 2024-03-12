@@ -18,14 +18,14 @@
             <div id="bombContainer" :class="[gameStarted ? '' : 'hidden']"><img src="../assets/LePotata.png" alt=""
                     class="bomb" id="bomb"><span class="bombCounter">{{ timer }}</span></div>
             <div id="middle">
-                <div id="myModal" class="modal-tutorial" v-show="!gameStarted">
+                <div id="myModal" class="modal-tutorial" v-show="!gameStarted && userPantalla.tutorial">
                     <div class="modal-tutorial-content">
                         <div class="explanationSection">
                             <div class="explanationColumn">
                                 <h2>Si tens la bomba</h2>
                                 <img src="../assets/Icon_1.png" class="jugador">
                                 <img src="../assets/LePotata.png" alt="" class="bombIniciar">
-                                <p class="name">Usuari</p>
+                                <p class="name">Usuari 1</p>
                                 <p>Has de contestar bé a la pregunta o abans que es termini el temps de la bomba, sinó,
                                     perdràs una vida. Tens un total de 2 vides més una extra. Ves amb compte, la gent et pot
                                     restar temps i canviar la pregunta.</p>
@@ -43,7 +43,7 @@
                             :class="[gameStarted ? 'hidden' : '']">START!</Button>
                     </div>
                 </div>
-                <div :class="[gameStarted ? '' : 'hidden']" class="gameContainer">
+                <div :class="[gameStarted && userPantalla.tutorial ? '' : 'hidden']" class="gameContainer">
                     <h3>{{ message.pregunta }}</h3>
                     <input type="text" name="resposta" id="resposta" @keyup.enter="enviarResposta" v-model="respuesta"
                         @input="limitarANumeros">
@@ -548,6 +548,7 @@ export default {
             lastUserWithBomb: -1,
         };
     },
+
     computed: {
         userPantalla() {
             let store = useAppStore();

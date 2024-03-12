@@ -44,19 +44,19 @@ io.on('connection', (socket) => {
     socket.on('join', (data) => {
         console.log("Soy", data);
         if (gameRooms.length == 0) {
-            gameRooms.push({ idRoom: lastRoom, roomName: "gameRoom" + lastRoom, users: [], tutorial: true, started: false, pregunta: "", pregActual: 0, timer: 1, timerAnterior: 0 });
+            gameRooms.push({ idRoom: lastRoom, roomName: "gameRoom" + lastRoom, users: [], started: false, pregunta: "", pregActual: 0, timer: 1, timerAnterior: 0 });
         } else {
             if (gameRooms[gameRooms.length - 1].users.length == 6 || gameRooms[gameRooms.length - 1].started === true) {
                 lastRoom++;
-                gameRooms.push({ idRoom: lastRoom, roomName: "gameRoom" + lastRoom, users: [], tutorial: true, started: false, pregunta: "", pregActual: 0, timer: 1, timerAnterior: 0 });
+                gameRooms.push({ idRoom: lastRoom, roomName: "gameRoom" + lastRoom, users: [], started: false, pregunta: "", pregActual: 0, timer: 1, timerAnterior: 0 });
             }
         }
         if (gameRooms[gameRooms.length - 1].users.length == 0) {
             // Si no hay usuarios conectados, se agrega el primer usuario a la sala
-            gameRooms[gameRooms.length - 1].users.push({ username: data.username, id: socket.id, bomba: true, image: data.image, roomPosition: lastRoom, lives: 3, email: data.email, roomName: gameRooms[gameRooms.length - 1].roomName, hasClickedStart: false });
+            gameRooms[gameRooms.length - 1].users.push({ username: data.username, id: socket.id, bomba: true, image: data.image, tutorial: data.tutorial, roomPosition: lastRoom, lives: 3, email: data.email, roomName: gameRooms[gameRooms.length - 1].roomName, hasClickedStart: false });
         } else {
             // Si ya hay usuarios, se agrega un nuevo usuario a la sala
-            gameRooms[gameRooms.length - 1].users.push({ username: data.username, id: socket.id, bomba: false, image: data.image, roomPosition: lastRoom, lives: 3, email: data.email, roomName: gameRooms[gameRooms.length - 1].roomName, hasClickedStart: false });
+            gameRooms[gameRooms.length - 1].users.push({ username: data.username, id: socket.id, bomba: false, image: data.image, tutorial: data.tutorial, roomPosition: lastRoom, lives: 3, email: data.email, roomName: gameRooms[gameRooms.length - 1].roomName, hasClickedStart: false });
         }
         socket.join("gameRoom" + lastRoom);
         console.log(gameRooms[gameRooms.length - 1].users[gameRooms[gameRooms.length - 1].users.length - 1]);

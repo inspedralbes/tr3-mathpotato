@@ -62,7 +62,7 @@ export default {
     watch: {
         error() {
             if (this.error == 1) {
-                this.$router.push({ path: '/logged&RegisterHome' });
+                this.$router.push({ path: '/home-user' });
             } else {
                 alert('Invalid credentials. Please try again.');
             }

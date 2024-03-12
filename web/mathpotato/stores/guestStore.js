@@ -7,7 +7,7 @@ export const useAppStore = defineStore('app', {
                 gameRooms: [
                     {
                         users: [
-                            { username: '', id: '', bomba: false, image: './assets/Icon_2.png' }
+                            { username: '', id: '', bomba: false, tutorial: true, image: './assets/Icon_2.png' }
                         ]
                     },
                 ],
@@ -89,7 +89,7 @@ export const useAppStore = defineStore('app', {
             this.guestInfo.email = data.email;
             this.guestInfo.win = false;
             this.guestInfo.lost = false;
-            this.guestInfo.tutorial = data.tutorial;
+            this.guestInfo.tutorial = true;
 
             console.log('*infoGuest*');
             console.log(this.guestInfo.username);
@@ -141,15 +141,23 @@ export const useAppStore = defineStore('app', {
         },
         setWin() {
             this.guestInfo.win = true;
+            this.setTutorial()
         },
         getWin() {
             return this.guestInfo.win;
         },
         setLost() {
             this.guestInfo.lost = true;
+            this.setTutorial()
         },
         getLost() {
             return this.guestInfo.lost;
+        },
+        setTutorial() {
+            this.guestInfo.tutorial = false;
+        },
+        getTutorial() {
+            return this.guestInfo.tutorial;
         },
         clearGuestInfo() {
             this.guestInfo.username = '';
@@ -161,12 +169,5 @@ export const useAppStore = defineStore('app', {
             this.guestInfo.lost = false;
             this.guestInfo.win = false;
         }
-
-        // setGameWinner(gameWinner){
-        //     this.gameWinner = gameWinner;
-        // },
-        // getGameWinner(){
-        //     return this.gameWinner;
-        // },
     }
 });

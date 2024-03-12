@@ -112,7 +112,7 @@ export default {
     watch: {
         error() {
             if (this.error == 1) {
-                this.$router.push({ path: '/logged&RegisterHome' })
+                this.$router.push({ path: '/home-user' })
             } else {
                 alert('Invalid credentials. Please try again.');
             }
@@ -134,7 +134,6 @@ export default {
                 "password": CryptoJS.SHA256(this.password).toString(),
                 "password_confirmation": CryptoJS.SHA256(this.passwordConfirmation).toString(),
                 "foto_perfil": this.imatgeSeleccionada,
-                "tutorial": this.tutorial
             };
             socket.emit('register', user);
         }

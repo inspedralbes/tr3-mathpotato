@@ -107,6 +107,7 @@ socket.on("finishGame", (dataPartida) => {
     const store = useAppStore();
     store.setGameStarted(dataPartida.gameStarted);
     store.setWin();
+    store.setTutorial();
     // store.setGuestInfo({ lives: 0});
 });
 
