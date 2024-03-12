@@ -16,6 +16,16 @@ jobs:
         with:
           node-version: '20.x'
 
+      - name: Pujant Nuxt.js
+        uses: burnett01/rsync-deployments@7.0.0
+        with:
+          switches: -avzr --delete
+          path: web/mathpotato/
+          remote_path: ${{ secrets.REMOTE_TARGET }}web/mathpotato/
+          remote_host: ${{ secrets.PROD_HOST }}
+          remote_user: ${{ secrets.PROD_USER }}
+          remote_key: ${{ secrets.PROD_KEY }}
+
       - name: Pujant Node.js
         uses: burnett01/rsync-deployments@7.0.0
         with:
@@ -44,5 +54,5 @@ jobs:
           key: ${{ secrets.PROD_KEY }}
           command_timeout: 30m
           script: | 
-            ls && cd ${{ secrets.REMOTE_TARGET }}back/node && npm install && cd ../laravel && composer install 
+            ls && cd ${{ secrets.REMOTE_TARGET }}back/node && npm install && cd ../laravel && composer install && cd ../../front/mathpotato && npm install && npm run build 
       - run: echo "🍏 This job's status is ${{ job.status }}."
