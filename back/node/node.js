@@ -43,6 +43,7 @@ io.on('connection', (socket) => {
 
     socket.on('join', (data) => {
         console.log("Soy", data);
+
         if (gameRooms.length == 0) {
             gameRooms.push({ idRoom: lastRoom, roomName: "gameRoom" + lastRoom, users: [], started: false, pregunta: "", pregActual: 0, timer: 1, timerAnterior: 0 });
         } else {
@@ -54,6 +55,7 @@ io.on('connection', (socket) => {
         if (gameRooms[gameRooms.length - 1].users.length == 0) {
             // Si no hay usuarios conectados, se agrega el primer usuario a la sala
             gameRooms[gameRooms.length - 1].users.push({ username: data.username, id: socket.id, bomba: true, image: data.image, tutorial: data.tutorial, roomPosition: lastRoom, lives: 3, email: data.email, roomName: gameRooms[gameRooms.length - 1].roomName, hasClickedStart: false });
+
         } else {
             // Si ya hay usuarios, se agrega un nuevo usuario a la sala
             gameRooms[gameRooms.length - 1].users.push({ username: data.username, id: socket.id, bomba: false, image: data.image, tutorial: data.tutorial, roomPosition: lastRoom, lives: 3, email: data.email, roomName: gameRooms[gameRooms.length - 1].roomName, hasClickedStart: false });
@@ -80,23 +82,23 @@ io.on('connection', (socket) => {
             userData.status = 1;
             userData.id = socket.id;
             userData.image = userData.foto_perfil;
-            console.log("userData", userData);
+            // console.log("userData", userData);
             socket.emit('loginSuccess', userData);
             return responseData;
         } else {
-            console.log(response);
+            // console.log(response);
             socket.emit('loginError', responseData.status);
 
         }
     });
     socket.on('login', async (data) => {
-        console.log(data);
-        console.log("data to send...", data)
+        // console.log(data);
+        // console.log("data to send...", data)
         await getUser(data);
     });
     async function getUser(data) {
         try {
-            console.log("data to send...", data)
+            // console.log("data to send...", data)
             const response = await fetch('http://localhost:8000/api/login', {
                 method: 'POST',
                 body: JSON.stringify(data),
@@ -111,16 +113,16 @@ io.on('connection', (socket) => {
                 responseData.image = responseData.foto_perfil;
                 socket.emit('loginSuccess', responseData);
 
-                console.log("response.ok....", responseData);
+                // console.log("response.ok....", responseData);
 
                 return responseData;
             } else {
-                console.log("response.Notok....", responseData);
+                // console.log("response.Notok....", responseData);
                 socket.emit('loginError', responseData.status);
             }
 
         } catch (error) {
-            console.error('There has been a problem with your fetch operation:', error);
+            // console.error('There has been a problem with your fetch operation:', error);
         }
     }
 
@@ -213,17 +215,17 @@ io.on('connection', (socket) => {
 
     socket.on('resposta', async (data) => {
         let roomIndex = gameRooms.findIndex(room => room.roomName === data.roomName);
-        console.log("Pregunta: ", gameRooms[roomIndex].pregunta);
+        // console.log("Pregunta: ", gameRooms[roomIndex].pregunta);
 
         const preguntaParaEvaluar = gameRooms[roomIndex].pregunta.replace('x', '*');
         const resultatPregunta = eval(preguntaParaEvaluar);
-        console.log("Result correct --> ", resultatPregunta);
-        console.log(data.resposta);
+        // console.log("Result correct --> ", resultatPregunta);
+        // console.log(data.resposta);
         let userWithBomb = getUserWithBomb(roomIndex);
         if (data.resposta !== "") {
             if (resultatPregunta == data.resposta) {
                 if (socket.id == gameRooms[roomIndex].users[userWithBomb].id) {
-                    console.log("respuesta correcta");
+                    // console.log("respuesta correcta");
                     gameRooms[roomIndex].pregActual++;
                     gameRooms[roomIndex].users[userWithBomb].bomba = false;
 
@@ -244,7 +246,7 @@ io.on('connection', (socket) => {
                     io.to(data.roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
 
                 } else {
-                    console.log("resposta correcta!");
+                    // console.log("resposta correcta!");
                     gameRooms[roomIndex].pregActual++;
                     gameRooms[roomIndex].users[userWithBomb].bomba = true;
                     gameRooms[roomIndex].timer -= 10;
@@ -253,11 +255,11 @@ io.on('connection', (socket) => {
             } else {
                 if (gameRooms[roomIndex].users[userWithBomb].id == socket.id) {
                     gameRooms[roomIndex].timer = gameRooms[roomIndex].timerAnterior;
-                    console.log("resposta incorrecta!");
+                    // console.log("resposta incorrecta!");
                     gameRooms[roomIndex].pregActual++;
                     gameRooms[roomIndex].users[userWithBomb].bomba = true;
                     gameRooms[roomIndex].users[userWithBomb].lives--;
-                    console.log("lives restantes -> " + gameRooms[roomIndex].users[userWithBomb].lives);
+                    // console.log("lives restantes -> " + gameRooms[roomIndex].users[userWithBomb].lives);
 
                     if (gameRooms[roomIndex].users[userWithBomb].lives == 0) {
                         if (gameRooms[roomIndex].users[userWithBomb].email !== 'none') {
@@ -270,7 +272,7 @@ io.on('connection', (socket) => {
                                     'Content-Type': 'application/json'
                                 }
                             });
-                            console.log("entrooo????? --> ", email);
+                            // console.log("entrooo????? --> ", email);
 
                         }
                         if (userWithBomb == gameRooms[roomIndex].users.length - 1) {
@@ -284,7 +286,7 @@ io.on('connection', (socket) => {
                         gameRooms[roomIndex].users.splice(userWithBomb, 1);
                         if (gameRooms[roomIndex].users.length == 1 && gameRooms[roomIndex].started == true) {
                             let email = gameRooms[roomIndex].users[0].email;
-                            console.log(email);
+                            // console.log(email);
                             if (email !== 'none') {
                                 let response = await fetch('http://localhost:8000/api/updateVictorias', {
                                     method: 'POST',
@@ -293,7 +295,7 @@ io.on('connection', (socket) => {
                                         'Content-Type': 'application/json'
                                     }
                                 });
-                                console.log("entrooo????? --> ", email);
+                                // console.log("entrooo????? --> ", email);
                             }
                             gameRooms[roomIndex].gameStarted = false;
                             io.to(gameRooms[roomIndex].roomName).emit('finishGame', ({ gameStarted: false, timer: 0, username: gameRooms[roomIndex].users[0].username, image: gameRooms[roomIndex].users[0].image, email: gameRooms[roomIndex].users[0].email }));
@@ -303,11 +305,11 @@ io.on('connection', (socket) => {
                     }
                     io.to(data.roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
                 } else {
-                    console.log("resposta incorrecta!");
+                    // console.log("resposta incorrecta!");
                     gameRooms[roomIndex].pregActual++;
                     gameRooms[roomIndex].users[userWithBomb].bomba = false;
 
-                    console.log(gameRooms[roomIndex].users[userWithBomb].bomba);
+                    // console.log(gameRooms[roomIndex].users[userWithBomb].bomba);
                     let userBombN = gameRooms[roomIndex].users.findIndex(user => user.id === socket.id);
                     gameRooms[roomIndex].users[userBombN].bomba = true;
                     io.to(data.roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
@@ -339,18 +341,18 @@ io.on('connection', (socket) => {
 
     async function startTimer(idRoom) {
         if (gameRooms.length > 0) {
-            console.log("Hay estas rooms", gameRooms);
+            // console.log("Hay estas rooms", gameRooms);
             let roomPosition = gameRooms.findIndex(room => room.idRoom === idRoom);
             if (roomPosition !== -1) {
-                console.log("timer --> ", gameRooms[roomPosition]);
+                // console.log("timer --> ", gameRooms[roomPosition]);
                 if (gameRooms[roomPosition].timer > 0 && gameRooms[roomPosition].started == true) {
                     setTimeout(() => {
-                        console.log("Aqui", gameRooms[roomPosition]);
+                        // console.log("Aqui", gameRooms[roomPosition]);
                         if (roomPosition !== -1 && gameRooms[roomPosition] !== undefined) {
                             if (gameRooms[roomPosition].idRoom == idRoom) {
                                 gameRooms[roomPosition].timer--;
                                 io.to(gameRooms[roomPosition].roomName).emit('timer', gameRooms[roomPosition].timer);
-                                console.log("tiempo --> ", gameRooms[roomPosition].timer);
+                                // console.log("tiempo --> ", gameRooms[roomPosition].timer);
                             }
 
 
@@ -366,7 +368,7 @@ io.on('connection', (socket) => {
                     }, 1000);
                 } else {
                     if (gameRooms[roomPosition].started == true && gameRooms[roomPosition].timer <= 0) {
-                        console.log("timer acabado");
+                        // console.log("timer acabado");
                         newPregunta(gameRooms[roomPosition]);
                         gameRooms[roomPosition].timer = gameRooms[roomPosition].timerAnterior - 1;
                         io.to(gameRooms[roomPosition].roomName).emit('timer', gameRooms[roomPosition].timer);
@@ -383,7 +385,7 @@ io.on('connection', (socket) => {
                                         'Content-Type': 'application/json'
                                     }
                                 });
-                                console.log("entrooo????? --> ", email);
+                                // console.log("entrooo????? --> ", email);
 
                             }
                             if (userWithBomb == gameRooms[roomPosition].users.length - 1) {
@@ -410,7 +412,7 @@ io.on('connection', (socket) => {
                                             'Content-Type': 'application/json'
                                         }
                                     });
-                                    console.log("entrooo????? --> ", email);
+                                    // console.log("entrooo????? --> ", email);
                                 }
                                 gameRooms[roomPosition].gameStarted = false;
                                 io.to(gameRooms[roomPosition].roomName).emit('finishGame', ({ gameStarted: false, timer: 0, username: gameRooms[roomPosition].users[0].username, image: gameRooms[roomPosition].users[0].image, email: gameRooms[roomPosition].users[0].email }));
@@ -443,7 +445,7 @@ io.on('connection', (socket) => {
         if (gameRooms.length > 0) {
             gameRooms.forEach(async room => {
                 let usuarioDesconectadoIndex = room.users.findIndex(user => user.id === socket.id);
-                console.log(usuarioDesconectadoIndex);
+                // console.log(usuarioDesconectadoIndex);
                 if (usuarioDesconectadoIndex !== -1) {
                     if (room.users[usuarioDesconectadoIndex].bomba) {
                         if (usuarioDesconectadoIndex == room.users.length - 1) {
@@ -452,7 +454,7 @@ io.on('connection', (socket) => {
                             room.users[usuarioDesconectadoIndex + 1].bomba = true;
                         }
                     }
-                    console.log("VAAAAAAAAAA", room.users[usuarioDesconectadoIndex]);
+                    // console.log("VAAAAAAAAAA", room.users[usuarioDesconectadoIndex]);
                     if (room.users[usuarioDesconectadoIndex].email != 'none') {
                         var email = room.users[usuarioDesconectadoIndex].email;
 
@@ -464,7 +466,7 @@ io.on('connection', (socket) => {
                                 'Content-Type': 'application/json'
                             }
                         });
-                        console.log("entrooo????? --> ", email);
+                        // console.log("entrooo????? --> ", email);
 
                     }
                     let usuarioDesconectado = room.users.splice(usuarioDesconectadoIndex, 1);
@@ -482,7 +484,7 @@ io.on('connection', (socket) => {
                                     'Content-Type': 'application/json'
                                 }
                             });
-                            console.log("entrooo????? --> ", email);
+                            // console.log("entrooo????? --> ", email);
                         }
                         gameRooms[room.idRoom].gameStarted = false;
                         io.to(room.roomName).emit('finishGame', ({ gameStarted: false, timer: 0, username: room.users[0].username, image: room.users[0].image, email: room.users[0].email }));
@@ -490,7 +492,7 @@ io.on('connection', (socket) => {
                         io.sockets.sockets.get(room.users[0].id).leave(room.roomName);
 
                     }
-                    console.log('Usuario desconectado: ', usuarioDesconectado);
+                    // console.log('Usuario desconectado: ', usuarioDesconectado);
 
                 }
 
@@ -502,7 +504,7 @@ io.on('connection', (socket) => {
         if (gameRooms.length > 0) {
             gameRooms.forEach(async room => {
                 let usuarioDesconectadoIndex = room.users.findIndex(user => user.id === socket.id);
-                console.log(usuarioDesconectadoIndex);
+                // console.log(usuarioDesconectadoIndex);
                 if (usuarioDesconectadoIndex !== -1) {
                     if (room.users[usuarioDesconectadoIndex].bomba) {
                         if (usuarioDesconectadoIndex == room.users.length - 1) {
@@ -511,7 +513,7 @@ io.on('connection', (socket) => {
                             room.users[usuarioDesconectadoIndex + 1].bomba = true;
                         }
                     }
-                    console.log("VAAAAAAAAAA", room.users[usuarioDesconectadoIndex]);
+                    // console.log("VAAAAAAAAAA", room.users[usuarioDesconectadoIndex]);
                     if (room.users[usuarioDesconectadoIndex].email != 'none') {
                         var email = room.users[usuarioDesconectadoIndex].email;
 
@@ -524,7 +526,7 @@ io.on('connection', (socket) => {
                                 'Content-Type': 'application/json'
                             }
                         });
-                        console.log("entrooo????? --> ", email);
+                        // console.log("entrooo????? --> ", email);
 
                     }
                     let usuarioDesconectado = room.users.splice(usuarioDesconectadoIndex, 1);
@@ -542,7 +544,7 @@ io.on('connection', (socket) => {
                                     'Content-Type': 'application/json'
                                 }
                             });
-                            console.log("entrooo????? --> ", email);
+                            // console.log("entrooo????? --> ", email);
                         }
                         gameRooms[room.idRoom].gameStarted = false;
                         io.to(room.roomName).emit('finishGame', ({ gameStarted: false, timer: 0, username: room.users[0].username, image: room.users[0].image, email: room.users[0].email }));
@@ -550,7 +552,7 @@ io.on('connection', (socket) => {
                         io.sockets.sockets.get(room.users[0].id).leave(room.roomName);
 
                     }
-                    console.log('Usuario desconectado: ', usuarioDesconectado);
+                    // console.log('Usuario desconectado: ', usuarioDesconectado);
 
                 }
 
@@ -563,7 +565,7 @@ io.on('connection', (socket) => {
         gameRooms.splice(roomIndex, 1);
     });
     socket.on('login', (data) => {
-        console.log(data);
+        // console.log(data);
     });
     socket.on('getRanking', async () => {
         let response = await fetch('http://localhost:8000/api/ranking', {
@@ -573,12 +575,12 @@ io.on('connection', (socket) => {
             },
         });
         let ranking = await response.json();
-        console.log(ranking);
+        // console.log(ranking);
         socket.emit('updateRanking', await ranking);
 
     });
     socket.on('changeSkin', async (data) => {
-        console.log(data);
+        // console.log(data);
         let response = await fetch('http://localhost:8000/api/changeIcon', {
             method: 'POST',
             body: JSON.stringify(data),
@@ -588,8 +590,8 @@ io.on('connection', (socket) => {
         });
         let responseData = await response.json();
         if (responseData.status == 1) {
-            console.log("Icono cambiado correctamente");
-            console.log(data.foto_perfil);
+            // console.log("Icono cambiado correctamente");
+            // console.log(data.foto_perfil);
             socket.emit('changeSkinSuccess', data.foto_perfil);
         }
     });
