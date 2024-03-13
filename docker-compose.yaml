@@ -11,13 +11,21 @@ services:
       - db
     command: bash -c "apt-get update -y \ && apt-get install -y openssl zip unzip git libonig-dev \ && apt-get install -y libpq-dev && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && docker-php-ext-install pdo mbstring pdo_mysql && composer install && php artisan key:generate && php artisan migrate && php artisan serve --host=0.0.0.0"
   node:
-    image: node:14
+    image: node:20
     ports:
       - 5175:5175
     volumes:
       - ./back/node:/app
     working_dir: /app
     command: bash -c "npm install && node node.js"
+  nuxt:
+    image: node:20
+    ports:
+      - 3000:3000
+    volumes:
+      - ./web/mathpotato:/app
+    working_dir: /app
+    command: bash -c "npm run dev --host=0.0.0.0"
   db:
     image: mysql
     ports:
