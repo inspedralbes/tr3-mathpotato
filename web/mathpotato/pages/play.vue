@@ -34,7 +34,7 @@
                             <div class="explanationColumn2">
                                 <h2>Si no tens la bomba</h2>
                                 <img src="@/assets/Icon_1.png">
-                                <p class="name">Usuari2</p>
+                                <p class="name">Usuari 2</p>
                                 <p>Pots contestar les preguntes per restar temps a l'usuari que té la bomba. Ves amb compte,
                                     si contestes malament, rebràs la bomba.</p>
                             </div>
@@ -49,31 +49,32 @@
                         @input="limitarANumeros">
                     <Button @click="enviarResposta" icon="pi pi-check" aria-label="Submit" />
                 </div>
+                <div id="modal-victory" class="modal-victoria" v-show="userPantalla.win">
+                    <div class="modal-victoria-content">
+                        <div class="explanationSection">
+                            <h2>Has guanyat!!!</h2>
+                            <img src="@/assets/Icon_Win.png" alt="Patata Ganadora" class="victoria">
+                        </div>
+                        <Button @click="replay" id="startGameButton">Replay</Button>
+                        <Button @click="goBack" id="goBackButton">Go Back</Button>
+                    </div>
+                </div>
+                <div id="modal-derrota" class="modal-derrota" v-show="userPantalla.lost">
+                    <div class="modal-derrota-content">
+                        <div class="explanationSection">
+                            <h2>Has perdut!!!</h2>
+                            <img src="@/assets/Icon_Lost.png" alt="Patata Perdedora" class="derrota">
+                        </div>
+                        <Button @click="replay" id="startGameButton">Volver a Jugar</Button>
+                        <Button @click="goBack" id="goBackButton">Salir</Button>
+                    </div>
+                </div>
             </div>
         </div>
-        <Dialog v-model:visible="userPantalla.win" modal header="Victoria" :style="{ width: '50rem' }"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-            <div>
-                <h2 class="letra">Enhorabona has guanyat la partida</h2>
-                <div class="content-bottom">
-                    <img src="@/assets/Icon_Win.png" alt="" class="victoria">
-                    <button @click="replay">Tornar a jugar</button>
-                </div>
-            </div>
-        </Dialog>
 
-        <Dialog v-model:visible="userPantalla.lost" modal header="Derrota" :style="{ width: '50rem' }"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-            <div>
-                <h2 class="letra">Uf... has perdut la partida</h2>
-                <div class="content-bottom">
-                    <img src="@/assets/Icon_Lost.png" alt="" class="derrota">
-                    <button @click="replay">Tornar a jugar</button>
-                </div>
-            </div>
-        </Dialog>
     </div>
 </template>
+
 <style scoped>
 :root {
     --xPositionAnt: 0;
@@ -359,6 +360,29 @@ html:lang(ar) {
     align-items: center;
 }
 
+.modal-victoria-content{
+    width: 35vw;
+    background-color: #FADB9A;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+
+}
+
+.modal-derrota-content{
+    width: 35vw;
+    background-color: #FCB6BE;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+}
+
 .modal {
     z-index: 100;
 }
@@ -426,6 +450,18 @@ button {
     justify-content: center;
 }
 
+#modal-victory {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#modal-derrota {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .explanationSection {
     display: flex;
     justify-content: space-between;
@@ -483,6 +519,17 @@ button {
     transition: background-color 0.3s;
 }
 
+#goBackButton{
+    margin-top: 2vh;
+    background-color: #ED1C2F;
+    padding: 15px 25px;
+    font-size: 1.2em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
 #startGameButton:disabled {
     background-color: #6c757d;
     color: #fff;
@@ -504,12 +551,39 @@ button {
     background-color: rgba(0, 0, 0, 0.7);
 }
 
+
 .modal-tutorial-content {
     background-color: #f8f9fa;
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
     max-width: 80%;
+}
+
+.modal-victoria{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modal-derrota{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
 }
 
 @keyframes hunch {
@@ -529,8 +603,10 @@ button {
 .userWithout {
     filter: grayscale(30%);
     /* opacity: 0.7; */
-
 }
+
+/*VICTORY & DEFEAT */
+
 </style>
 <script>
 import { useAppStore } from '../stores/guestStore.js';
@@ -718,6 +794,7 @@ export default {
                     }
             };
         },
+        
         async changeBomb() {
             await this.$nextTick(); // Espera hasta que el componente se haya renderizado completamente
             console.log(this.lastUserWithBomb);
