@@ -90,7 +90,7 @@ export const useAppStore = defineStore('app', {
             this.guestInfo.email = data.email;
             this.guestInfo.win = false;
             this.guestInfo.lost = false;
-            this.guestInfo.tutorial = true;
+            this.guestInfo.tutorial = data.tutorial;
 
             console.log('*infoGuest*');
             console.log(this.guestInfo.username);
@@ -143,6 +143,7 @@ export const useAppStore = defineStore('app', {
         setWin() {
             this.guestInfo.win = true;
             this.setTutorial()
+            console.log('Ganador: ', this.guestInfo.tutorial);
         },
         getWin() {
             return this.guestInfo.win;
@@ -150,6 +151,7 @@ export const useAppStore = defineStore('app', {
         setLost() {
             this.guestInfo.lost = true;
             this.setTutorial()
+            console.log('Perdedor: ', this.guestInfo.tutorial);
         },
         getLost() {
             return this.guestInfo.lost;

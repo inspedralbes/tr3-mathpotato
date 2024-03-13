@@ -43,7 +43,7 @@ io.on('connection', (socket) => {
 
     socket.on('join', (data) => {
         console.log("Soy", data);
-
+        console.log("tutorial", data.tutorial);
         if (gameRooms.length == 0) {
             gameRooms.push({ idRoom: lastRoom, roomName: "gameRoom" + lastRoom, users: [], started: false, pregunta: "", pregActual: 0, timer: 1, timerAnterior: 0 });
         } else {
