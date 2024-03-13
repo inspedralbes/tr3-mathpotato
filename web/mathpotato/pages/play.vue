@@ -51,24 +51,19 @@
                 </div>
                 <div id="modal-victory" class="modal-victoria" v-show="userPantalla.win">
                     <div class="modal-victoria-content">
-                        <div class="explanationSection">
-                            <h2>Has guanyat!!!</h2>
-                            <img src="@/assets/Icon_Win.png" alt="Patata Ganadora" class="victoria">
-                        </div>
-                        <Button @click="replay" id="startGameButton">Replay</Button>
-                        <Button @click="goBack" id="goBackButton">Go Back</Button>
+                        <img src="@/assets/victory.png" alt="Patata Ganadora" style="width: 250px; height: 200px;">
+                        <!-- <p class="victory-text">Victoria</p> -->
+                        <Button @click="replay" id="startGameButton">Volver a jugar</Button>
                     </div>
                 </div>
-                <div id="modal-derrota" class="modal-derrota" v-show="userPantalla.lost">
-                    <div class="modal-derrota-content">
-                        <div class="explanationSection">
-                            <h2>Has perdut!!!</h2>
-                            <img src="@/assets/Icon_Lost.png" alt="Patata Perdedora" class="derrota">
-                        </div>
+                <div id="modal-victory" class="modal-victoria" v-show="userPantalla.lost">
+                    <div class="modal-victoria-content">
+                        <img src="@/assets/defeat.png" alt="Patata Ganadora" style="width: 250px; height: 200px;">
+                        <!-- <p class="victory-text">Derrota</p> -->
                         <Button @click="replay" id="startGameButton">Volver a Jugar</Button>
-                        <Button @click="goBack" id="goBackButton">Salir</Button>
                     </div>
                 </div>
+                
             </div>
         </div>
 
@@ -362,14 +357,11 @@ html:lang(ar) {
 
 .modal-victoria-content{
     width: 35vw;
-    background-color: #FADB9A;
-    padding: 15px;
-    border-radius: 8px;
     text-align: center;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     display: flex;
+    flex-direction: column;
     align-items: center;
-
+    justify-content: center;
 }
 
 .modal-derrota-content{
@@ -509,10 +501,10 @@ button {
 
 
 #startGameButton {
-    margin-top: 2vh;
+    margin-top: 1vh;
     background-color: #3772FF;
-    padding: 15px 25px;
-    font-size: 1.2em;
+    padding: 10px 15px;
+    font-size: 0.8em;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -536,8 +528,6 @@ button {
     cursor: not-allowed;
 }
 
-
-
 .modal-tutorial {
     display: flex;
     align-items: center;
@@ -550,7 +540,6 @@ button {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
 }
-
 
 .modal-tutorial-content {
     background-color: #f8f9fa;
@@ -606,6 +595,43 @@ button {
 }
 
 /*VICTORY & DEFEAT */
+
+@keyframes growAndBlink {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.3);
+    opacity: 0.8;
+  }
+}
+
+.modal-victoria-content img {
+  animation: growAndBlink 2.5s ease-in-out infinite;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: scale(1);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 1;
+  }
+}
+
+.victory-text {
+  font-size: 24px;
+  color: #ffffff;
+  text-align: center;
+  animation: slideIn 2.5s ease-in-out infinite;
+}
 
 </style>
 <script>
