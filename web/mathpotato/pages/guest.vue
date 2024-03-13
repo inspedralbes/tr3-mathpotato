@@ -40,7 +40,7 @@ export default {
             } else {
                 // Submit the form
                 this.username = this.username.slice(0, 20);
-                socket.emit('join', {username:this.username, image:1, email:'none'});
+                socket.emit('join', {username:this.username, image:1, email:'none', tutorial: true});
 
 
                 this.$router.push({ path: '/play' });             

@@ -8,14 +8,14 @@
                             <img src="@/assets/potatHeart.png">
                         </div>
 
-                        <img :src="'./src/assets/Icon_' + user.image + '.png'" alt="image" class="icon"
+                        <img :src="'./_nuxt/assets/Icon_' + user.image + '.png'" alt="image" class="icon"
                             :class="[user.bomba ? 'userWithBomb' : 'userWithout']"
                             :style="{ 'background-color': user.background }">
                     </div>
                     <p class="name" :class="[user.id == this.userPantalla.id ? 'nameUser' : '']">{{ user.username }}</p>
                 </div>
             </div>
-            <div id="bombContainer" :class="[gameStarted ? '' : 'hidden']"><img src="../assets/LePotata.png" alt=""
+            <div id="bombContainer" :class="[gameStarted ? '' : 'hidden']"><img src="@/assets/LePotata.png" alt=""
                     class="bomb" id="bomb"><span class="bombCounter">{{ timer }}</span></div>
             <div id="middle">
                 <div id="myModal" class="modal-tutorial" v-show="!gameStarted && userPantalla.tutorial">
@@ -23,8 +23,8 @@
                         <div class="explanationSection">
                             <div class="explanationColumn">
                                 <h2>Si tens la bomba</h2>
-                                <img src="../assets/Icon_1.png" class="jugador">
-                                <img src="../assets/LePotata.png" alt="" class="bombIniciar">
+                                <img src="@/assets/Icon_1.png" class="jugador">
+                                <img src="@/assets/LePotata.png" alt="" class="bombIniciar">
                                 <p class="name">Usuari 1</p>
                                 <p>Has de contestar bé a la pregunta o abans que es termini el temps de la bomba, sinó,
                                     perdràs una vida. Tens un total de 2 vides més una extra. Ves amb compte, la gent et pot
@@ -33,7 +33,7 @@
 
                             <div class="explanationColumn2">
                                 <h2>Si no tens la bomba</h2>
-                                <img src="../assets/Icon_1.png">
+                                <img src="@/assets/Icon_1.png">
                                 <p class="name">Usuari2</p>
                                 <p>Pots contestar les preguntes per restar temps a l'usuari que té la bomba. Ves amb compte,
                                     si contestes malament, rebràs la bomba.</p>
@@ -56,7 +56,7 @@
             <div>
                 <h2 class="letra">Enhorabona has guanyat la partida</h2>
                 <div class="content-bottom">
-                    <img src="../assets/Icon_Win.png" alt="" class="victoria">
+                    <img src="@/assets/Icon_Win.png" alt="" class="victoria">
                     <button @click="replay">Tornar a jugar</button>
                 </div>
             </div>
@@ -67,7 +67,7 @@
             <div>
                 <h2 class="letra">Uf... has perdut la partida</h2>
                 <div class="content-bottom">
-                    <img src="../assets/Icon_Lost.png" alt="" class="derrota">
+                    <img src="@/assets/Icon_Lost.png" alt="" class="derrota">
                     <button @click="replay">Tornar a jugar</button>
                 </div>
             </div>
@@ -600,7 +600,7 @@ export default {
             this.showModal = false;
         },
         replay() {
-            socket.emit('join', { "username": this.userPantalla.username, "image": this.userPantalla.image, "email": this.userPantalla.email });
+            socket.emit('join', { "username": this.userPantalla.username, "image": this.userPantalla.image, "email": this.userPantalla.email, "tutorial": this.userPantalla.tutorial });
         },
         goBack() {
             this.$router.push({ name: '/' });
