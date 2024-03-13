@@ -25,3 +25,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=papata
       - MYSQL_DATABASE=Potato
+    volumes:
+      - papata:/var/lib/mysql:rw
+volumes:
+  papata:

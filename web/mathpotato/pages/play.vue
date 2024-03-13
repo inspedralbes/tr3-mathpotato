@@ -15,7 +15,7 @@
                     <p class="name" :class="[user.id == this.userPantalla.id ? 'nameUser' : '']">{{ user.username }}</p>
                 </div>
             </div>
-            <div id="bombContainer" :class="[gameStarted ? '' : 'hidden']"><img src="@/assets/LePotata.png" alt=""
+            <div id="bombContainer" :class="[gameStarted ? '' : 'hidden']"><img src="@/assets/lePotata.png" alt=""
                     class="bomb" id="bomb"><span class="bombCounter">{{ timer }}</span></div>
             <div id="middle">
                 <div id="myModal" class="modal-tutorial" v-show="!gameStarted && userPantalla.tutorial">
@@ -127,7 +127,9 @@ html:lang(ar) {
     border-radius: 20px;
     width: 90%;
 }
-
+#explosion{
+    width: 10vw;
+}
 .gameContainer>input {
     width: 80%;
     height: 5vh;
@@ -574,6 +576,12 @@ export default {
             let store = useAppStore();
             return store.getGameStarted();
         },
+        explodes(){
+            let store = useAppStore();
+            return store.getExplodes();
+        }
+
+
     },
     watch: {
         users: {
@@ -594,8 +602,24 @@ export default {
                 }
             }
         },
+        explodes: {
+            handler() {
+                if (this.explodes) {
+                    this.explosion()
+                    
+                }
+            }
+            
+        }
     },
     methods: {
+        explosion(){
+            document.getElementById("bomb").src = "/_nuxt/assets/Explosion.gif";
+            setTimeout(() => {
+                document.getElementById("bomb").src = "/_nuxt/assets/lePotata.png";
+                useAppStore().setExplodes(false);
+            }, 2000/3);
+},
         closeModal() {
             this.showModal = false;
         },

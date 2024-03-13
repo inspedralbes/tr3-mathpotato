@@ -30,6 +30,7 @@ export const useAppStore = defineStore('app', {
             pregunta: ""
         },
         respostaAnterior: true,
+        explodes: false,
         timer: 0,
         gameStarted: false,
         gameWinner: false,
@@ -168,6 +169,12 @@ export const useAppStore = defineStore('app', {
             this.guestInfo.email = '';
             this.guestInfo.lost = false;
             this.guestInfo.win = false;
+        },
+        getExplodes(){
+            return this.explodes;
+        },
+        setExplodes(explodes){
+            this.explodes = explodes;
         }
     }
 });

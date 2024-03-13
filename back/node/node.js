@@ -243,14 +243,14 @@ io.on('connection', (socket) => {
                         gameRooms[roomIndex].users[userWithBomb + 1].bomba = true;
                     }
                     gameRooms[roomIndex].timer = gameRooms[roomIndex].timerAnterior;
-                    io.to(data.roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
+                    io.to(data.roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes":false });
 
                 } else {
                     // console.log("resposta correcta!");
                     gameRooms[roomIndex].pregActual++;
                     gameRooms[roomIndex].users[userWithBomb].bomba = true;
                     gameRooms[roomIndex].timer -= 10;
-                    io.to(data.roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
+                    io.to(data.roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes":true });
                 }
             } else {
                 if (gameRooms[roomIndex].users[userWithBomb].id == socket.id) {
@@ -303,7 +303,7 @@ io.on('connection', (socket) => {
                             gameRooms.splice(data.room, 1);
                         }
                     }
-                    io.to(data.roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
+                    io.to(data.roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes":true });
                 } else {
                     // console.log("resposta incorrecta!");
                     gameRooms[roomIndex].pregActual++;
@@ -312,7 +312,7 @@ io.on('connection', (socket) => {
                     // console.log(gameRooms[roomIndex].users[userWithBomb].bomba);
                     let userBombN = gameRooms[roomIndex].users.findIndex(user => user.id === socket.id);
                     gameRooms[roomIndex].users[userBombN].bomba = true;
-                    io.to(data.roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
+                    io.to(data.roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes": false });
                 }
             }
             newPregunta(gameRooms[roomIndex]);
@@ -427,7 +427,7 @@ io.on('connection', (socket) => {
                             console.log(gameRooms[roomPosition].users);
                             startTimer(idRoom);
                             console.log(gameRooms[roomPosition]);
-                            io.to(gameRooms[roomPosition].roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomPosition].users, "bombChange": true });
+                            io.to(gameRooms[roomPosition].roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomPosition].users, "bombChange": true, "explodes":true });
                             gameRooms[roomPosition].pregActual++;
                         }
 

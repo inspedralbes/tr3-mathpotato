@@ -83,6 +83,7 @@ socket.on("changeBomb", (newUsersData) => {
     console.log('Cambio de bomba: ', newUsersData.bombChange);
     store.setUsers(newUsersData.arrayUsers);
     store.setRespostaAnterior(newUsersData.bombChange);
+    store.setExplodes(newUsersData.explodes)
 });
 
 socket.on("userLost", (UsersData) => {
