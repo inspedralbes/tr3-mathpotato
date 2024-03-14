@@ -43,12 +43,11 @@
                     </div>
                     
                 </div>
-                <Button @click="startGame" id="startGameButton" :disabled="users.length <= 2" :class="[gameStarted ? 'hidden' : '']">START!</Button>
                 <div :class="[gameStarted && userPantalla.tutorial ? '' : 'hidden']" class="gameContainer">
                     <h3>{{ message.pregunta }}</h3>
                     <input type="text" name="resposta" id="resposta" @keyup.enter="enviarResposta" v-model="respuesta"
-                        @input="limitarANumeros">
-                    <Button @click="enviarResposta" icon="pi pi-check" aria-label="Submit" />
+                    @input="limitarANumeros">
+                    <!-- <Button @click="enviarResposta" icon="pi pi-check" aria-label="Submit" /> -->
                 </div>
                 <div id="modal-victory" class="modal-victoria" v-show="userPantalla.win">
                     <div class="modal-victoria-content">
@@ -65,6 +64,7 @@
                     </div>
                 </div>
                 
+                <Button @click="startGame" id="startGameButton" :disabled="users.length <= 2" :class="[gameStarted ? 'hidden' : '']">START!</Button>
             </div>
         </div>
 
@@ -653,6 +653,7 @@ export default {
             victoriaVisible: false,
             derrotaVisible: false,
             lastUserWithBomb: -1,
+            showStartButton: false,
         };
     },
 
@@ -729,7 +730,9 @@ export default {
             this.showModal = false;
         },
         replay() {
+            this.showStartButton = true;
             socket.emit('join', { "username": this.userPantalla.username, "image": this.userPantalla.image, "email": this.userPantalla.email, "tutorial": this.userPantalla.tutorial });
+            
         },
         goBack() {
             this.$router.push({ name: '/' });
@@ -781,6 +784,7 @@ export default {
 
             // Realizar otras acciones necesarias para el usuario (puede que no sea necesario en este punto)
             return store.setGameStarted(true);
+
         },
         getId(index) {
             let size = this.users.length;
