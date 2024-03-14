@@ -618,7 +618,7 @@ export default {
             setTimeout(() => {
                 document.getElementById("bomb").src = "/_nuxt/assets/lePotata.png";
                 useAppStore().setExplodes(false);
-            }, 2000/3);
+            }, 2000/2);
 },
         closeModal() {
             this.showModal = false;
