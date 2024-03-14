@@ -58,7 +58,7 @@
                 </div>
                 <div id="modal-victory" class="modal-victoria" v-show="userPantalla.lost">
                     <div class="modal-victoria-content">
-                        <img src="@/assets/defeat.png" alt="Patata Ganadora" style="width: 250px; height: 200px;">
+                        <img src="@/assets/defeat.png" alt="Patata Perdedora" style="width: 250px; height: 200px;">
                         <!-- <p class="victory-text">Derrota</p> -->
                         <Button @click="replay" id="startGameButton">Volver a Jugar</Button>
                     </div>

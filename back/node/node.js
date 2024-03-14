@@ -212,110 +212,141 @@ io.on('connection', (socket) => {
             }
         }
     }
+    function respostaCorrecta(roomIndex, userWithBomb) {
+        gameRooms[roomIndex].pregActual++;
+        console.log("respuesta correcta");
+        if (socket.id == gameRooms[roomIndex].users[userWithBomb].id) {
+            respostaCorrectaUsariCorrecte(roomIndex, userWithBomb);
+        } else {
+            respostaCorrectaUsariIncorrecte(roomIndex, userWithBomb);
+        }
+    }
 
+    function respostaCorrectaUsariCorrecte(roomIndex, userWithBomb) {
+        gameRooms[roomIndex].users[userWithBomb].bomba = false;
+        console.log("user bomba: " + gameRooms[roomIndex].users[userWithBomb].bomba);
+        if (userWithBomb == gameRooms[roomIndex].users.length - 1) {
+            gameRooms[roomIndex].users[0].bomba = true;
+            if (gameRooms[roomIndex].timerAnterior > 20) {
+                gameRooms[roomIndex].timerAnterior = gameRooms[roomIndex].timerAnterior - 5;
+            } else {
+                if (gameRooms[roomIndex].timerAnterior > 5) {
+                    gameRooms[roomIndex].timerAnterior = gameRooms[roomIndex].timerAnterior - 2;
+                }
+            }
+        } else {
+            gameRooms[roomIndex].users[userWithBomb + 1].bomba = true;
+        }
+        gameRooms[roomIndex].timer = gameRooms[roomIndex].timerAnterior;
+        console.log("users in room -> ", gameRooms[roomIndex].users);
+        io.to(gameRooms[roomIndex].roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
+    }
+
+    function respostaCorrectaUsariIncorrecte(roomIndex, userWithBomb) {
+        console.log("resposta correcta!");
+        gameRooms[roomIndex].users[userWithBomb].bomba = true;
+        gameRooms[roomIndex].timer -= 10;
+        io.to(gameRooms[roomIndex].roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
+    }
+
+    async function addToRanking(email) {
+        let response = await fetch('http://localhost:8000/api/updateDerrotas', {
+            method: 'POST',
+            body: JSON.stringify({ email }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    }
+    async function updateVictorias(roomIndex) {
+        let email = gameRooms[roomIndex].users[0].email;
+        // console.log(email);
+        if (email !== 'none') {
+            let response = await fetch('http://localhost:8000/api/updateVictorias', {
+                method: 'POST',
+                body: JSON.stringify({ email }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            // console.log("entrooo????? --> ", email);
+        }
+    }
+    function UserHasNoLives(roomIndex, userWithBomb, roomToEliminate) {
+        if (gameRooms[roomIndex].users[userWithBomb].email !== 'none') {
+            var email = gameRooms[roomIndex].users[userWithBomb].email;
+            addToRanking(email);
+        }
+        if (userWithBomb == gameRooms[roomIndex].users.length - 1) {
+            gameRooms[roomIndex].users[0].bomba = true;
+        }
+        else {
+            gameRooms[roomIndex].users[userWithBomb + 1].bomba = true;
+        }
+        socket.leave(gameRooms[roomIndex].roomName);
+        socket.emit('userLost', gameRooms[roomIndex].users[userWithBomb]);
+        gameRooms[roomIndex].users.splice(userWithBomb, 1);
+        if (gameRooms[roomIndex].users.length == 1 && gameRooms[roomIndex].started == true) {
+            updateVictorias(roomIndex);
+            io.to(gameRooms[roomIndex].roomName).emit('finishGame', ({ gameStarted: false, timer: 0, username: gameRooms[roomIndex].users[0].username, image: gameRooms[roomIndex].users[0].image, email: gameRooms[roomIndex].users[0].email }));
+            io.sockets.sockets.get(gameRooms[roomIndex].users[0].id).leave(gameRooms[roomIndex].roomName);
+            gameRooms.splice(roomToEliminate, 1);
+        }
+    }
+    function respostaIncorrectaUsuariCorrecte(roomIndex, userWithBomb) {
+        gameRooms[roomIndex].timer = gameRooms[roomIndex].timerAnterior;
+        gameRooms[roomIndex].pregActual++;
+        gameRooms[roomIndex].users[userWithBomb].lives--;
+        let check = gameRooms[roomIndex].roomName;
+        console.log("lives restantes -> " + gameRooms[roomIndex].users[userWithBomb].lives);
+
+        if (gameRooms[roomIndex].users[userWithBomb].lives == 0) {
+            UserHasNoLives(roomIndex, userWithBomb, gameRooms[roomIndex]);
+        }
+        if (gameRooms[roomIndex] && gameRooms[roomIndex].users.length > 1 && gameRooms[roomIndex].roomName == check) {
+            io.to(gameRooms[roomIndex].roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
+        }
+    }
+
+    function respostaIncorrectaUsuariIncorrecte(roomIndex, userWithBomb, roomEnviada) {
+        if (gameRooms[roomIndex].roomName == roomEnviada) {
+            console.log("resposta incorrecta!");
+            gameRooms[roomIndex].pregActual++;
+            gameRooms[roomIndex].users[userWithBomb].bomba = false;
+
+            console.log(gameRooms[roomIndex].users[userWithBomb].bomba);
+            let userBombN = gameRooms[roomIndex].users.findIndex(user => user.id === socket.id);
+            gameRooms[roomIndex].users[userBombN].bomba = true;
+            io.to(gameRooms[roomIndex].roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
+        }
+    }
+    function respostaIncorrecta(roomIndex, userWithBomb) {
+        console.log("resposta incorrecta!");
+        if (gameRooms[roomIndex].users[userWithBomb].id == socket.id) {
+            respostaIncorrectaUsuariCorrecte(roomIndex, userWithBomb);
+        } else {
+            respostaIncorrectaUsuariIncorrecte(roomIndex, userWithBomb, gameRooms[roomIndex].roomName);
+        }
+
+    }
     socket.on('resposta', async (data) => {
         let roomIndex = gameRooms.findIndex(room => room.roomName === data.roomName);
-        // console.log("Pregunta: ", gameRooms[roomIndex].pregunta);
+        console.log("Pregunta: ", gameRooms[roomIndex].pregunta);
 
         const preguntaParaEvaluar = gameRooms[roomIndex].pregunta.replace('x', '*');
         const resultatPregunta = eval(preguntaParaEvaluar);
-        // console.log("Result correct --> ", resultatPregunta);
-        // console.log(data.resposta);
+        console.log("Result correct --> ", resultatPregunta);
+        console.log(data.resposta);
         let userWithBomb = getUserWithBomb(roomIndex);
         if (data.resposta !== "") {
             if (resultatPregunta == data.resposta) {
-                if (socket.id == gameRooms[roomIndex].users[userWithBomb].id) {
-                    // console.log("respuesta correcta");
-                    gameRooms[roomIndex].pregActual++;
-                    gameRooms[roomIndex].users[userWithBomb].bomba = false;
-
-                    console.log("user bomba: " + gameRooms[roomIndex].users[userWithBomb].bomba);
-                    if (userWithBomb == gameRooms[roomIndex].users.length - 1) {
-                        gameRooms[roomIndex].users[0].bomba = true;
-                        if (gameRooms[roomIndex].timerAnterior > 20) {
-                            gameRooms[roomIndex].timerAnterior = gameRooms[roomIndex].timerAnterior - 5;
-                        } else {
-                            if (gameRooms[roomIndex].timerAnterior > 5) {
-                                gameRooms[roomIndex].timerAnterior = gameRooms[roomIndex].timerAnterior - 2;
-                            }
-                        }
-                    } else {
-                        gameRooms[roomIndex].users[userWithBomb + 1].bomba = true;
-                    }
-                    gameRooms[roomIndex].timer = gameRooms[roomIndex].timerAnterior;
-                    io.to(data.roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
-
-                } else {
-                    // console.log("resposta correcta!");
-                    gameRooms[roomIndex].pregActual++;
-                    gameRooms[roomIndex].users[userWithBomb].bomba = true;
-                    gameRooms[roomIndex].timer -= 10;
-                    io.to(data.roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
-                }
+                respostaCorrecta(roomIndex, userWithBomb);
             } else {
-                if (gameRooms[roomIndex].users[userWithBomb].id == socket.id) {
-                    gameRooms[roomIndex].timer = gameRooms[roomIndex].timerAnterior;
-                    // console.log("resposta incorrecta!");
-                    gameRooms[roomIndex].pregActual++;
-                    gameRooms[roomIndex].users[userWithBomb].bomba = true;
-                    gameRooms[roomIndex].users[userWithBomb].lives--;
-                    // console.log("lives restantes -> " + gameRooms[roomIndex].users[userWithBomb].lives);
-
-                    if (gameRooms[roomIndex].users[userWithBomb].lives == 0) {
-                        if (gameRooms[roomIndex].users[userWithBomb].email !== 'none') {
-                            var email = gameRooms[roomIndex].users[userWithBomb].email;
-
-                            let response = await fetch('http://localhost:8000/api/updateDerrotas', {
-                                method: 'POST',
-                                body: JSON.stringify({ email }),
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                }
-                            });
-                            // console.log("entrooo????? --> ", email);
-
-                        }
-                        if (userWithBomb == gameRooms[roomIndex].users.length - 1) {
-                            gameRooms[roomIndex].users[0].bomba = true;
-                        }
-                        else {
-                            gameRooms[roomIndex].users[userWithBomb + 1].bomba = true;
-                        }
-                        socket.leave(gameRooms[roomIndex].roomName);
-                        socket.emit('userLost', gameRooms[roomIndex].users[userWithBomb]);
-                        gameRooms[roomIndex].users.splice(userWithBomb, 1);
-                        if (gameRooms[roomIndex].users.length == 1 && gameRooms[roomIndex].started == true) {
-                            let email = gameRooms[roomIndex].users[0].email;
-                            // console.log(email);
-                            if (email !== 'none') {
-                                let response = await fetch('http://localhost:8000/api/updateVictorias', {
-                                    method: 'POST',
-                                    body: JSON.stringify({ email }),
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    }
-                                });
-                                // console.log("entrooo????? --> ", email);
-                            }
-                            gameRooms[roomIndex].gameStarted = false;
-                            io.to(gameRooms[roomIndex].roomName).emit('finishGame', ({ gameStarted: false, timer: 0, username: gameRooms[roomIndex].users[0].username, image: gameRooms[roomIndex].users[0].image, email: gameRooms[roomIndex].users[0].email }));
-                            io.sockets.sockets.get(gameRooms[roomIndex].users[0].id).leave(gameRooms[roomIndex].roomName);
-                            gameRooms.splice(data.room, 1);
-                        }
-                    }
-                    io.to(data.roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
-                } else {
-                    // console.log("resposta incorrecta!");
-                    gameRooms[roomIndex].pregActual++;
-                    gameRooms[roomIndex].users[userWithBomb].bomba = false;
-
-                    // console.log(gameRooms[roomIndex].users[userWithBomb].bomba);
-                    let userBombN = gameRooms[roomIndex].users.findIndex(user => user.id === socket.id);
-                    gameRooms[roomIndex].users[userBombN].bomba = true;
-                    io.to(data.roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
-                }
+                respostaIncorrecta(roomIndex, userWithBomb);
             }
-            newPregunta(gameRooms[roomIndex]);
+            if (gameRooms[roomIndex] && gameRooms[roomIndex].users.length > 1 && gameRooms[roomIndex].roomName == data.roomName) {
+                newPregunta(gameRooms[roomIndex]);
+            }
         }
 
 
@@ -368,73 +399,12 @@ io.on('connection', (socket) => {
                     }, 1000);
                 } else {
                     if (gameRooms[roomPosition].started == true && gameRooms[roomPosition].timer <= 0) {
-                        // console.log("timer acabado");
-                        newPregunta(gameRooms[roomPosition]);
-                        gameRooms[roomPosition].timer = gameRooms[roomPosition].timerAnterior - 1;
-                        io.to(gameRooms[roomPosition].roomName).emit('timer', gameRooms[roomPosition].timer);
                         let userWithBomb = getUserWithBomb(roomPosition);
-                        gameRooms[roomPosition].users[userWithBomb].lives--;
-                        if (gameRooms[roomPosition].users[userWithBomb].lives == 0) {
-                            if (gameRooms[roomPosition].users[userWithBomb].email !== 'none') {
-                                var email = gameRooms[roomPosition].users[userWithBomb].email;
-
-                                let response = await fetch('http://localhost:8000/api/updateDerrotas', {
-                                    method: 'POST',
-                                    body: JSON.stringify({ email }),
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    }
-                                });
-                                // console.log("entrooo????? --> ", email);
-
-                            }
-                            if (userWithBomb == gameRooms[roomPosition].users.length - 1) {
-                                gameRooms[roomPosition].users[0].bomba = true;
-                            }
-                            else {
-                                gameRooms[roomPosition].users[userWithBomb + 1].bomba = true;
-                            }
-                            let my_socket = io.sockets.sockets.get(gameRooms[roomPosition].users[userWithBomb].id);
-                            my_socket.leave(gameRooms[roomPosition].roomName);
-                            my_socket.emit('userLost', gameRooms[roomPosition].users[userWithBomb]);
-                            gameRooms[roomPosition].users.splice(userWithBomb, 1);
-
-                            if (gameRooms[roomPosition].users.length == 1 && gameRooms[roomPosition].started == true) {
-                                gameRooms[roomPosition].gameStarted = false;
-                                gameRooms[roomPosition].timer = 0;
-                                var email = gameRooms[roomPosition].users[0].email;
-
-                                if (email !== 'none') {
-                                    let response = await fetch('http://localhost:8000/api/updateVictorias', {
-                                        method: 'POST',
-                                        body: JSON.stringify({ email }),
-                                        headers: {
-                                            'Content-Type': 'application/json'
-                                        }
-                                    });
-                                    // console.log("entrooo????? --> ", email);
-                                }
-                                gameRooms[roomPosition].gameStarted = false;
-                                io.to(gameRooms[roomPosition].roomName).emit('finishGame', ({ gameStarted: false, timer: 0, username: gameRooms[roomPosition].users[0].username, image: gameRooms[roomPosition].users[0].image, email: gameRooms[roomPosition].users[0].email }));
-                                io.sockets.sockets.get(gameRooms[roomPosition].users[0].id).leave(gameRooms[roomPosition].roomName);
-                                gameRooms.splice(roomPosition, 1);
-
-                            } else {
-                                newPregunta(gameRooms[roomPosition]);
-                            }
+                        respostaIncorrectaUsuariCorrecte(roomPosition, userWithBomb);
+                        if (gameRooms[roomPosition].users.length > 1 && gameRooms[roomPosition].idRoom == idRoom) {
+                            newPregunta(gameRooms[roomPosition]);
                         }
-                        if (gameRooms[roomPosition] && gameRooms[roomPosition].users.length > 1) {
-                            console.log(gameRooms[roomPosition].users);
-                            startTimer(idRoom);
-                            console.log(gameRooms[roomPosition]);
-                            io.to(gameRooms[roomPosition].roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomPosition].users, "bombChange": true });
-                            gameRooms[roomPosition].pregActual++;
-                        }
-
-
-
-
-
+                        startTimer(idRoom);
                     }
                 }
             }
