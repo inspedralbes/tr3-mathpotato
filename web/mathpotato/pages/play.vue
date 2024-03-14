@@ -41,6 +41,9 @@
                         </div>
                         <Button @click="startGame" id="startGameButton" :disabled="users.length <= 2"
                             :class="[gameStarted ? 'hidden' : '']">START!</Button>
+                            <ul>
+                                <li v-for="user in users"><div>{{ user.username }}</div><div v-if="user.hasClickedStart">Ready</div><div v-else>Not Ready</div></li>
+                            </ul>
                     </div>
                 </div>
                 <div :class="[gameStarted && userPantalla.tutorial ? '' : 'hidden']" class="gameContainer">

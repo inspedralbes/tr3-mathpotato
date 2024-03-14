@@ -45,6 +45,7 @@ io.on('connection', (socket) => {
         console.log("Soy", data);
         console.log("tutorial", data.tutorial);
         if (gameRooms.length == 0) {
+            lastRoom++;
             gameRooms.push({ idRoom: lastRoom, roomName: "gameRoom" + lastRoom, users: [], started: false, pregunta: "", pregActual: 0, timer: 1, timerAnterior: 0 });
         } else {
             if (gameRooms[gameRooms.length - 1].users.length == 6 || gameRooms[gameRooms.length - 1].started === true) {
@@ -138,6 +139,17 @@ io.on('connection', (socket) => {
         return room;
     }
 
+    function checkAllPlayersClickedStart(){
+        let room = getRoomBySocketId(socket.id);
+        let allPlayersClickedStart = true;
+        room.users.forEach(user => {
+            if (!user.hasClickedStart) {
+                allPlayersClickedStart = false;
+            }
+        });
+        return allPlayersClickedStart; 
+    }
+
     socket.on('startGame', (data) => {
 
         let room = getRoomBySocketId(socket.id);
@@ -149,7 +161,7 @@ io.on('connection', (socket) => {
 
 
             // Marcar la sala como iniciada y realizar otras acciones necesarias
-            if (room.users.length >= 3 && room.users.length <= 6) {
+            if (room.users.length >= 3 && room.users.length <= 6 && checkAllPlayersClickedStart()) {
                 room.started = true;
                 console.log(room);
                 console.log("startGame");
@@ -160,7 +172,10 @@ io.on('connection', (socket) => {
 
                 // Emitir evento de inicio de juego a todos los usuarios en la sala
                 io.to(room.roomName).emit('gameStarted', { allPlayersStarted: true });
+            } else{
+                io.to(room.roomName).emit('usersDesconectados', room.users, room.roomName );
             }
+
 
         }
     });
@@ -283,14 +298,21 @@ io.on('connection', (socket) => {
         else {
             gameRooms[roomIndex].users[userWithBomb + 1].bomba = true;
         }
+        let socket=io.sockets.sockets.get(gameRooms[roomIndex].users[userWithBomb].id);
         socket.leave(gameRooms[roomIndex].roomName);
         socket.emit('userLost', gameRooms[roomIndex].users[userWithBomb]);
         gameRooms[roomIndex].users.splice(userWithBomb, 1);
+        console.log("USERS -> " + gameRooms[roomIndex].users);
         if (gameRooms[roomIndex].users.length == 1 && gameRooms[roomIndex].started == true) {
             updateVictorias(roomIndex);
             io.to(gameRooms[roomIndex].roomName).emit('finishGame', ({ gameStarted: false, timer: 0, username: gameRooms[roomIndex].users[0].username, image: gameRooms[roomIndex].users[0].image, email: gameRooms[roomIndex].users[0].email }));
             io.sockets.sockets.get(gameRooms[roomIndex].users[0].id).leave(gameRooms[roomIndex].roomName);
             gameRooms.splice(roomToEliminate, 1);
+        } else {
+            if (gameRooms[roomIndex].users.length > 1) {
+                io.to(gameRooms[roomIndex].roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
+            }
+        
         }
     }
     function respostaIncorrectaUsuariCorrecte(roomIndex, userWithBomb) {
@@ -401,7 +423,7 @@ io.on('connection', (socket) => {
                     if (gameRooms[roomPosition].started == true && gameRooms[roomPosition].timer <= 0) {
                         let userWithBomb = getUserWithBomb(roomPosition);
                         respostaIncorrectaUsuariCorrecte(roomPosition, userWithBomb);
-                        if (gameRooms[roomPosition].users.length > 1 && gameRooms[roomPosition].idRoom == idRoom) {
+                        if (gameRooms[roomPosition] && gameRooms[roomPosition].users.length > 1 && gameRooms[roomPosition].idRoom == idRoom) {
                             newPregunta(gameRooms[roomPosition]);
                         }
                         startTimer(idRoom);
@@ -516,7 +538,6 @@ io.on('connection', (socket) => {
                             });
                             // console.log("entrooo????? --> ", email);
                         }
-                        gameRooms[room.idRoom].gameStarted = false;
                         io.to(room.roomName).emit('finishGame', ({ gameStarted: false, timer: 0, username: room.users[0].username, image: room.users[0].image, email: room.users[0].email }));
                         gameRooms.splice(room.idRoom, 1);
                         io.sockets.sockets.get(room.users[0].id).leave(room.roomName);
