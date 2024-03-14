@@ -26,7 +26,7 @@
                                 <img src="@/assets/Icon_1.png" class="jugador">
                                 <img src="@/assets/LePotata.png" alt="" class="bombIniciar">
                                 <p class="name">Usuari 1</p>
-                                <p>Has de contestar bé a la pregunta o abans que es termini el temps de la bomba, sinó,
+                                <p>Has de contestar bé a la pregunta o abans que s'acabi el temps de la bomba, sinó,
                                     perdràs una vida. Tens un total de 2 vides més una extra. Ves amb compte, la gent et pot
                                     restar temps i canviar la pregunta.</p>
                             </div>
@@ -116,7 +116,7 @@ html:lang(ar) {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-image: url("../assets/backgroundPregunta.png");
+    /* background-image: url("../assets/backgroundPregunta.png"); */
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
