@@ -43,7 +43,7 @@
                     </div>
                     
                 </div>
-                <div :class="[gameStarted && userPantalla.tutorial ? '' : 'hidden']" class="gameContainer">
+                <div :class="[gameStarted && userPantalla.tutorial ? '' : 'hidden']" class="gameContainer" v-show="gameStarted">
                     <h3>{{ message.pregunta }}</h3>
                     <input type="text" name="resposta" id="resposta" @keyup.enter="enviarResposta" v-model="respuesta"
                     @input="limitarANumeros">
