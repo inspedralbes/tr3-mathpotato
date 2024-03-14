@@ -401,7 +401,7 @@ io.on('connection', (socket) => {
                     if (gameRooms[roomPosition].started == true && gameRooms[roomPosition].timer <= 0) {
                         let userWithBomb = getUserWithBomb(roomPosition);
                         respostaIncorrectaUsuariCorrecte(roomPosition, userWithBomb);
-                        if (gameRooms[roomPosition].users.length > 1 && gameRooms[roomPosition].idRoom == idRoom) {
+                        if (gameRooms[roomPosition] && gameRooms[roomPosition].users.length > 1 && gameRooms[roomPosition].idRoom == idRoom) {
                             newPregunta(gameRooms[roomPosition]);
                         }
                         startTimer(idRoom);

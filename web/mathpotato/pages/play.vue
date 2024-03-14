@@ -39,15 +39,15 @@
                                     si contestes malament, rebràs la bomba.</p>
                             </div>
                         </div>
-                        <Button @click="startGame" id="startGameButton" :disabled="users.length <= 2"
-                            :class="[gameStarted ? 'hidden' : '']">START!</Button>
+                        <Button @click="ocultarModal" id="ocultarModal">ACEPTAR!</Button>
                     </div>
+                    
                 </div>
-                <div :class="[gameStarted && userPantalla.tutorial ? '' : 'hidden']" class="gameContainer">
+                <div :class="[gameStarted && userPantalla.tutorial ? '' : 'hidden']" class="gameContainer" v-show="gameStarted">
                     <h3>{{ message.pregunta }}</h3>
                     <input type="text" name="resposta" id="resposta" @keyup.enter="enviarResposta" v-model="respuesta"
-                        @input="limitarANumeros">
-                    <Button @click="enviarResposta" icon="pi pi-check" aria-label="Submit" />
+                    @input="limitarANumeros">
+                    <!-- <Button @click="enviarResposta" icon="pi pi-check" aria-label="Submit" /> -->
                 </div>
                 <div id="modal-victory" class="modal-victoria" v-show="userPantalla.win">
                     <div class="modal-victoria-content">
@@ -64,6 +64,7 @@
                     </div>
                 </div>
                 
+                <Button @click="startGame" id="startGameButton" :disabled="users.length <= 2" :class="[gameStarted ? 'hidden' : '']">START!</Button>
             </div>
         </div>
 
@@ -635,6 +636,8 @@ button {
   animation: slideIn 2.5s ease-in-out infinite;
 }
 
+/* MODAL TUTORIAL */
+
 </style>
 <script>
 import { useAppStore } from '../stores/guestStore.js';
@@ -650,6 +653,7 @@ export default {
             victoriaVisible: false,
             derrotaVisible: false,
             lastUserWithBomb: -1,
+            showStartButton: false,
         };
     },
 
@@ -726,7 +730,9 @@ export default {
             this.showModal = false;
         },
         replay() {
+            this.showStartButton = true;
             socket.emit('join', { "username": this.userPantalla.username, "image": this.userPantalla.image, "email": this.userPantalla.email, "tutorial": this.userPantalla.tutorial });
+            
         },
         goBack() {
             this.$router.push({ name: '/' });
@@ -739,6 +745,11 @@ export default {
             console.log("emit respost -> ", resposta);
             socket.emit('resposta', { "resposta": resposta, "roomName": this.users[0].roomName });
             this.respuesta = "";
+        },
+        ocultarModal() {
+            this.showModal = false;
+            this.userPantalla.tutorial = false;   
+
         },
         async startGame() {
             let store = useAppStore();
@@ -773,9 +784,7 @@ export default {
 
             // Realizar otras acciones necesarias para el usuario (puede que no sea necesario en este punto)
             return store.setGameStarted(true);
-        },
-        todosUsuariosHanClickeadoInicio(room) {
-            return room.users.every(user => user.clickedStart);
+
         },
         getId(index) {
             let size = this.users.length;
