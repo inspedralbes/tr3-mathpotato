@@ -185,6 +185,7 @@ export default {
         replay() {
             document.getElementById("startGameButton").classList.remove("buttonRed");
             document.getElementById("startGameButton").innerHTML = "Ready!";
+            useAppStore().setCountdown(-2);
             this.hasClickedStart = false;
             this.showWaitingModal = true;
             this.showStartButton = true;
