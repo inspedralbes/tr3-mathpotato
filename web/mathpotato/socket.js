@@ -19,6 +19,12 @@ socket.on("usersConnected", (usersConnected, roomName) => {
     store.setRespostaAnterior(true);
 });
 
+socket.on("countdown", (countdown) => {
+    const store = useAppStore();
+    console.log('Cuenta atrás: ', countdown);
+    store.setCountdown(countdown);
+});
+
 socket.on("usersDesconectados", (usersConnected) => {
     const store = useAppStore();
     console.log('Usuarios desconectados: ', usersConnected);

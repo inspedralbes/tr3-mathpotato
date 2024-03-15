@@ -35,10 +35,16 @@ export const useAppStore = defineStore('app', {
         gameStarted: false,
         gameWinner: false,
         error: "",
-        ranking: []
-
+        ranking: [],
+        countdown: -2
     }),
     actions: {
+        setCountdown(countdown) {
+            this.countdown = countdown;
+        },
+        getCountdown() {
+            return this.countdown;
+        },
         setRoomName(roomGame) {
             this.infoGame.rooms.gameRooms[0].roomName = roomGame;
             console.log(this.infoGame.rooms.gameRooms[0].roomName);

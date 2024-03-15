@@ -4,6 +4,7 @@ import { createServer } from 'node:http';
 import { Server } from 'socket.io';
 import { join } from 'path';
 import mysql from 'mysql';
+import { count } from 'node:console';
 
 const app = express();
 
@@ -139,15 +140,14 @@ io.on('connection', (socket) => {
         return room;
     }
 
-    function checkAllPlayersClickedStart(){
-        let room = getRoomBySocketId(socket.id);
+    function checkAllPlayersClickedStart(room) {
         let allPlayersClickedStart = true;
         room.users.forEach(user => {
             if (!user.hasClickedStart) {
                 allPlayersClickedStart = false;
             }
         });
-        return allPlayersClickedStart; 
+        return allPlayersClickedStart;
     }
 
     socket.on('startGame', (data) => {
@@ -157,24 +157,40 @@ io.on('connection', (socket) => {
         if (room) {
             // Primer bloque de código
             let userIndex = room.users.findIndex(user => user.id === socket.id);
-            room.users[userIndex].hasClickedStart = true;
+            room.users[userIndex].hasClickedStart = !room.users[userIndex].hasClickedStart;
 
 
             // Marcar la sala como iniciada y realizar otras acciones necesarias
-            if (room.users.length >= 3 && room.users.length <= 6 && checkAllPlayersClickedStart()) {
+            io.to(room.roomName).emit('usersDesconectados', room.users, room.roomName);
+            if (room.users.length >= 3 && room.users.length <= 6 && checkAllPlayersClickedStart(room)) {
                 room.started = true;
-                console.log(room);
-                console.log("startGame");
-                let roomPosition = room.roomPosition;
-                newPregunta(room);
-                iniciarTimer(room);
-                startTimer(room.idRoom);
+                let countdown = 3;
+                for (let index = countdown; index >= 0; index--) {
+                    setTimeout(() => {
+                        if (checkAllPlayersClickedStart(room) && index == 0) {
+                            console.log(room);
+                            console.log("startGame");
+                            let roomPosition = room.roomPosition;
+                            newPregunta(room);
+                            iniciarTimer(room);
+                            startTimer(room.idRoom);
+                            // Emitir evento de inicio de juego a todos los usuarios en la sala
+                            io.to(room.roomName).emit('gameStarted', { allPlayersStarted: true });
+                        } else {
+                            if (checkAllPlayersClickedStart(room)) {
+                                console.log("index" + index);
+                                io.to(room.roomName).emit('countdown', index);
+                            } else {
+                                room.started = false;
+                                index = -2;
+                                console.log("No todos los jugadores han clicado en start");
+                                io.to(room.roomName).emit('countdown', index);
+                            }
+                        }
+                    }, 1500 * (countdown - index));
+                }
 
-                // Emitir evento de inicio de juego a todos los usuarios en la sala
-                io.to(room.roomName).emit('gameStarted', { allPlayersStarted: true });
-            } else{
-                io.to(room.roomName).emit('usersDesconectados', room.users, room.roomName );
-            }
+            } 
 
 
         }
@@ -298,7 +314,7 @@ io.on('connection', (socket) => {
         else {
             gameRooms[roomIndex].users[userWithBomb + 1].bomba = true;
         }
-        let socket=io.sockets.sockets.get(gameRooms[roomIndex].users[userWithBomb].id);
+        let socket = io.sockets.sockets.get(gameRooms[roomIndex].users[userWithBomb].id);
         socket.leave(gameRooms[roomIndex].roomName);
         socket.emit('userLost', gameRooms[roomIndex].users[userWithBomb]);
         gameRooms[roomIndex].users.splice(userWithBomb, 1);
@@ -312,7 +328,7 @@ io.on('connection', (socket) => {
             if (gameRooms[roomIndex].users.length > 1) {
                 io.to(gameRooms[roomIndex].roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
             }
-        
+
         }
     }
     function respostaIncorrectaUsuariCorrecte(roomIndex, userWithBomb) {

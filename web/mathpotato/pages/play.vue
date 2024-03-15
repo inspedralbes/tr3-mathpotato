@@ -53,23 +53,324 @@
                     <div class="modal-victoria-content">
                         <img src="@/assets/victory.png" alt="Patata Ganadora" style="width: 250px; height: 200px;">
                         <!-- <p class="victory-text">Victoria</p> -->
-                        <Button @click="replay" id="startGameButton">Volver a jugar</Button>
+                        <Button @click="replay" >Volver a jugar</Button>
                     </div>
                 </div>
                 <div id="modal-victory" class="modal-victoria" v-show="userPantalla.lost">
                     <div class="modal-victoria-content">
                         <img src="@/assets/defeat.png" alt="Patata Perdedora" style="width: 250px; height: 200px;">
                         <!-- <p class="victory-text">Derrota</p> -->
-                        <Button @click="replay" id="startGameButton">Volver a Jugar</Button>
+                        <Button @click="replay" >Volver a Jugar</Button>
                     </div>
                 </div>
-                
-                <Button @click="startGame" id="startGameButton" :disabled="users.length <= 2" :class="[gameStarted ? 'hidden' : '']">START!</Button>
+                <div id="ModalWaiting" class="modal-tutorial" v-show="!gameStarted && !userPantalla.tutorial && this.showWaitingModal">
+                    <div class="modal-tutorial-content ">
+                        <div class="List">
+                            <div v-for="user in users">
+                                <div class="ListItem">
+                                    <img :src="'./_nuxt/assets/Icon_' + user.image + '.png'" alt="image" class="icon"
+                                    :style="{ 'background-color': user.background }">
+                                    <div>{{ user.username }}</div>
+                                    <div v-if="user.hasClickedStart">Ready</div><div v-else>NotReady</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-if="countdown>-2">{{ countdown }}</div>
+                        <Button @click="startGame" id="startGameButton" :disabled="users.length <= 2" :class="[gameStarted ? 'hidden' : '']">READY!</Button>
+                    </div>
+                </div>
             </div>
         </div>
 
     </div>
 </template>
+
+
+<script>
+import { useAppStore } from '../stores/guestStore.js';
+import { socket } from '../socket';
+import { useSSRContext, useTransitionState } from 'vue';
+
+export default {
+    data() {
+        return {
+            pregunta: {},
+            respuesta: "",
+            showModal: true,
+            victoriaVisible: false,
+            derrotaVisible: false,
+            lastUserWithBomb: -1,
+            showStartButton: false,
+            showWaitingModal: true,
+            hasClickedStart: false,
+        };
+    },
+
+    computed: {
+        countdown(){
+            let store = useAppStore();
+            return store.getCountdown();
+        },
+        userPantalla() {
+            let store = useAppStore();
+            return store.getGuestInfo();
+        },
+        encertada() {
+            let store = useAppStore();
+            return store.getRespostaAnterior();
+        },
+        users() {
+            let store = useAppStore();
+            return store.getUsers();
+        },
+        timer() {
+            let store = useAppStore();
+            return store.getTimer();
+        },
+        message() {
+            let store = useAppStore();
+            return store.getPregunta();
+        },
+        gameStarted() {
+            let store = useAppStore();
+            return store.getGameStarted();
+        },
+        explodes(){
+            let store = useAppStore();
+            return store.getExplodes();
+        }
+
+
+    },
+    watch: {
+        users: {
+            handler(newVal) {
+                console.log(this.encertada);
+                if (newVal && newVal.length > 0 && this.encertada) {
+                    console.log("change bomb");
+                    this.changeBomb();
+                    this.respuesta = "";
+                }
+                console.log(newVal);
+            }
+        },
+        gameStarted: {
+            handler(newVal) {
+                if (newVal) {
+                    this.lastUserWithBomb = this.findUsersWithBomb();
+                }
+            }
+        },
+        explodes: {
+            handler() {
+                if (this.explodes) {
+                    this.explosion()
+                    
+                }
+            }
+            
+        }
+    },
+    methods: {
+        explosion(){
+            document.getElementById("bomb").src = "/_nuxt/assets/Explosion.gif";
+            setTimeout(() => {
+                document.getElementById("bomb").src = "/_nuxt/assets/lePotata.png";
+                useAppStore().setExplodes(false);
+            }, 2000/2);
+},
+        closeModal() {
+            this.showModal = false;
+        },
+        replay() {
+            document.getElementById("startGameButton").classList.remove("buttonRed");
+            document.getElementById("startGameButton").innerHTML = "Ready!";
+            this.hasClickedStart = false;
+            this.showWaitingModal = true;
+            this.showStartButton = true;
+            socket.emit('join', { "username": this.userPantalla.username, "image": this.userPantalla.image, "email": this.userPantalla.email, "tutorial": this.userPantalla.tutorial });
+            
+        },
+        goBack() {
+            this.$router.push({ name: '/' });
+        },
+        limitarANumeros() {
+            this.respuesta = this.respuesta.replace(/\D/g, '');
+        },
+        enviarResposta() {
+            const resposta = this.respuesta;
+            console.log("emit respost -> ", resposta);
+            socket.emit('resposta', { "resposta": resposta, "roomName": this.users[0].roomName });
+            this.respuesta = "";
+        },
+        ocultarModal() {
+            this.showModal = false;
+            this.userPantalla.tutorial = false;   
+
+        },
+        async startGame() {
+            let store = useAppStore();
+            this.hasClickedStart= !this.hasClickedStart;
+            let gameButton=document.getElementById("startGameButton");
+            if(this.hasClickedStart){
+                gameButton.innerHTML ="Cancel";
+                gameButton.classList.add("buttonRed");
+                gameButton.classList.remove("buttonGreen");
+            }else{
+                gameButton.innerHTML ="Ready!";
+                gameButton.classList.add("buttonGreen");
+                gameButton.classList.remove("buttonRed");
+            }
+
+            // Emitir el evento startGame solo cuando el usuario da clic
+            socket.emit('startGame', { roomPosition: this.users[0].roomPosition });
+
+            // Espera a que el servidor confirme que el jugador ha empezado
+            await new Promise(resolve => {
+                socket.once('gameStarted', (data) => {
+                    if (data.allPlayersStarted) {
+                        resolve();
+                        this.showWaitingModal = false;
+                    }
+                });
+            });
+
+            // Realizar otras acciones necesarias para el usuario (puede que no sea necesario en este punto)
+            this.showModal = false;
+            await this.$nextTick();
+
+            let objectAntElement = document.getElementById("user0");
+            if (objectAntElement) {
+                let userBombpos = objectAntElement.getBoundingClientRect();
+                let userBombX = userBombpos.x + 100;
+                let userBombY = userBombpos.y;
+                document.getElementById("bombContainer").style.setProperty("--xPosition", userBombX + "px");
+                document.getElementById("bombContainer").style.setProperty("--yPosition", userBombY + "px");
+            }
+
+            // Apagar el escucha del evento 'gameStarted'
+            socket.off('gameStarted');
+
+            // Realizar otras acciones necesarias para el usuario (puede que no sea necesario en este punto)
+            return store.setGameStarted(true);
+
+        },
+        getId(index) {
+            let size = this.users.length;
+            // console.log(size);
+            switch (size) {
+                case 1:
+                    return "topmid";
+                case 2:
+                    switch (index) {
+                        case 0:
+                            return "topmid";
+                        case 1:
+                            return "bottommid";
+                    }
+                    break;
+                case 3:
+                    switch (index) {
+                        case 0:
+                            return "topmid";
+                        case 1:
+                            return "bottomright";
+                        case 2:
+                            return "bottomleft";
+                    }
+                    break;
+                case 4:
+                    switch (index) {
+                        case 0:
+                            return "topmid";
+                        case 1:
+                            return "rightmid";
+                        case 2:
+                            return "bottommid";
+                        case 3:
+                            return "leftmid";
+                    }
+                    break;
+                case 5:
+                    switch (index) {
+                        case 0:
+                            return "topmid";
+                        case 1:
+                            return "rightmid";
+                        case 2:
+                            return "bottomright";
+                        case 3:
+                            return "bottomleft";
+                        case 4:
+                            return "leftmid";
+                    }
+                    break;
+                case 6:
+                    switch (index) {
+                        case 0:
+                            return "topleft";
+                        case 1:
+                            return "topright";
+                        case 2:
+                            return "rightmid";
+                        case 3:
+                            return "bottomright";
+                        case 4:
+                            return "bottomleft";
+                        case 5:
+                            return "leftmid";
+                    }
+            };
+        },
+        
+        async changeBomb() {
+            await this.$nextTick(); // Espera hasta que el componente se haya renderizado completamente
+            console.log(this.lastUserWithBomb);
+            if (this.lastUserWithBomb !== this.findUsersWithBomb()) {
+                console.log(this.lastUserWithBomb, "!=", this.findUsersWithBomb());
+                this.lastUserWithBomb = this.findUsersWithBomb();
+                let usersWithBomb = this.findUsersWithBomb();
+                let userWithBomb = document.getElementById("user" + usersWithBomb);
+                console.log(userWithBomb);
+                if (usersWithBomb !== -1) {
+                    let userBombpos = userWithBomb.getBoundingClientRect();
+                    let objectAntElement = document.getElementById("bombContainer");
+
+                    let objectAntpos = objectAntElement.getBoundingClientRect();
+                    let userBombXAnt = objectAntpos.x;
+                    let userBombYAnt = objectAntpos.y;
+
+                    document.getElementById("bombContainer").style.setProperty("--xPositionAnt", userBombXAnt + "px");
+                    document.getElementById("bombContainer").style.setProperty("--yPositionAnt", userBombYAnt + "px");
+
+                    let userBombX = userBombpos.x + 100;
+                    let userBombY = userBombpos.y;
+
+                    document.getElementById("bombContainer").style.setProperty("--xPosition", userBombX + "px");
+                    document.getElementById("bombContainer").style.setProperty("--yPosition", userBombY + "px");
+
+                    document.getElementById("bombContainer").classList.add("moveBomb");
+
+                    setTimeout(() => {
+                        document.getElementById("bombContainer").classList.remove("moveBomb");
+                    }, 800);
+                }
+            }
+        },
+        findUsersWithBomb() {
+            return this.users.findIndex(user => user.bomba === true);
+        },
+    },
+    mounted() {
+        return this.users.findIndex(user => user.bomba === true);
+    },
+    created() {
+        window.addEventListener('popstate', () => {
+            socket.emit('leaveRoom', {});
+        });
+    },
+}
+</script>
 
 <style scoped>
 :root {
@@ -79,6 +380,12 @@
     --yPosition: 0;
 }
 
+.buttonRed{
+    background-color: #ED1C2F;
+}
+.buttonGreen{
+    background-color: #4CAF50;
+}
 .hidden {
     display: none;
 }
@@ -400,8 +707,7 @@ html:lang(ar) {
 }
 
 button {
-    background-color: #3F51B5;
-    ;
+    background-color: green;
     color: white;
     padding: 10px 20px;
     font-size: 1.5rem;
@@ -438,6 +744,16 @@ button {
     color: #000;
 }
 
+.ListItem{
+    display: grid;
+    place-items: center;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.List{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
 
 #myModal {
     display: flex;
@@ -505,7 +821,6 @@ button {
 
 #startGameButton {
     margin-top: 1vh;
-    background-color: #3772FF;
     padding: 10px 15px;
     font-size: 0.8em;
     border: none;
@@ -639,266 +954,3 @@ button {
 /* MODAL TUTORIAL */
 
 </style>
-<script>
-import { useAppStore } from '../stores/guestStore.js';
-import { socket } from '../socket';
-import { useSSRContext, useTransitionState } from 'vue';
-
-export default {
-    data() {
-        return {
-            pregunta: {},
-            respuesta: "",
-            showModal: true,
-            victoriaVisible: false,
-            derrotaVisible: false,
-            lastUserWithBomb: -1,
-            showStartButton: false,
-        };
-    },
-
-    computed: {
-        userPantalla() {
-            let store = useAppStore();
-            return store.getGuestInfo();
-        },
-        encertada() {
-            let store = useAppStore();
-            return store.getRespostaAnterior();
-        },
-        users() {
-            let store = useAppStore();
-            return store.getUsers();
-        },
-        timer() {
-            let store = useAppStore();
-            return store.getTimer();
-        },
-        message() {
-            let store = useAppStore();
-            return store.getPregunta();
-        },
-        gameStarted() {
-            let store = useAppStore();
-            return store.getGameStarted();
-        },
-        explodes(){
-            let store = useAppStore();
-            return store.getExplodes();
-        }
-
-
-    },
-    watch: {
-        users: {
-            handler(newVal) {
-                console.log(this.encertada);
-                if (newVal && newVal.length > 0 && this.encertada) {
-                    console.log("change bomb");
-                    this.changeBomb();
-                    this.respuesta = "";
-                }
-                console.log(newVal);
-            }
-        },
-        gameStarted: {
-            handler(newVal) {
-                if (newVal) {
-                    this.lastUserWithBomb = this.findUsersWithBomb();
-                }
-            }
-        },
-        explodes: {
-            handler() {
-                if (this.explodes) {
-                    this.explosion()
-                    
-                }
-            }
-            
-        }
-    },
-    methods: {
-        explosion(){
-            document.getElementById("bomb").src = "/_nuxt/assets/Explosion.gif";
-            setTimeout(() => {
-                document.getElementById("bomb").src = "/_nuxt/assets/lePotata.png";
-                useAppStore().setExplodes(false);
-            }, 2000/2);
-},
-        closeModal() {
-            this.showModal = false;
-        },
-        replay() {
-            this.showStartButton = true;
-            socket.emit('join', { "username": this.userPantalla.username, "image": this.userPantalla.image, "email": this.userPantalla.email, "tutorial": this.userPantalla.tutorial });
-            
-        },
-        goBack() {
-            this.$router.push({ name: '/' });
-        },
-        limitarANumeros() {
-            this.respuesta = this.respuesta.replace(/\D/g, '');
-        },
-        enviarResposta() {
-            const resposta = this.respuesta;
-            console.log("emit respost -> ", resposta);
-            socket.emit('resposta', { "resposta": resposta, "roomName": this.users[0].roomName });
-            this.respuesta = "";
-        },
-        ocultarModal() {
-            this.showModal = false;
-            this.userPantalla.tutorial = false;   
-
-        },
-        async startGame() {
-            let store = useAppStore();
-
-            // Emitir el evento startGame solo cuando el usuario da clic
-            socket.emit('startGame', { roomPosition: this.users[0].roomPosition });
-
-            // Espera a que el servidor confirme que el jugador ha empezado
-            await new Promise(resolve => {
-                socket.once('gameStarted', (data) => {
-                    if (data.allPlayersStarted) {
-                        resolve();
-                    }
-                });
-            });
-
-            // Realizar otras acciones necesarias para el usuario (puede que no sea necesario en este punto)
-            this.showModal = false;
-            await this.$nextTick();
-
-            let objectAntElement = document.getElementById("user0");
-            if (objectAntElement) {
-                let userBombpos = objectAntElement.getBoundingClientRect();
-                let userBombX = userBombpos.x + 100;
-                let userBombY = userBombpos.y;
-                document.getElementById("bombContainer").style.setProperty("--xPosition", userBombX + "px");
-                document.getElementById("bombContainer").style.setProperty("--yPosition", userBombY + "px");
-            }
-
-            // Apagar el escucha del evento 'gameStarted'
-            socket.off('gameStarted');
-
-            // Realizar otras acciones necesarias para el usuario (puede que no sea necesario en este punto)
-            return store.setGameStarted(true);
-
-        },
-        getId(index) {
-            let size = this.users.length;
-            // console.log(size);
-            switch (size) {
-                case 1:
-                    return "topmid";
-                case 2:
-                    switch (index) {
-                        case 0:
-                            return "topmid";
-                        case 1:
-                            return "bottommid";
-                    }
-                    break;
-                case 3:
-                    switch (index) {
-                        case 0:
-                            return "topmid";
-                        case 1:
-                            return "bottomright";
-                        case 2:
-                            return "bottomleft";
-                    }
-                    break;
-                case 4:
-                    switch (index) {
-                        case 0:
-                            return "topmid";
-                        case 1:
-                            return "rightmid";
-                        case 2:
-                            return "bottommid";
-                        case 3:
-                            return "leftmid";
-                    }
-                    break;
-                case 5:
-                    switch (index) {
-                        case 0:
-                            return "topmid";
-                        case 1:
-                            return "rightmid";
-                        case 2:
-                            return "bottomright";
-                        case 3:
-                            return "bottomleft";
-                        case 4:
-                            return "leftmid";
-                    }
-                    break;
-                case 6:
-                    switch (index) {
-                        case 0:
-                            return "topleft";
-                        case 1:
-                            return "topright";
-                        case 2:
-                            return "rightmid";
-                        case 3:
-                            return "bottomright";
-                        case 4:
-                            return "bottomleft";
-                        case 5:
-                            return "leftmid";
-                    }
-            };
-        },
-        
-        async changeBomb() {
-            await this.$nextTick(); // Espera hasta que el componente se haya renderizado completamente
-            console.log(this.lastUserWithBomb);
-            if (this.lastUserWithBomb !== this.findUsersWithBomb()) {
-                console.log(this.lastUserWithBomb, "!=", this.findUsersWithBomb());
-                this.lastUserWithBomb = this.findUsersWithBomb();
-                let usersWithBomb = this.findUsersWithBomb();
-                let userWithBomb = document.getElementById("user" + usersWithBomb);
-                console.log(userWithBomb);
-                if (usersWithBomb !== -1) {
-                    let userBombpos = userWithBomb.getBoundingClientRect();
-                    let objectAntElement = document.getElementById("bombContainer");
-
-                    let objectAntpos = objectAntElement.getBoundingClientRect();
-                    let userBombXAnt = objectAntpos.x;
-                    let userBombYAnt = objectAntpos.y;
-
-                    document.getElementById("bombContainer").style.setProperty("--xPositionAnt", userBombXAnt + "px");
-                    document.getElementById("bombContainer").style.setProperty("--yPositionAnt", userBombYAnt + "px");
-
-                    let userBombX = userBombpos.x + 100;
-                    let userBombY = userBombpos.y;
-
-                    document.getElementById("bombContainer").style.setProperty("--xPosition", userBombX + "px");
-                    document.getElementById("bombContainer").style.setProperty("--yPosition", userBombY + "px");
-
-                    document.getElementById("bombContainer").classList.add("moveBomb");
-
-                    setTimeout(() => {
-                        document.getElementById("bombContainer").classList.remove("moveBomb");
-                    }, 800);
-                }
-            }
-        },
-        findUsersWithBomb() {
-            return this.users.findIndex(user => user.bomba === true);
-        },
-    },
-    mounted() {
-        return this.users.findIndex(user => user.bomba === true);
-    },
-    created() {
-        window.addEventListener('popstate', () => {
-            socket.emit('leaveRoom', {});
-        });
-    },
-}
-</script>
