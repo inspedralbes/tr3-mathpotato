@@ -51,7 +51,7 @@
                 <div :class="[gameStarted && userPantalla.tutorial ? '' : 'hidden']" class="gameContainer" v-show="gameStarted">
                     <h3>{{ message.pregunta }}</h3>
                     <!-- <div>{{ socket }}</div> -->
-                    <input :disabled="escudo.activated && socket === users[findUsersWithBomb()].id" type="text" name="resposta" id="resposta" @keyup.enter="enviarResposta" v-model="respuesta"
+                    <input :disabled="escudo.activated && user !== users[findUsersWithBomb()].id" type="text" name="resposta" id="resposta" @keyup.enter="enviarResposta" v-model="respuesta"
                     @input="limitarANumeros">
                     <!-- <Button @click="enviarResposta" icon="pi pi-check" aria-label="Submit" /> -->
                 </div>
@@ -678,6 +678,7 @@ export default {
             lastUserWithBomb: -1,
             showStartButton: false,
             shieldUser: {},
+            user: socket.id,
         };
     },
 
