@@ -122,7 +122,7 @@ html:lang(ar) {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-image: url("../assets/backgroundPregunta.png");
+    /* background-image: url("../assets/backgroundPregunta.png"); */
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -389,7 +389,7 @@ html:lang(ar) {
 }
 
 .shieldUser {
-    background-color: blue;
+    background-image: url('../assets/shield-user.png');
     animation-name: fadeOut;
     animation-duration: 1s;
     animation-iteration-count: infinite;
