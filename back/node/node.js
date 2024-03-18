@@ -4,6 +4,7 @@ import { createServer } from 'node:http';
 import { Server } from 'socket.io';
 import { join } from 'path';
 import mysql from 'mysql';
+import { set } from '@vue/composition-api';
 import { count } from 'node:console';
 
 const app = express();
@@ -47,11 +48,11 @@ io.on('connection', (socket) => {
         console.log("tutorial", data.tutorial);
         if (gameRooms.length == 0) {
             lastRoom++;
-            gameRooms.push({ idRoom: lastRoom, roomName: "gameRoom" + lastRoom, users: [], started: false, pregunta: "", pregActual: 0, timer: 1, timerAnterior: 0 });
+            gameRooms.push({ idRoom: lastRoom, roomName: "gameRoom" + lastRoom, users: [], started: false, pregunta: "", pregActual: 0, timer: 1, timerAnterior: 0, shieldUser: "" });
         } else {
             if (gameRooms[gameRooms.length - 1].users.length == 6 || gameRooms[gameRooms.length - 1].started === true) {
                 lastRoom++;
-                gameRooms.push({ idRoom: lastRoom, roomName: "gameRoom" + lastRoom, users: [], started: false, pregunta: "", pregActual: 0, timer: 1, timerAnterior: 0 });
+                gameRooms.push({ idRoom: lastRoom, roomName: "gameRoom" + lastRoom, users: [], started: false, pregunta: "", pregActual: 0, timer: 1, timerAnterior: 0, shieldUser: "" });
             }
         }
         if (gameRooms[gameRooms.length - 1].users.length == 0) {
@@ -232,6 +233,7 @@ io.on('connection', (socket) => {
 
         }
         let id_pregunta = room.pregActual + 1;
+        activarEscudoUserNewPregunta(room);
         room.pregunta = pregunta;
         room.pregActual = id_pregunta;
         io.to(room.roomName).emit('pregunta', { "id": room.pregActual, "pregunta": room.pregunta });
@@ -247,13 +249,15 @@ io.on('connection', (socket) => {
         gameRooms[roomIndex].pregActual++;
         console.log("respuesta correcta");
         if (socket.id == gameRooms[roomIndex].users[userWithBomb].id) {
-            respostaCorrectaUsariCorrecte(roomIndex, userWithBomb);
+            respostaCorrectaUsuariCorrecte(roomIndex, userWithBomb);
         } else {
-            respostaCorrectaUsariIncorrecte(roomIndex, userWithBomb);
+            if (!gameRooms[roomIndex].shieldUser) {
+                respostaCorrectaUsuariIncorrecte(roomIndex, userWithBomb);
+            }
         }
     }
 
-    function respostaCorrectaUsariCorrecte(roomIndex, userWithBomb) {
+    function respostaCorrectaUsuariCorrecte(roomIndex, userWithBomb) {
         gameRooms[roomIndex].users[userWithBomb].bomba = false;
         console.log("user bomba: " + gameRooms[roomIndex].users[userWithBomb].bomba);
         if (userWithBomb == gameRooms[roomIndex].users.length - 1) {
@@ -273,7 +277,8 @@ io.on('connection', (socket) => {
         io.to(gameRooms[roomIndex].roomName).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
     }
 
-    function respostaCorrectaUsariIncorrecte(roomIndex, userWithBomb) {
+    function respostaCorrectaUsuariIncorrecte(roomIndex, userWithBomb) {
+
         console.log("resposta correcta!");
         gameRooms[roomIndex].users[userWithBomb].bomba = true;
         gameRooms[roomIndex].timer -= 10;
@@ -347,6 +352,7 @@ io.on('connection', (socket) => {
     }
 
     function respostaIncorrectaUsuariIncorrecte(roomIndex, userWithBomb, roomEnviada) {
+
         if (gameRooms[roomIndex].roomName == roomEnviada) {
             console.log("resposta incorrecta!");
             gameRooms[roomIndex].pregActual++;
@@ -363,10 +369,31 @@ io.on('connection', (socket) => {
         if (gameRooms[roomIndex].users[userWithBomb].id == socket.id) {
             respostaIncorrectaUsuariCorrecte(roomIndex, userWithBomb);
         } else {
-            respostaIncorrectaUsuariIncorrecte(roomIndex, userWithBomb, gameRooms[roomIndex].roomName);
+            if (!gameRooms[roomIndex].shieldUser) {
+                respostaIncorrectaUsuariIncorrecte(roomIndex, userWithBomb, gameRooms[roomIndex].roomName);
+            }
         }
 
     }
+
+    function activarEscudoUserNewPregunta(room) {
+        let sec = 5;
+        io.to(room.roomName).emit('shieldUser', { "activated": true, "sec": sec });
+        room.shieldUser = true;
+        const interval = setInterval(() => {
+            sec--;
+
+            if (sec === 0) {
+                io.to(room.roomName).emit('shieldUser', { "activated": false, "sec": sec });
+                room.shieldUser = false;
+                clearInterval(interval);
+
+            } else {
+                io.to(room.roomName).emit('shieldUser', { "activated": true, "sec": sec });
+            }
+        }, 1000);
+    }
+
     socket.on('resposta', async (data) => {
         let roomIndex = gameRooms.findIndex(room => room.roomName === data.roomName);
         console.log("Pregunta: ", gameRooms[roomIndex].pregunta);
@@ -381,9 +408,16 @@ io.on('connection', (socket) => {
                 respostaCorrecta(roomIndex, userWithBomb);
             } else {
                 respostaIncorrecta(roomIndex, userWithBomb);
+
             }
-            if (gameRooms[roomIndex] && gameRooms[roomIndex].users.length > 1 && gameRooms[roomIndex].roomName == data.roomName) {
-                newPregunta(gameRooms[roomIndex]);
+            if (socket.id == gameRooms[roomIndex].users[userWithBomb].id) {
+                if (gameRooms[roomIndex] && gameRooms[roomIndex].users.length > 1 && gameRooms[roomIndex].roomName == data.roomName) {
+                    newPregunta(gameRooms[roomIndex]);
+                }
+            } else {
+                if (gameRooms[roomIndex] && gameRooms[roomIndex].users.length > 1 && gameRooms[roomIndex].roomName == data.roomName && !gameRooms[roomIndex].shieldUser) {
+                    newPregunta(gameRooms[roomIndex]);
+                }
             }
         }
 

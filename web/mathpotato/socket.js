@@ -47,6 +47,7 @@ socket.on("gameStarted", (gameStarted) => {
 });
 
 socket.on("pregunta", (pregunta) => {
+    console.log("pregunta -> ", pregunta);
     const store = useAppStore();
     console.log('Nueva pregunta: ', pregunta);
     store.setPregunta(pregunta);
@@ -55,6 +56,7 @@ socket.on("pregunta", (pregunta) => {
 socket.on("changeBomb", (newUsersData) => {
     const store = useAppStore();
     console.log('Cambio de bomba: ', newUsersData.bombChange);
+
     store.setUsers(newUsersData.arrayUsers);
     store.setRespostaAnterior(newUsersData.bombChange);
     store.setExplodes(newUsersData.explodes)
@@ -69,6 +71,12 @@ socket.on("userLost", (UsersData) => {
 socket.on('timer', (timerValue) => {
     const store = useAppStore();
     store.setTimer(timerValue);
+});
+
+socket.on('shieldUser', (shield) => {
+    const store = useAppStore();
+    console.log(shield);
+    store.setShieldUser(shield);
 });
 
 socket.on("finishGame", (dataPartida) => {

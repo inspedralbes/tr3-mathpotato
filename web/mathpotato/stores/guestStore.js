@@ -22,12 +22,12 @@ export const useAppStore = defineStore('app', {
             email: '',
             lost: false,
             win: false,
-            tutorial: true
+            tutorial: true,
         },
         users: [],
         pregunta: {
             id_pregunta: "",
-            pregunta: ""
+            pregunta: "",
         },
         respostaAnterior: true,
         explodes: false,
@@ -36,7 +36,12 @@ export const useAppStore = defineStore('app', {
         gameWinner: false,
         error: "",
         ranking: [],
-        countdown: -2
+        countdown: -2,
+        shieldUser: {
+            activated: false,
+            sec: 0
+        }
+
     }),
     actions: {
         setCountdown(countdown) {
@@ -97,6 +102,8 @@ export const useAppStore = defineStore('app', {
             this.guestInfo.win = false;
             this.guestInfo.lost = false;
             this.guestInfo.tutorial = data.tutorial;
+            this.guestInfo.shieldUser.activated = data.shieldUser.activated;
+            this.guestInfo.shieldUser.sec = data.shieldUser.sec;
 
             console.log('*infoGuest*');
             console.log(this.guestInfo.username);
@@ -110,7 +117,13 @@ export const useAppStore = defineStore('app', {
             this.guestInfo.username = '';
             this.guestInfo.id = '';
         },
-
+        setShieldUser(shieldUser) {
+            this.shieldUser.activated = shieldUser.activated;
+            this.shieldUser.sec = shieldUser.sec;
+        },
+        getShieldUser() {
+            return this.shieldUser;
+        },
         setPregunta(pregunta) {
             this.pregunta.id_pregunta = pregunta.id_pregunta;
             this.pregunta.pregunta = pregunta.pregunta
@@ -177,11 +190,12 @@ export const useAppStore = defineStore('app', {
             this.guestInfo.email = '';
             this.guestInfo.lost = false;
             this.guestInfo.win = false;
+
         },
-        getExplodes(){
+        getExplodes() {
             return this.explodes;
         },
-        setExplodes(explodes){
+        setExplodes(explodes) {
             this.explodes = explodes;
         }
     }

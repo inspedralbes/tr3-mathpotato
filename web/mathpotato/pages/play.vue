@@ -9,14 +9,19 @@
                         </div>
 
                         <img :src="'./_nuxt/assets/Icon_' + user.image + '.png'" alt="image" class="icon"
-                            :class="[user.bomba ? 'userWithBomb' : 'userWithout']"
+                            :class="[user.bomba ? 'userWithBomb' : 'userWithout', user.bomba && escudo.activated ? 'shieldUser' : '']"
                             :style="{ 'background-color': user.background }">
+                            
+                        <div id="shieldUser" :class="[escudo.shieldUser] ? '' : 'hidden' "></div>
                     </div>
+                    
                     <p class="name" :class="[user.id == this.userPantalla.id ? 'nameUser' : '']">{{ user.username }}</p>
                 </div>
             </div>
             <div id="bombContainer" :class="[gameStarted ? '' : 'hidden']"><img src="@/assets/lePotata.png" alt=""
                     class="bomb" id="bomb"><span class="bombCounter">{{ timer }}</span></div>
+                    
+
             <div id="middle">
                 <div id="myModal" class="modal-tutorial" v-show="!gameStarted && userPantalla.tutorial">
                     <div class="modal-tutorial-content">
@@ -45,7 +50,8 @@
                 </div>
                 <div :class="[gameStarted && userPantalla.tutorial ? '' : 'hidden']" class="gameContainer" v-show="gameStarted">
                     <h3>{{ message.pregunta }}</h3>
-                    <input type="text" name="resposta" id="resposta" @keyup.enter="enviarResposta" v-model="respuesta"
+                    <!-- <div>{{ socket }}</div> -->
+                    <input :disabled="escudo.activated && user !== users[findUsersWithBomb()].id" type="text" name="resposta" id="resposta" @keyup.enter="enviarResposta" v-model="respuesta"
                     @input="limitarANumeros">
                     <!-- <Button @click="enviarResposta" icon="pi pi-check" aria-label="Submit" /> -->
                 </div>
@@ -424,7 +430,7 @@ html:lang(ar) {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-image: url("../assets/backgroundPregunta.png");
+    /* background-image: url("../assets/backgroundPregunta.png"); */
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -689,6 +695,23 @@ html:lang(ar) {
 .modal {
     z-index: 100;
 }
+
+.shieldUser {
+    background-image: url('../assets/shield-user.png');
+    animation-name: fadeOut;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
 
 .letra {
     font-size: 2rem;
