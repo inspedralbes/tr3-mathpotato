@@ -2,12 +2,17 @@ import { defineStore } from 'pinia';
 
 export const useAppStore = defineStore('app', {
     state: () => ({
+        lobbies: [
+            { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 }
+
+        ],
         infoGame: {
             rooms: {
                 gameRooms: [
                     {
                         users: [
-                            { username: '', id: '', bomba: false, tutorial: true, image: './assets/Icon_2.png' }
+                            { username: '', bomba: false, tutorial: true, image: './assets/Icon_2.png' }
                         ]
                     },
                 ],
@@ -15,7 +20,6 @@ export const useAppStore = defineStore('app', {
         },
         guestInfo: {
             username: '',
-            id: '',
             bomba: false,
             image: './assets/Icon_2.png',
             lives: 2,
@@ -41,7 +45,6 @@ export const useAppStore = defineStore('app', {
             activated: false,
             sec: 0
         }
-
     }),
     actions: {
         setCountdown(countdown) {
@@ -49,6 +52,15 @@ export const useAppStore = defineStore('app', {
         },
         getCountdown() {
             return this.countdown;
+        },
+        setLobbiesName(lobbies) {
+            this.lobbies[0].nameLobby = lobbies;
+            this.lobbies[0].mode = lobbies;
+            this.lobbies[0].numUser = 20;
+
+        },
+        getLobbiesName() {
+            return this.lobbies;
         },
         setRoomName(roomGame) {
             this.infoGame.rooms.gameRooms[0].roomName = roomGame;
@@ -69,6 +81,13 @@ export const useAppStore = defineStore('app', {
             return this.infoGame.rooms.gameRooms;
         },
         getRoomName() {
+            return this.infoGame.rooms.gameRooms[0].roomName;
+        },
+        setPublicRooms(gameRooms) {
+            this.infoGame.rooms.gameRooms[0].roomName = gameRooms;
+            console.log(this.infoGame.rooms.gameRooms[0].roomName);
+        },
+        getPublicRooms() {
             return this.infoGame.rooms.gameRooms[0].roomName;
         },
         setUsersInRoom(users) {
