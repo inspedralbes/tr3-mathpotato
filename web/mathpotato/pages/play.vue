@@ -109,6 +109,9 @@ export default {
             showStartButton: false,
             showWaitingModal: true,
             hasClickedStart: false,
+            shieldUser: {},
+            user: socket.id,
+
         };
     },
 
@@ -124,6 +127,10 @@ export default {
         encertada() {
             let store = useAppStore();
             return store.getRespostaAnterior();
+        },
+        escudo(){
+            let store = useAppStore();
+            return store.getShieldUser();
         },
         users() {
             let store = useAppStore();
@@ -701,6 +708,7 @@ html:lang(ar) {
     animation-name: fadeOut;
     animation-duration: 1s;
     animation-iteration-count: infinite;
+    animation-direction: alternate;
 }
 
 @keyframes fadeOut {
