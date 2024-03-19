@@ -4,7 +4,8 @@ export const useAppStore = defineStore('app', {
     state: () => ({
         lobbies: [
             { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 }
+            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
+
 
         ],
         infoGame: {
@@ -58,6 +59,12 @@ export const useAppStore = defineStore('app', {
             this.lobbies[0].mode = lobbies;
             this.lobbies[0].numUser = 20;
 
+        },
+        setModesConfigGame(modes) {
+            this.lobbies[0].mode = modes;
+        },
+        getModesConfigGame() {
+            return this.lobbies[0].mode;
         },
         getLobbiesName() {
             return this.lobbies;
