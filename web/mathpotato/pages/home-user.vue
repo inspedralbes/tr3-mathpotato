@@ -5,7 +5,7 @@
             <Button @click="jugar" class="button_game">JUGAR!</Button>
             <!-- <Button class="button_rooms" disabled>Crear Partida</Button> -->
             <div v-if="users.image" @mouseover="showChangeSkinButton" @mouseleave="hideChangeSkinButton" class="user">
-                <img :src="'./src/assets/Icon_' + users.image + '.png'" class="icon">
+                <img :src="'./_nuxt/assets/Icon_' + users.image + '.png'" class="icon">
                 <button v-if="showSkinButton" @click="changeSkin" class="change-skin-button">Cambiar Skin</button>
                 <button v-if="showSkinButton" label="ChangeSkin" class="change-skin-button" @click="visible = true">Cambiar
                     Skin</button>
@@ -13,23 +13,23 @@
                     :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
                     <div id="Image_gallery">
                         <div><input type="radio" name="image" id="1" value="1" checked v-model="imatgeSeleccionada"><label
-                                for="1"><img src="../assets/Icon_1.png" alt="" class="iconModal"></label></div>
+                                for="1"><img src="./_nuxt/assets/Icon_1.png" alt="" class="iconModal"></label></div>
                         <div><input type="radio" name="image" id="2" value="2" v-model="imatgeSeleccionada"><label
-                                for="2"><img src="../assets/Icon_2.png" alt="" class="iconModal"></label></div>
+                                for="2"><img src="./_nuxt/assets/Icon_2.png" alt="" class="iconModal"></label></div>
                         <div><input type="radio" name="image" id="3" value="3" v-model="imatgeSeleccionada"><label
-                                for="3"><img src="../assets/Icon_3.png" alt="" class="iconModal"></label></div>
+                                for="3"><img src="./_nuxt/assets/Icon_3.png" alt="" class="iconModal"></label></div>
                         <div><input type="radio" name="image" id="4" value="4" v-model="imatgeSeleccionada"><label
-                                for="4"><img src="../assets/Icon_4.png" alt="" class="iconModal"></label></div>
+                                for="4"><img src="./_nuxt/assets/Icon_4.png" alt="" class="iconModal"></label></div>
                         <div><input type="radio" name="image" id="5" value="5" v-model="imatgeSeleccionada"><label
-                                for="5"><img src="../assets/Icon_5.png" alt="" class="iconModal"></label></div>
+                                for="5"><img src="./_nuxt/assets/Icon_5.png" alt="" class="iconModal"></label></div>
                         <div><input type="radio" name="image" id="6" value="6" v-model="imatgeSeleccionada"><label
-                                for="6"><img src="../assets/Icon_6.png" alt="" class="iconModal"></label></div>
+                                for="6"><img src="./_nuxt/assets/Icon_6.png" alt="" class="iconModal"></label></div>
                         <div><input type="radio" name="image" id="7" value="7" v-model="imatgeSeleccionada"><label
-                                for="7"><img src="../assets/Icon_7.png" alt="" class="iconModal"></label></div>
+                                for="7"><img src="./_nuxt/assets/Icon_7.png" alt="" class="iconModal"></label></div>
                         <div><input type="radio" name="image" id="8" value="8" v-model="imatgeSeleccionada"><label
-                                for="8"><img src="../assets/Icon_8.png" alt="" class="iconModal"></label></div>
+                                for="8"><img src="./_nuxt/assets/Icon_8.png" alt="" class="iconModal"></label></div>
                         <div><input type="radio" name="image" id="9" value="9" v-model="imatgeSeleccionada"><label
-                                for="9"><img src="../assets/Icon_9.png" alt="" class="iconModal"></label></div>
+                                for="9"><img src="./_nuxt/assets/Icon_9.png" alt="" class="iconModal"></label></div>
                     </div>
                     <div class="p-d-flex p-jc-end">
                         <Button label="Confirmar" @click="guardarDades" />

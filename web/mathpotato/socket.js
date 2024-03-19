@@ -11,7 +11,7 @@ socket.on("usersConnected", (usersConnected, roomName) => {
     console.log("*Conectado al servidor*", usersConnected);
     console.log('Sala de juego: ', roomName);
     const store = useAppStore();
-
+    
     // Establece el array de usuarios en Pinia
     store.setUsers(usersConnected);
     store.setRoomName(roomName);
