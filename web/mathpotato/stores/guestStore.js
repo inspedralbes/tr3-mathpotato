@@ -224,5 +224,6 @@ export const useAppStore = defineStore('app', {
         setExplodes(explodes) {
             this.explodes = explodes;
         }
-    }
+    },
+    
 });

@@ -3,24 +3,29 @@
         <!-- Public Rooms -->
         <div class="container-public-room">
             <div class="header-public-room">
-                <svg @click="refresh" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-refresh btn-refesh" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
-                    <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
-                </svg>
+                <div class="container-svg">
+                    <svg @click="refresh" xmlns="http://www.w3.org/2000/svg"
+                        class="icon icon-tabler icon-tabler-refresh" style="cursor: pointer;" width="20" height="20" viewBox="0 0 24 24"
+                        stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
+                        <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
+                    </svg>
+                </div>
                 <div class="container-select">
                     <select class="despegable-modes" v-model="selectedMode">
-                    <option v-for="(lobby_mode, index) in lobbies" :key="index" :value="mode">
-                        {{ lobby_mode.mode }}
-                    </option>
+                        <option v-for="(lobby_mode, index) in lobbies" :key="index" :value="mode">
+                            {{ lobby_mode.mode }}
+                        </option>
                     </select>
                 </div>
             </div>
             <div class="content-public-room">
                 <div class="list-salas">
                     <ul>
-                        <button class="btn-list-salas" v-for="(lobby, index) in lobbies" :key="index" @click="joinPublicRoom(lobby)">
-                            {{ lobby.nameLobby }} | {{ lobby.mode }} 
+                        <button class="btn-list-salas" v-for="(lobby, index) in lobbies" :key="index"
+                            @click="joinPublicRoom(lobby)">
+                            {{ lobby.nameLobby }} | {{ lobby.mode }}
                         </button>
                     </ul>
                 </div>
@@ -42,14 +47,20 @@
 
 <script>
 import { useAppStore } from "../stores/guestStore.js";
+import { socket } from "../socket";
 export default {
     data() {
         return {
             privateRoomCode: "",
+            selectedMode: "",
         };
     },
     computed: {
-        lobbies(){
+        users(){
+            let store = useAppStore();
+            return store.getGuestInfo();
+        },
+        lobbies() {
             let store = useAppStore();
             return store.getLobbiesName();
         },
@@ -58,9 +69,15 @@ export default {
         createPrivateRoom() {
             // Logic to create a private room
         },
-        joinPublicRoom(lobby) {
+        joinPublicRoom() {
             // Logic to join a public room
-        }
+            socket.emit('join', { username: this.users.username, image: this.users.image, email: this.users.email})
+            this.$router.push({ path: '/play'});
+        },
+        refresh() {
+            // Logic to refresh the public rooms
+
+        },
     },
 };
 </script>
@@ -70,7 +87,8 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Arial', sans-serif;
-    background-color: #F2F2F2; /* Color de fondo general */
+    background-color: #F2F2F2;
+    /* Color de fondo general */
 }
 
 .container-principal {
@@ -88,13 +106,13 @@ body {
     padding: 20px;
 }
 
-.container-select{
+.container-select {
     display: flex;
     align-items: center;
-    margin-left: auto;
+    width: 20%;
 }
 
-.input-container{
+.input-container {
     display: flex;
     padding-top: 40px;
     align-items: center;
@@ -103,16 +121,21 @@ body {
     width: 100%;
 }
 
-.btn-refesh{
+.btn-refesh {
     cursor: pointer;
     margin-left: 20px;
 }
 
 .container-public-room {
-    border-right: 10px solid #6C5CE7; /* Color representativo de MathPotato */
+    border-right: 10px solid #6C5CE7;
+    /* Color representativo de MathPotato */
 }
 
-.despegable-modes{
+.container-private-room{
+    border-left: 10px solid #6C5CE7;
+}
+
+.despegable-modes {
     padding: 10px;
     align-items: end;
     font-size: 16px;
@@ -125,14 +148,35 @@ body {
 
 }
 
+.container-svg{
+    /* background-color: #333; */
+    position: relative;
+    width: 55%;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+    padding-right: 20px;
+    
+}
+
+.icon {
+    transition: transform 0.3s ease-in-out;
+}
+
+.icon:hover {
+    transform: rotate(180deg);
+}
+
 .header-public-room {
-    display: flex; /* Align items to the right */
+    display: flex;
+    width: 100%;
+    /* Align items to the right */
     padding: 20px;
     justify-content: right;
     align-items: end;
 }
 
-.button-container-createRoom{
+.button-container-createRoom {
     text-align: center;
     padding: 20px;
 
@@ -140,21 +184,10 @@ body {
 
 .title-lobbies-pub {
     font-size: 24px;
-    margin-right: 10px;margin-right: 10px;
-    color: #6C5CE7; /* Color representativo de MathPotato */
-}
-
-.btn-refresh {
-    background: transparent;
-    border: none;
     margin-right: 10px;
-    cursor: pointer;
-}
-
-.btn-refresh svg {
-    width: 16px;
-    height: 16px;
-    fill: #6C5CE7; /* Color representativo de MathPotato */
+    margin-right: 10px;
+    color: #6C5CE7;
+    /* Color representativo de MathPotato */
 }
 
 .content-public-room .list-salas ul {
@@ -206,6 +239,7 @@ body {
 }
 
 .btn-createRoom:hover {
-    background-color: #5A4DB3; /* Color representativo de MathPotato (oscurecido) */
+    background-color: #5A4DB3;
+    /* Color representativo de MathPotato (oscurecido) */
 }
 </style>
