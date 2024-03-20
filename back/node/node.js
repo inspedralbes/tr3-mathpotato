@@ -704,6 +704,13 @@ io.on('connection', (socket) => {
             });
         }
     });
+
+    socket.on('getSalas', () => {
+        let openLobbies = [];
+        openLobbies=lobbies.filter(lobby => !lobby.private);
+
+        socket.emit('salas', openLobbies);
+    })
    
     socket.on('disconnect', () => {
         let gameRooms = findLobbieBySocketId(socket.id);
