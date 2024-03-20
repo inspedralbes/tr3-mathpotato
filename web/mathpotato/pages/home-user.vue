@@ -73,7 +73,7 @@ export default {
             console.log('Cambiando la skin...');
         },
         jugar() {
-            socket.emit('join', { username: this.users.username, image: this.users.image, email: this.users.email });
+            socket.emit('join', { username: this.users.username, image: this.users.image, email: this.users.email, tutorial:this.users.tutorial });
 
             this.$router.push({ path: '/play' });
         },
@@ -205,4 +205,3 @@ input[type="radio"]:checked+label>img {
     color: white;
 
 }</style>
-../socket.js

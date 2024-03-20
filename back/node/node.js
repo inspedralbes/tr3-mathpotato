@@ -102,7 +102,7 @@ function findIndexRoomBySocketId(socketId, gameRooms) {
     }
 }
 
-async function getUser(data) {
+async function getUser(data, socket) {
     try {
         // console.log("data to send...", data)
         const response = await fetch('http://localhost:8000/api/login', {
@@ -114,14 +114,25 @@ async function getUser(data) {
         }
         );
         const responseData = await response.json();
+        console.log(responseData.status,"==",1);
         if (responseData.status === 1) {
-            responseData.id = socket.id;
-            responseData.image = responseData.foto_perfil;
-            socket.emit('loginSuccess', responseData);
+            let returnData = responseData;
+            returnData.id = socket.id;
+            returnData.image = responseData.foto_perfil;
+            returnData.username = responseData.username;
+            returnData.email = responseData.email;
+            if(responseData.tutorial === 1){
+                returnData.tutorial = true;
+            }
+            else{
+                returnData.tutorial = false;
+            }
+            returnData.status = 1;
+            socket.emit('loginSuccess', returnData);
 
             // console.log("response.ok....", responseData);
-
-            return responseData;
+            
+            return returnData;
         } else {
             // console.log("response.Notok....", responseData);
             socket.emit('loginError', responseData.status);
@@ -553,7 +564,7 @@ io.on('connection', (socket) => {
     socket.on('login', async (data) => {
         // console.log(data);
         // console.log("data to send...", data)
-        await getUser(data);
+        await getUser(data, socket);
     });
     
     
