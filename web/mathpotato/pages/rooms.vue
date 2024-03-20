@@ -3,21 +3,18 @@
         <!-- Public Rooms -->
         <div class="container-public-room">
             <div class="header-public-room">
-                <h2 class="title-lobbies-pub">Lobbies Publiques</h2>
-                <button @click="refresh" class="btn-refesh"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-refresh" width="16" height="16" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <svg @click="refresh" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-refresh btn-refesh" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
                     <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
-                </svg></button>
-                <div>
-                    <select v-model="selectedMode">
+                </svg>
+                <div class="container-select">
+                    <select class="despegable-modes" v-model="selectedMode">
                     <option v-for="(lobby_mode, index) in lobbies" :key="index" :value="mode">
                         {{ lobby_mode.mode }}
                     </option>
                     </select>
                 </div>
-            
-                
             </div>
             <div class="content-public-room">
                 <div class="list-salas">
@@ -33,9 +30,8 @@
         <!-- Private Room Code -->
         <div class="container-private-room">
             <div class="input-container">
-                <input type="text" v-model="privateRoomCode" placeholder="Enter room code" />
+                <input class="input" type="text" v-model="privateRoomCode" placeholder="Enter room code" />
             </div>
-
             <!-- Create Private Room -->
             <div class="button-container-createRoom">
                 <button @click="createPrivateRoom" class="btn-createRoom">Create</button>
@@ -73,124 +69,143 @@ export default {
 body {
     margin: 0;
     padding: 0;
-    /* background-color: #202020; */
-    /* color: #FFF; */
-    
+    font-family: 'Arial', sans-serif;
+    background-color: #F2F2F2; /* Color de fondo general */
 }
+
 .container-principal {
-    height: 100vh;
-    width: 100vw;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
 }
 
-.container-public-room {
-    display: grid;
-    grid-template-rows: 1fr 1fr;
-
-}
+.container-public-room,
 .container-private-room {
-    display: grid;
-    grid-template-rows: 1fr 1fr;
+    width: 45%;
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
 }
 
-.header-public-room {
+.container-select{
     display: flex;
     align-items: center;
-    height: 20vh;
-    width: 30vw;
-}
-
-.list-salas{
-    
-}
-
-/* .content-public-room{
-    display: grid;
-    grid-template-rows: 1fr 1fr;
-    height: 70vh;
-    width: 50vw;
-} */
-/* 
-.public-rooms {
-    flex: 1;
-    border-right: 2px solid #4CAF50;
-    padding-right: 20px;
-}
-
-.btn-refesh{
-}
-
-h2 {
-    font-size: 24px;
-    margin-bottom: 10px;
-}
-
-ul {
-    list-style: none;
-    padding: 0;
+    margin-left: auto;
 }
 
 .input-container{
     display: flex;
+    padding-top: 40px;
     align-items: center;
+    margin-bottom: 20px;
     justify-content: center;
+    width: 100%;
+}
+
+.btn-refesh{
+    cursor: pointer;
+    margin-left: 20px;
+}
+
+.container-public-room {
+    border-right: 10px solid #6C5CE7; /* Color representativo de MathPotato */
+}
+
+.despegable-modes{
     padding: 10px;
-    width: 50%;
+    align-items: end;
+    font-size: 16px;
+    border: 2px solid #6C5CE7;
+    border-radius: 5px;
+    background-color: #FFFFFF;
+    color: #333;
+    outline: none;
+    cursor: pointer;
+
+}
+
+.header-public-room {
+    display: flex; /* Align items to the right */
+    padding: 20px;
+    justify-content: right;
+    align-items: end;
 }
 
 .button-container-createRoom{
-    display: flex; 
-    height: 35%;
-    width: 200px;
+    text-align: center;
+    padding: 20px;
 
 }
+
+.title-lobbies-pub {
+    font-size: 24px;
+    margin-right: 10px;margin-right: 10px;
+    color: #6C5CE7; /* Color representativo de MathPotato */
+}
+
+.btn-refresh {
+    background: transparent;
+    border: none;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.btn-refresh svg {
+    width: 16px;
+    height: 16px;
+    fill: #6C5CE7; /* Color representativo de MathPotato */
+}
+
+.content-public-room .list-salas ul {
+    padding: 0;
+    margin: 0;
+}
+
 .btn-list-salas {
     display: block;
-    width: 400px;
-    padding: 10px 0;
+    width: 100%;
+    padding: 10px;
     font-size: 18px;
     text-align: left;
     border: none;
-    border-bottom: 1px solid #4CAF50;
+    border-bottom: 1px solid #ccc;
     cursor: pointer;
     transition: background-color 0.3s;
 }
- .container-private-room input[type="text"] {
-    width: calc(100% - 100px);
+
+.btn-list-salas:last-child {
+    border-bottom: none;
+}
+
+.container-private-room input[type="text"] {
+    width: calc(100% - 120px);
     padding: 10px;
     font-size: 16px;
     margin-right: 10px;
-    border: 2px solid #4CAF50;
+    border: 2px solid #6C5CE7;
     border-radius: 5px;
-    background-color: #303030;
-    color: #FFF;
+    background-color: #FFFFFF;
+    color: #333;
     outline: none;
-} 
+}
 
 .container-private-room input[type="text"]::placeholder {
     color: #999;
 }
 
-.container-private-room .btn-list-salas {
-    width: 100px;
-    padding: 10px;
-    font-size: 18px;
-    background-color: #4CAF50;
-    color: #FFF;
+.btn-createRoom {
+    padding: 10px 30px;
+    font-size: 16px;
+    background-color: #6C5CE7;
+    color: #fff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
-.container-private-room .btn-list-salas:hover {
-    background-color: #45a049;
+.btn-createRoom:hover {
+    background-color: #5A4DB3; /* Color representativo de MathPotato (oscurecido) */
 }
-
-
-
-.title-lobbies-pub{
-    padding-right: 20px;
-} */
 </style>
