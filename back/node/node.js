@@ -394,7 +394,7 @@ function iniciarTimer(room) {
     room.timerAnterior = room.timer;
 }
 
-async function startTimer(idRoom) {
+async function startTimer(idRoom, socket) {
     console.log("startTimer");
     let gameRooms = findLobbieBySocketId(socket.id);
     if (gameRooms.length > 0) {
@@ -418,7 +418,7 @@ async function startTimer(idRoom) {
 
                         } else {
                             if (gameRooms[roomPosition].users.length > 1) {
-                                startTimer(idRoom);
+                                startTimer(idRoom, socket);
                             }
                         }
                     }
@@ -431,7 +431,7 @@ async function startTimer(idRoom) {
                         newPregunta(gameRooms[roomPosition]);
                     }
                     console.log("timer acabado");
-                    startTimer(idRoom);
+                    startTimer(idRoom, socket);
                 }
             }
         }
@@ -591,7 +591,7 @@ io.on('connection', (socket) => {
                             let roomPosition = room.roomPosition;
                             newPregunta(room);
                             iniciarTimer(room);
-                            startTimer(room.idGame);
+                            startTimer(room.idGame, socket);
                             // Emitir evento de inicio de juego a todos los usuarios en la sala
                             io.to(room.idGame).emit('gameStarted', { allPlayersStarted: true });
                         } else {
