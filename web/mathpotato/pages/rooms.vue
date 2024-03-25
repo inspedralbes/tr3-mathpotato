@@ -26,39 +26,68 @@
                     <div class="card">
                         <div class="flex flex-column md:flex-row gap-5">
                             <div class="flex-auto">
-                                <ScrollPanel 
+                            <ScrollPanel 
                                 style="width: 100%; height: 300px" 
                                 :pt="{ 
-                                    wrapper: { 
-                                        style: { 'border-right': '10px solid var(--surface-ground)'},
-                                        },  
-                                        bary: 'hover:bg-primary-400 opacity-100' }" 
-                                        class="custom-scroll-panel">
+                                wrapper: { 
+                                    style: { 'border-right': '10px solid var(--surface-ground)' }
+                                },  
+                                bary: 'hover:bg-primary-400 opacity-100' 
+                                }" 
+                                class="custom-scroll-panel"
+                            >
                                 <ul>
-                                    <button class="btn-list-salas" v-for="(lobby, index) in lobbies" :key="index"
-                                        @click="joinPublicRoom(lobby)">
-                                        {{ lobby.nameLobby }} | {{ lobby.mode }}
-                                    </button>
+                                <button 
+                                    class="btn-list-salas" 
+                                    v-for="(lobby, index) in lobbies" 
+                                    :key="index"
+                                    @click="joinPublicRoom(lobby)"
+                                >
+                                    {{ lobby.nameLobby }} | {{ lobby.mode }}
+                                </button>
                                 </ul>
-                                </ScrollPanel>
-                                    
+                            </ScrollPanel>  
                             </div>
-                            
+                        <div class="card">
+                            <Paginator :rows="10" :total-records="lobbies.length" ></Paginator>
                         </div>
+                    </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Private Room Code -->
-        <div class="container-private-room">
-            <div class="input">
-                <InputText v-model="value" type="text" variant="filled" />
+        <div class="container-join-room">
+            <div class="card flex justify-content-center">
+                <div class="flex flex-column align-items-center code">
+                    <div class="font-bold text-xl mb-2">Pon el codigo para unirte!</div>
+                    <InputOtp v-model="value" :length="6" style="gap: 0; justify-content: center; padding: 20px;" >
+                        <template #default="{ attrs, events, index }">
+                            <input type="text" v-bind="attrs" v-on="events" class="custom-otp-input" />
+                            <div style="padding: 5px;" v-if="index === 3" class="px-3">
+                                <i class="pi pi-minus" />
+                            </div>
+                        </template>
+                    </InputOtp>
+                    <div class="flex justify-content-between mt-5 align-self-stretch">
+                        <Button label="Submit Code"></Button>
+                    </div>
+                </div>
             </div>
             <!-- Create Private Room -->
-            <div class="button-container-createRoom">
-                <Button @click="createPrivateRoom" label="CREATE!" />
+            
+        </div>
+        <div class="button-container-createRoom">
+                <div class="card flex justify-content-center">
+                    <Button label="CREATE!" @click="visible = true" />
+                    <div di="modal-config-game">
+                        
+                    </div>
+                </div>
             </div>
+        <div class="container-create-room">
+            
         </div>
     </div>
 </template>
@@ -66,6 +95,8 @@
 <script>
 import { useAppStore } from "../stores/guestStore.js";
 import { socket } from "../socket";
+import { ref } from "vue";
+const visible = ref(false);
 export default {
     data() {
         return {
@@ -110,6 +141,46 @@ body {
     
 }
 
+/* */
+
+.custom-otp-input {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+    appearance: none;
+    text-align: center;
+    transition: all 0.2s;
+    border-radius: 0;
+    border: 1px solid var(--surface-400);
+    background: transparent;
+    outline-offset: -2px;
+    outline-color: transparent;
+    border-right: 0 none;
+    transition: outline-color 0.3s;
+    color: var(--text-color);
+}
+.code{
+    text-align: center;
+}
+.custom-otp-input:focus {
+    outline: 2px solid var(--primary-color);
+}
+
+.custom-otp-input:first-child,
+.custom-otp-input:nth-child(5) {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+
+.custom-otp-input:nth-child(3),
+.custom-otp-input:last-child {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+    border-right-width: 1px;
+    border-right-style: solid;
+    border-color: var(--surface-400);
+}
+
 .container-header{
     padding: 20px;
     /* flex-direction: column; */
@@ -139,8 +210,8 @@ body {
 }
 
 .container-public-room,
-.container-private-room {
-    width: 90%;
+.container-join-room {
+    width: 93%;
     justify-content: center;
     align-items: center;
     background-color: #FFFFFF;
@@ -175,11 +246,12 @@ body {
     /* Color representativo de MathPotato */
 }
 
-.container-private-room{
+.container-join-room{
     border-left: 10px solid #6C5CE7;
     justify-content: center;
     align-items: center
 }
+
 
 .despegable-modes {
     padding: 10px;
@@ -257,23 +329,11 @@ body {
     border-bottom: none;
 }
 
-/* .container-private-room input[type="text"] {
-    width: 40%;
-    padding: 10px;
-    font-size: 16px;
-    margin-right: 10px;
-    border: 2px solid #6C5CE7;
-    border-radius: 5px;
-    background-color: #FFFFFF;
-    color: #333;
-    outline: none;
-} */
-
 .input{
     text-align: center;
 }
 
-.container-private-room input[type="text"]::placeholder {
+.container-join-room input[type="text"]::placeholder {
     color: #999;
 }
 

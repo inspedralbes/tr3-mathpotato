@@ -15,7 +15,7 @@ export default defineNuxtConfig({
       // unstyled: true,
     },
     components: {
-      include: ['InputText', 'Button', 'AnimateOnScroll', 'Dialog', 'ScrollPanel']
+      include: ['InputText', 'Button', 'AnimateOnScroll', 'Dialog', 'ScrollPanel', 'Paginator', 'InputOtp']
     },
 
   },
