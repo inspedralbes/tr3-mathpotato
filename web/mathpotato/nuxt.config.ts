@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  css: ['./assets/css/normalize.css'],
+  css: ['./assets/css/normalize.css', 'primevue/resources/themes/lara-light-teal/theme.css'],
   devtools: { enabled: true },
   modules: [
     '@pinia/nuxt',
@@ -10,12 +10,12 @@ export default defineNuxtConfig({
 
     options: {
 
-      inputStyle: 'filled',
+      // inputStyle: 'filled',
       ripple: true,
-      unstyled: true,
+      // unstyled: true,
     },
     components: {
-      include: ['InputText', 'Button', 'AnimateOnScroll', 'Dialog',]
+      include: ['InputText', 'Button', 'AnimateOnScroll', 'Dialog', 'ScrollPanel']
     },
 
   },

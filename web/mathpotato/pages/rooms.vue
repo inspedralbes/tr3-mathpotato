@@ -1,45 +1,63 @@
 <template>
     <div class="container-principal">
         <!-- Public Rooms -->
-        <div class="container-public-room">
-            <div class="header-public-room">
-                <div class="container-svg">
-                    <svg @click="refresh" xmlns="http://www.w3.org/2000/svg"
-                        class="icon icon-tabler icon-tabler-refresh" style="cursor: pointer;" width="20" height="20" viewBox="0 0 24 24"
-                        stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
-                        <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
-                    </svg>
+        
+        <div class="rooms-container">
+            <div class="container-public-room">
+                <div class="header-public-room">
+                    <div class="container-svg">
+                        <svg @click="refresh" xmlns="http://www.w3.org/2000/svg"
+                            class="icon icon-tabler icon-tabler-refresh" style="cursor: pointer;" width="20" height="20" viewBox="0 0 24 24"
+                            stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
+                            <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
+                        </svg>
+                    </div>
+                    <div class="container-select">
+                        <select class="despegable-modes" v-model="selectedMode">
+                            <option v-for="(lobby_mode, index) in lobbies" :key="index" :value="mode">
+                                {{ lobby_mode.mode }}
+                            </option>
+                        </select>
+                    </div>
                 </div>
-                <div class="container-select">
-                    <select class="despegable-modes" v-model="selectedMode">
-                        <option v-for="(lobby_mode, index) in lobbies" :key="index" :value="mode">
-                            {{ lobby_mode.mode }}
-                        </option>
-                    </select>
-                </div>
-            </div>
-            <div class="content-public-room">
-                <div class="list-salas">
-                    <ul>
-                        <button class="btn-list-salas" v-for="(lobby, index) in lobbies" :key="index"
-                            @click="joinPublicRoom(lobby)">
-                            {{ lobby.nameLobby }} | {{ lobby.mode }}
-                        </button>
-                    </ul>
+                <div class="content-public-room">
+                    <div class="card">
+                        <div class="flex flex-column md:flex-row gap-5">
+                            <div class="flex-auto">
+                                <ScrollPanel 
+                                style="width: 100%; height: 300px" 
+                                :pt="{ 
+                                    wrapper: { 
+                                        style: { 'border-right': '10px solid var(--surface-ground)'},
+                                        },  
+                                        bary: 'hover:bg-primary-400 opacity-100' }" 
+                                        class="custom-scroll-panel">
+                                <ul>
+                                    <button class="btn-list-salas" v-for="(lobby, index) in lobbies" :key="index"
+                                        @click="joinPublicRoom(lobby)">
+                                        {{ lobby.nameLobby }} | {{ lobby.mode }}
+                                    </button>
+                                </ul>
+                                </ScrollPanel>
+                                    
+                            </div>
+                            
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Private Room Code -->
         <div class="container-private-room">
-            <div class="input-container">
-                <input class="input" type="text" v-model="privateRoomCode" placeholder="Enter room code" />
+            <div class="input">
+                <InputText v-model="value" type="text" variant="filled" />
             </div>
             <!-- Create Private Room -->
             <div class="button-container-createRoom">
-                <button @click="createPrivateRoom" class="btn-createRoom">Create</button>
+                <Button @click="createPrivateRoom" label="CREATE!" />
             </div>
         </div>
     </div>
@@ -71,8 +89,8 @@ export default {
         },
         joinPublicRoom() {
             // Logic to join a public room
-            socket.emit('join', { username: this.users.username, image: this.users.image, email: this.users.email})
-            this.$router.push({ path: '/play'});
+            // socket.emit('join', { username: this.users.username, image: this.users.image, email: this.users.email})
+            // this.$router.push({ path: '/play'});
         },
         refresh() {
             // Logic to refresh the public rooms
@@ -89,28 +107,54 @@ body {
     font-family: 'Arial', sans-serif;
     background-color: #F2F2F2;
     /* Color de fondo general */
+    
+}
+
+.container-header{
+    padding: 20px;
+    /* flex-direction: column; */
+
 }
 
 .container-principal {
     display: flex;
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh;
+    padding-right: 20px;
+    padding-left: 20px;
+    background-image: url('../assets/Banner.png');
+    background-repeat: no-repeat;
+    background-position: top;
+    
+}
+
+.rooms-container{
+    display: flex;
     justify-content: space-between;
-    padding: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin-top: 20px;
+
 }
 
 .container-public-room,
 .container-private-room {
-    width: 45%;
+    width: 90%;
+    justify-content: center;
+    align-items: center;
     background-color: #FFFFFF;
     border-radius: 10px;
+    /* height: 60vh; */
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
 }
 
-.container-select {
+/* .container-select {
     display: flex;
     align-items: center;
     width: 20%;
-}
+} */
 
 .input-container {
     display: flex;
@@ -133,6 +177,8 @@ body {
 
 .container-private-room{
     border-left: 10px solid #6C5CE7;
+    justify-content: center;
+    align-items: center
 }
 
 .despegable-modes {
@@ -211,8 +257,8 @@ body {
     border-bottom: none;
 }
 
-.container-private-room input[type="text"] {
-    width: calc(100% - 120px);
+/* .container-private-room input[type="text"] {
+    width: 40%;
     padding: 10px;
     font-size: 16px;
     margin-right: 10px;
@@ -221,6 +267,10 @@ body {
     background-color: #FFFFFF;
     color: #333;
     outline: none;
+} */
+
+.input{
+    text-align: center;
 }
 
 .container-private-room input[type="text"]::placeholder {

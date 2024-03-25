@@ -5,7 +5,26 @@ export const useAppStore = defineStore('app', {
         lobbies: [
             { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
             { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
-
+            { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
 
         ],
         infoGame: {
@@ -225,5 +244,5 @@ export const useAppStore = defineStore('app', {
             this.explodes = explodes;
         }
     },
-    
+
 });

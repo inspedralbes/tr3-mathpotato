@@ -44,7 +44,7 @@
                                     si contestes malament, rebràs la bomba.</p>
                             </div>
                         </div>
-                        <Button @click="ocultarModal" id="ocultarModal">ACEPTAR!</Button>
+                        <Button @click="ocultarModal()" label="ACEPTAR!" id="ocultarModal" />
                     </div>
                     
                 </div>
