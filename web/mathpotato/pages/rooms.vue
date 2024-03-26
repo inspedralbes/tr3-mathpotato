@@ -1,18 +1,13 @@
 <template>
     <div class="container-principal">
         <!-- Public Rooms -->
-        
         <div class="rooms-container">
             <div class="container-public-room">
                 <div class="header-public-room">
                     <div class="container-svg">
-                        <svg @click="refresh" xmlns="http://www.w3.org/2000/svg"
-                            class="icon icon-tabler icon-tabler-refresh" style="cursor: pointer;" width="20" height="20" viewBox="0 0 24 24"
-                            stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
-                            <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
-                        </svg>
+                        <div class="flex justify-content-start">
+                            <Button @click="btnRefresh" icon="pi pi-refresh" class="btn-refresh" label="Reload" severity="warning" />
+                        </div>
                     </div>
                     <div class="container-select">
                         <select class="despegable-modes" v-model="selectedMode">
@@ -61,7 +56,7 @@
         <div class="container-join-room">
             <div class="card flex justify-content-center">
                 <div class="flex flex-column align-items-center code">
-                    <div class="font-bold text-xl mb-2">Pon el codigo para unirte!</div>
+                    <div class="font-bold text-xl mb-2 text-join-room">Pon el codigo para unirte!</div>
                     <InputOtp v-model="value" :length="6" style="gap: 0; justify-content: center; padding: 20px;" >
                         <template #default="{ attrs, events, index }">
                             <input type="text" v-bind="attrs" v-on="events" class="custom-otp-input" />
@@ -71,25 +66,49 @@
                         </template>
                     </InputOtp>
                     <div class="flex justify-content-between mt-5 align-self-stretch">
-                        <Button label="Submit Code"></Button>
+                        <Button label="Submit Code" @click="console.log(value)"></Button>
                     </div>
                 </div>
             </div>
             <!-- Create Private Room -->
-            
-        </div>
-        <div class="button-container-createRoom">
+            <Divider type="solid" />
+            <div class="button-container-createRoom">
                 <div class="card flex justify-content-center">
-                    <Button label="CREATE!" @click="visible = true" />
-                    <div di="modal-config-game">
-                        
+                    <div class="font-bold text-xl mb-2 text-create-room">Crea tu propia sala!</div>
+                    <Button label="Create!" @click="visible = true" />
+                    <div di="modal-config-game"> 
                     </div>
                 </div>
             </div>
-        <div class="container-create-room">
             
         </div>
+        <div class="card flex justify-content-center">
+            <Dialog v-model:visible="visible" modal header="Config Game" :style="{ width: '25rem' }">
+                <span class="p-text-secondary block mb-5">Update your information.</span>
+                <Divider type="solid" />
+                <div class="flex align-items-center gap-3 mb-3">
+                    <label for="username" class="font-semibold w-6rem">Name Room</label>
+                    <InputText id="username" class="flex-auto" autocomplete="off" />
+                </div>
+                <Divider type="solid" />
+                <div class="flex align-items-center radiobutton-div">
+                    <RadioButton v-model="ingredient" inputId="ingredient1" name="pizza" value="Cheese" />
+                    <label for="ingredient1" class="text-radiobutton">Public</label>
+                    <RadioButton v-model="ingredient" inputId="ingredient2" name="pizza" value="Mushroom" />
+                    <label for="ingredient2" class="text-radiobutton">Private</label>
+                </div>
+                <Divider type="solid" />
+                <div class="flex justify-content-end gap-2 button-modal">
+                    <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
+                    <Button type="button" label="Save" @click="visible = false"></Button>
+                </div>
+            </Dialog>
+        </div>
+        
+
     </div>
+    
+    
 </template>
 
 <script>
@@ -102,6 +121,10 @@ export default {
         return {
             privateRoomCode: "",
             selectedMode: "",
+            showModalConfig: false,
+            btnRefresh: false,
+            ingredient: '',
+            visible: false
         };
     },
     computed: {
@@ -117,6 +140,9 @@ export default {
     methods: {
         createPrivateRoom() {
             // Logic to create a private room
+        },
+        ModalConfig(){
+            this.showModalConfig = true;
         },
         joinPublicRoom() {
             // Logic to join a public room
@@ -159,11 +185,43 @@ body {
     transition: outline-color 0.3s;
     color: var(--text-color);
 }
+
+.btn-refresh{
+    top: 25%;
+    font-size: 0.9em; 
+    padding: 0.5em 0.5em;
+}
+
+.radiobutton-div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.text-radiobutton{
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 .code{
     text-align: center;
 }
 .custom-otp-input:focus {
     outline: 2px solid var(--primary-color);
+}
+
+.text-create-room{
+    padding-bottom: 20px;
+    font-size: 20px;
+}
+
+.text-join-room{
+    font-size: 20px;
+}
+
+.btn-create{
+    padding: 10px 30px;
+
 }
 
 .custom-otp-input:first-child,

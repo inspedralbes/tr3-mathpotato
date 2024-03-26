@@ -1,10 +1,12 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  css: ['./assets/css/normalize.css', 'primevue/resources/themes/lara-light-teal/theme.css'],
+  css: ['./assets/css/normalize.css', 'primevue/resources/themes/lara-light-teal/theme.css', 'primeicons/primeicons.css'],
   devtools: { enabled: true },
+
   modules: [
     '@pinia/nuxt',
-    'nuxt-primevue'
+    'nuxt-primevue',
+
   ],
   primevue: {
 
@@ -15,7 +17,7 @@ export default defineNuxtConfig({
       // unstyled: true,
     },
     components: {
-      include: ['InputText', 'Button', 'AnimateOnScroll', 'Dialog', 'ScrollPanel', 'Paginator', 'InputOtp']
+      include: ['InputText', 'Button', 'AnimateOnScroll', 'Dialog', 'ScrollPanel', 'Paginator', 'InputOtp', 'Divider', 'RadioButton']
     },
 
   },
