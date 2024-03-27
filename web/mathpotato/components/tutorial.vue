@@ -1,79 +1,99 @@
 <template>
-  <div id="page1" class="explain" v-if="page === 1">
-    Benvingut a Mathpotato! Aquest joc consisteix en respondre preguntes de matemàtiques per passar la patata, evitant
-    explotar
-  </div>
-  <div id="page2" class="explain" v-else-if="page == 2">
-    Per començar, selecciona una imatge de perfil
-  </div>
-  <div class="explanationSection">
-    <button @click="changeBomb()">as</button>
-    <div id="background">
-      <div id="grid">
-        <div id="topmid">
-          <div class="user topmid" id="user0">
-            <div class="imageContainer">
-              <div class="vidaContainer" v-for="n in 2" :key="n">
-                <img src="@/assets/potatHeart.png">
+  <div class="tutorial">
+    <div id="page1" class="explain" v-if="page === 1">
+      Benvingut a Mathpotato! Aquest joc consisteix en respondre preguntes de matemàtiques per passar la patata, evitant
+      explotar
+    </div>
+    <div id="page2" class="explain" v-else-if="page === 2">
+      Tú ets el personatge amb el nombre taronga, tens la bomba! pero no et preocupis tens un temps marcat a la bomba
+      per passar-la
+    </div>
+    <div id="page3" class="explain" v-else-if="page === 3">
+      Per passar la bomba, has de respondre correctament la pregunta que et mostrem a la pantalla
+    </div>
+    <div id="page4" class="explain" v-else-if="page === 4">
+      Encara que no tinguis la bomba pots respondre la pregunta per restar-li temps a la bomba (Durant la partida el
+      temps baixarà sol)
+    </div>
+    <div id="page5" class="explain" v-else-if="page === 5">
+      Si no respons la pregunta o la resposta és incorrecta, la bomba explotarà i perdràs una vida
+    </div>
+    <div id="page6" class="explain" v-else-if="page === 6">
+      Quan la preugnta canvia la pregunta, el jugador amb la bomba rebrà un escut de 5 segons, si no tens la bomba no
+      podràs respondre
+    </div>
+    <div id="page7" class="explain" v-else-if="page === 7">
+      Si perds totes les vides, perdràs la partida, si ets l'ultim en peu guanyaras la partida.
+    </div>
+    <div class="explanationSection">
+      <div id="background">
+        <div id="grid">
+          <div id="topmid">
+            <div class="userTutorial topmid" id="userTutorial0">
+              <div class="imageContainer">
+                <div class="vidaContainer" v-for="n in 2" :key="n">
+                  <img src="@/assets/potatHeart.png">
+                </div>
+
+                <img src='@/assets/Icon_Poltata.png' alt="image" class="icon">
+
               </div>
 
-              <img src='@/assets/Icon_Poltata.png' alt="image" class="icon shieldUser">
-
+              <p class="name nameuserTutorial">Tú</p>
             </div>
-
-            <p class="name nameUser">Tú</p>
           </div>
-        </div>
-        <div id="bottomleft">
-          <div class="user" id="user1">
-            <div class="imageContainer">
-              <div class="vidaContainer" v-for="n in 2" :key="n">
-                <img src="@/assets/potatHeart.png">
+          <div id="bottomleft">
+            <div class="userTutorial" id="userTutorial2">
+              <div class="imageContainer">
+                <div class="vidaContainer">
+                  <img src="@/assets/potatHeart.png">
+                  <img src="@/assets/potatHeart.png">
+                </div>
+
+                <img src='@/assets/Icon_alvaro.png' alt="image" class="icon">
+
               </div>
 
-              <img src='@/assets/Icon_alvaro.png' alt="image" class="icon">
-
+              <p class="name">No ets tú</p>
             </div>
-
-            <p class="name">No ets tú</p>
           </div>
-        </div>
-        <div id="bottomright">
-          <div class="user" id="user2">
-            <div class="imageContainer">
-              <div class="vidaContainer" v-for="n in 2" :key="n">
-                <img src="@/assets/potatHeart.png">
+          <div id="bottomright">
+            <div class="userTutorial" id="userTutorial1">
+              <div class="imageContainer">
+                <div class="vidaContainer" v-for="n in lives" :key="n">
+                  <img src="@/assets/potatHeart.png">
+                </div>
+
+                <img src='@/assets/Icon_Ermengol.png' alt="image" class="icon" id="shieldUser">
+
+
               </div>
 
-              <img src='@/assets/Icon_Ermengol.png' alt="image" class="icon">
+              <p class="name">100% no tú</p>
+            </div>
+          </div>
+          <div id="bombContainerTutorial">
+            <img src="@/assets/lePotata.png" alt="" class="bomb" id="bomb"><span id="bombCounter">30</span>
+          </div>
 
 
+          <div id="middle">
+            <div class="gameContainer">
+              <h3 id="pregunta">2-2</h3>
+              <!-- <div>{{ socket }}</div> -->
+              <input type="text" name="resposta" id="resposta" disabled />
             </div>
 
-            <p class="name">100% no tú</p>
           </div>
-        </div>
-        <div id="bombContainer">
-          <img src="@/assets/lePotata.png" alt="" class="bomb" id="bomb"><span class="bombCounter">30</span>
-        </div>
-
-
-        <div id="middle">
-          <div class="gameContainer">
-            <h3>2-2</h3>
-            <!-- <div>{{ socket }}</div> -->
-            <input type="text" name="resposta" id="resposta" disabled />
-          </div>
-
         </div>
       </div>
+
     </div>
-
+    <div>
+      <button @click="nextPage()" v-if="page < 7">Next</button>
+      <button @click="latestPage()" v-if="page > 1">Latest</button>
+    </div>
   </div>
-  <div>
-    <button @click="nextPage()">Next</button>
-  </div>
-
 </template>
 
 <script>
@@ -83,54 +103,121 @@ export default {
   data() {
     return {
       page: 1,
-      lastUserWithBomb: -1,
-      userWithBomb: 0,
+      lastuserTutorialWithBomb: 2,
+      userTutorialWithBomb: 0,
+      lives: 2
     }
   },
   methods: {
     nextPage() {
       this.page++;
       console.log(this.page);
+      this.specificChanges();
     },
-    changeBomb() {
-
-      console.log(this.lastUserWithBomb);
-      if (this.lastUserWithBomb !== this.userWithBomb) {
-        console.log(this.lastUserWithBomb, "!=", this.userWithBomb);
-        this.lastUserWithBomb = this.userWithBomb;
-        this.userWithBomb = this.userWithBomb + 1;
-        if (this.userWithBomb > 2) {
-          this.userWithBomb = 0;
+    latestPage() {
+      this.page--;
+      this.specificChanges();
+    },
+    specificChanges() {
+      if (this.page == 2) {
+        if (this.lastuserTutorialWithBomb != 1) {
+          this.lastuserTutorialWithBomb = 1;
+          this.userTutorialWithBomb = 0;
         }
-        console.log(this.userWithBomb);
-        let userWithBomb = document.getElementById("user" + this.userWithBomb);
-        console.log(userWithBomb);
-        if (this.userWithBomb !== -1) {
-          let userBombpos = userWithBomb.getBoundingClientRect();
-          let objectAntElement = document.getElementById("bombContainer");
+        document.getElementById("pregunta").innerHTML = "2-2";
+        this.changeBombTutorial();
+
+      }
+
+      if (this.page == 3) {
+        if (document.getElementById("pregunta").innerHTML == "2-2") {
+          document.getElementById("resposta").value = "0";
+        }
+        setTimeout(() => {
+          this.lastuserTutorialWithBomb = 0;
+          this.userTutorialWithBomb = 1;
+          document.getElementById("pregunta").innerHTML = "2/2";
+          this.changeBombTutorial();
+          document.getElementById("resposta").value = "";
+          document.getElementById("bombCounter").innerHTML = "30";
+        }, 1000);
+
+      }
+      if (this.page == 4) {
+        document.getElementById("resposta").value = "1";
+        this.lives = 2;
+        setTimeout(() => {
+          document.getElementById("bombCounter").innerHTML = "25";
+          document.getElementById("pregunta").innerHTML = "3×2";
+          document.getElementById("resposta").value = "";
+        }, 1000);
+      }
+      if (this.page == 5) {
+        document.getElementById("shieldUser").classList.remove("shielduserTutorial");
+        document.getElementById("resposta").value = "7";
+        setTimeout(() => {
+          if(this.lives == 2){
+            this.lives--;
+          document.getElementById("bombCounter").innerHTML = "30";
+          document.getElementById("pregunta").innerHTML = "3×3";
+          document.getElementById("resposta").value = "";
+          this.hideButton();
+          }
+         
+        }, 1000);
+      }
+      if (this.page == 6) {
+        document.getElementById("shieldUser").classList.add("shielduserTutorial");
+        this.$emit('hButton');
+      }
+      if (this.page == 7) {
+        console.log("end");
+        this.$emit('sButton');
+      }
+
+    },
+    changeBombTutorial() {
+
+      console.log(this.lastuserTutorialWithBomb);
+      if (this.lastuserTutorialWithBomb !== this.userTutorialWithBomb) {
+        console.log(this.lastuserTutorialWithBomb, "!=", this.userTutorialWithBomb);
+        if (this.userTutorialWithBomb > 2) {
+          this.userTutorialWithBomb = 0;
+        }
+        console.log(this.userTutorialWithBomb);
+        let userTutorialWithBomb = document.getElementById("userTutorial" + this.userTutorialWithBomb);
+        console.log(userTutorialWithBomb);
+        if (this.userTutorialWithBomb !== -1) {
+          let userTutorialBombpos = userTutorialWithBomb.getBoundingClientRect();
+          let objectAntElement = document.getElementById("bombContainerTutorial");
 
           let objectAntpos = objectAntElement.getBoundingClientRect();
-          let userBombXAnt = objectAntpos.x;
-          let userBombYAnt = objectAntpos.y;
+          let userTutorialBombXAnt = objectAntpos.x;
+          let userTutorialBombYAnt = objectAntpos.y;
 
-          document.getElementById("bombContainer").style.setProperty("--xPositionAnt", userBombXAnt + "px");
-          document.getElementById("bombContainer").style.setProperty("--yPositionAnt", userBombYAnt + "px");
+          document.getElementById("bombContainerTutorial").style.setProperty("--xPositionAnt", userTutorialBombXAnt + "px");
+          document.getElementById("bombContainerTutorial").style.setProperty("--yPositionAnt", userTutorialBombYAnt + "px");
 
-          let userBombX = userBombpos.x + 100;
-          let userBombY = userBombpos.y;
+          let userTutorialBombX = userTutorialBombpos.x + 100;
+          let userTutorialBombY = userTutorialBombpos.y;
 
-          document.getElementById("bombContainer").style.setProperty("--xPosition", userBombX + "px");
-          document.getElementById("bombContainer").style.setProperty("--yPosition", userBombY + "px");
+          document.getElementById("bombContainerTutorial").style.top = userTutorialBombY + "px";
+          document.getElementById("bombContainerTutorial").style.left = userTutorialBombX + "px";
+          document.getElementById("bombContainerTutorial").style.setProperty("--xPosition", userTutorialBombX + "px");
+          document.getElementById("bombContainerTutorial").style.setProperty("--yPosition", userTutorialBombY + "px");
 
-          document.getElementById("bombContainer").classList.add("moveBomb");
+          document.getElementById("bombContainerTutorial").classList.add("moveBomb");
 
           setTimeout(() => {
-            document.getElementById("bombContainer").classList.remove("moveBomb");
+            document.getElementById("bombContainerTutorial").classList.remove("moveBomb");
           }, 800);
         }
       }
     },
 
+  },
+  mounted() {
+    this.changeBombTutorial();
   }
 }
 </script>
@@ -142,6 +229,8 @@ export default {
   --xPosition: 0;
   --yPosition: 0;
 }
+
+
 
 .explain {
   font-size: 2rem;
@@ -164,10 +253,11 @@ export default {
 .name {
   text-shadow: 2px 0 #000, -2px 0 #000, 0 2px #000, 0 -2px #000, 1px 1px #000, -1px -1px #000, 1px -1px #000, -1px 1px #000;
   color: white;
+  font-size: 1vw;
   font-family: Verdana, Geneva, Tahoma, sans-serif
 }
 
-.nameUser {
+.nameuserTutorial {
   color: #ffa500;
 }
 
@@ -178,10 +268,14 @@ html:lang(ar) {
 #background {
   background-image: url("../assets/backround2.png");
   background-repeat: no-repeat;
-  width: 100%;
-  height: 80%;
   background-size: cover;
   background-position: center;
+  height: 50vh;
+  width: 80%;
+  border-radius: 15px;
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .gameContainer>h3 {
@@ -200,7 +294,8 @@ html:lang(ar) {
   background-size: cover;
   box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
   border-radius: 20px;
-  width: 90%;
+  width: 50%;
+
 }
 
 #explosion {
@@ -209,11 +304,11 @@ html:lang(ar) {
 
 .gameContainer>input {
   width: 80%;
-  height: 5vh;
+  /* height: 5vh; */
   border-radius: 10px;
   border: 1px solid black;
   margin-bottom: 10px;
-  font-size: 1.5vw;
+  font-size: 1vw;
   font-weight: bold;
   color: black;
   filter: brightness(1);
@@ -227,7 +322,7 @@ html:lang(ar) {
   animation-direction: alternate;
 }
 
-#bombContainer {
+#bombContainerTutorial {
   position: absolute;
   top: var(--yPosition);
   left: var(--xPosition);
@@ -249,14 +344,14 @@ html:lang(ar) {
 
 .icon {
   border-radius: 50%;
-  width: 7vw;
+  width: 4vw;
   border: 1px solid black;
   background-color: blanchedalmond;
   margin: 0;
   box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
 }
 
-.user {
+.userTutorial {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -274,7 +369,7 @@ html:lang(ar) {
 
 .vidaContainer img {
   width: 40px;
-  height: 40px;
+  /* height: 40px; */
   margin-top: 5px;
 }
 
@@ -286,7 +381,7 @@ html:lang(ar) {
   display: grid;
   grid-template-areas: ". topleft topmid topright ." "leftmid . middle . rightmid" ". bottomleft bottommid bottomright .";
   width: 100%;
-  height: 100%;
+  height: 50vh;
   margin-left: auto;
   margin-right: auto;
 }
@@ -393,7 +488,7 @@ html:lang(ar) {
 }
 
 .bomb {
-  width: 10vw;
+  width: 5vw;
   animation-name: hunch;
   animation-duration: 1s;
   animation-iteration-count: infinite;
@@ -401,15 +496,15 @@ html:lang(ar) {
   position: absolute;
 }
 
-.bombCounter {
+#bombCounter {
   position: absolute;
-  top: 6vw;
-  left: 9.3vh;
+  top: 2.7vw;
+  left: 4.7vh;
   animation-name: hunch;
   animation-duration: 1s;
   animation-iteration-count: infinite;
   animation-direction: alternate;
-  font-size: 1.2rem;
+  font-size: 0.78rem;
   font-weight: bold;
   color: red;
   text-shadow: 2px 0 #000, -2px 0 #000, 0 2px #000, 0 -2px #000, 1px 1px #000, -1px -1px #000, 1px -1px #000, -1px 1px #000;
@@ -462,11 +557,11 @@ html:lang(ar) {
   z-index: 100;
 }
 
-.shieldUser {
-  background-image: url('../assets/shield-user.png');
+.shielduserTutorial {
+  background-image: url('../assets/shield-userTutorial.png');
   background-size: cover;
-  width: 7vw;
-  height: 7vw;
+  width: 4vw;
+  /* height: 7vw; */
   animation-name: fadeOut;
   animation-duration: 1s;
   animation-iteration-count: infinite;
@@ -496,10 +591,6 @@ html:lang(ar) {
   align-items: center;
 }
 
-.victoria {
-  width: 7vw;
-  margin-right: 2vw;
-}
 
 button {
   background-color: green;
@@ -550,29 +641,11 @@ button {
   grid-template-columns: 1fr 1fr;
 }
 
-#myModal {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#modal-victory {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#modal-derrota {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
 .explanationSection {
-  display: flex;
-  justify-content: space-between;
+  width: 100%;
+  height: 50vh;
 }
-
 
 .explanationColumn,
 .explanationColumn2 {
@@ -650,8 +723,12 @@ button {
   left: 0;
   top: 0;
   width: 100%;
-  height: 100%;
+  height: 80%;
   background-color: rgba(0, 0, 0, 0.7);
+}
+
+.tutorial {
+  width: 100% !important;
 }
 
 .modal-tutorial-content {
@@ -660,32 +737,6 @@ button {
   border-radius: 15px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   max-width: 80%;
-}
-
-.modal-victoria {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
-}
-
-.modal-derrota {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
 }
 
 @keyframes hunch {
@@ -698,11 +749,11 @@ button {
   }
 }
 
-.userWithBomb {
+.userTutorialWithBomb {
   border: 4px solid #3772FF;
 }
 
-.userWithout {
+.userTutorialWithout {
   filter: grayscale(30%);
   /* opacity: 0.7; */
 }

@@ -63,7 +63,6 @@ function findOpenGame(lobby) {
 function findFirstPublicLobby() {
     let returnData = null;
     lobbies.forEach(lobby => {
-        console.log("ESTA", lobby.games[0].users);
         if (!lobby.private) {
             returnData = lobby;
         }
@@ -334,7 +333,7 @@ function respostaIncorrectaUsuariCorrecte(roomIndex, userWithBomb, gameRooms) {
     }
 }
 
-function respostaIncorrectaUsuariIncorrecte(roomIndex, userWithBomb, roomEnviada, gameRooms) {
+function respostaIncorrectaUsuariIncorrecte(roomIndex, userWithBomb, roomEnviada, gameRooms, socket) {
 
     if (gameRooms[roomIndex].idGame == roomEnviada) {
         console.log("resposta incorrecta!");
@@ -353,7 +352,7 @@ function respostaIncorrecta(roomIndex, userWithBomb, gameRooms, socket) {
         respostaIncorrectaUsuariCorrecte(roomIndex, userWithBomb, gameRooms);
     } else {
         if (!gameRooms[roomIndex].shieldUser) {
-            respostaIncorrectaUsuariIncorrecte(roomIndex, userWithBomb, gameRooms[roomIndex].idGame, gameRooms);
+            respostaIncorrectaUsuariIncorrecte(roomIndex, userWithBomb, gameRooms[roomIndex].idGame, gameRooms, socket);
         }
     }
 
@@ -632,6 +631,7 @@ io.on('connection', (socket) => {
         let userWithBomb = getUserWithBomb(roomIndex, gameRooms);
         if (data.resposta !== "") {
             if (resultatPregunta == data.resposta) {
+                console.log("Correcte", userWithBomb);
                 respostaCorrecta(roomIndex, userWithBomb, gameRooms, socket);
             } else {
                 respostaIncorrecta(roomIndex, userWithBomb, gameRooms, socket);

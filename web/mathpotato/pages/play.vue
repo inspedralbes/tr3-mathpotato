@@ -25,8 +25,10 @@
             <div id="middle">
                 <div id="myModal" class="modal-tutorial" v-show="!gameStarted && userPantalla.tutorial">
                     <div class="modal-tutorial-content">
-                        <tutorial></tutorial>
-                        <Button @click="ocultarModal" id="ocultarModal">ACEPTAR!</Button>
+                        <div class="tutorialContent">
+                            <tutorial @hButton="hideButton" @sButton="showButton"/>
+                        </div>
+                        <Button @click="ocultarModal" id="ocultarModal" v-if="showStartButton">ACEPTAR!</Button>
                     </div>
 
                 </div>
@@ -256,6 +258,17 @@ export default {
             return store.setGameStarted(true);
 
         },
+        handleTryEvent() {
+            console.log("try");
+        },
+        showButton() {
+            console.log('AAAAAAAAAAAAAAAAAAA');
+            this.showStartButton = true;
+        },
+        hideButton() {
+            console.log('PENE');
+            this.showStartButton = false;
+        },
         getId(index) {
             let size = this.users.length;
             // console.log(size);
@@ -359,7 +372,9 @@ export default {
             }
         },
         findUsersWithBomb() {
-            return this.users.findIndex(user => user.bomba === true);
+            let user=this.users.findIndex(user => user.bomba === true);
+            console.log(user);
+            return user;
         },
     },
     mounted() {
@@ -379,6 +394,13 @@ export default {
     --yPositionAnt: 0;
     --xPosition: 0;
     --yPosition: 0;
+}
+
+.tutorialContent {
+    display: block;
+    width: 100%;
+    height: 90%;
+    
 }
 
 .buttonRed {
@@ -889,10 +911,11 @@ button {
 .modal-tutorial-content {
     background-color: #f8f9fa;
     padding: 30px;
-    height: 80vh;
+    height: 80%;
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
     max-width: 80%;
+    width: 80%;
 }
 
 .modal-victoria {
