@@ -10,11 +10,13 @@
                         </div>
                     </div>
                     <div class="container-select">
-                        <select class="despegable-modes" v-model="selectedMode">
-                            <option v-for="(lobby_mode, index) in lobbies" :key="index" :value="mode">
-                                {{ lobby_mode.mode }}
-                            </option>
-                        </select>
+                        <div class="card flex justify-content-center select-modes">
+                            <FloatLabel class="w-full md:w-20rem">
+                                <MultiSelect id="ms-cities" v-model="selectedModes" :options="modes" optionLabel="name" :maxSelectedLabels="3" class="w-full" />
+                                <label for="ms-cities">Modes</label>
+                            </FloatLabel>
+                        </div>
+
                     </div>
                 </div>
                 <div class="content-public-room">
@@ -98,9 +100,10 @@
                     <label for="ingredient2" class="text-radiobutton">Private</label>
                 </div>
                 <Divider type="solid" />
-                <div class="flex justify-content-end gap-2 button-modal">
-                    <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
-                    <Button type="button" label="Save" @click="visible = false"></Button>
+            <div class="flex justify-content-end gap-2 button-modal">
+                <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
+                <Button type="button" label="Save" @click="visible = false"></Button>
+                
                 </div>
             </Dialog>
         </div>
@@ -120,11 +123,15 @@ export default {
     data() {
         return {
             privateRoomCode: "",
-            selectedMode: "",
+            selectedModes: null,
             showModalConfig: false,
             btnRefresh: false,
             ingredient: '',
-            visible: false
+            visible: false,
+            modes: [
+                { name: 'puteo'},
+                { name: 'default'}
+            ]
         };
     },
     computed: {
@@ -136,6 +143,11 @@ export default {
             let store = useAppStore();
             return store.getLobbiesName();
         },
+        updateLobbies(){
+            let store = useAppStore();
+            return store.updateLobbies();  
+        }
+        
     },
     methods: {
         createPrivateRoom() {
@@ -153,6 +165,7 @@ export default {
             // Logic to refresh the public rooms
 
         },
+        
     },
 };
 </script>
@@ -185,6 +198,8 @@ body {
     transition: outline-color 0.3s;
     color: var(--text-color);
 }
+
+
 
 .btn-refresh{
     top: 25%;
@@ -279,11 +294,11 @@ body {
     padding: 20px;
 }
 
-/* .container-select {
+ .container-select {
     display: flex;
     align-items: center;
-    width: 20%;
-} */
+    width: 22%;
+} 
 
 .input-container {
     display: flex;

@@ -4,28 +4,7 @@ export const useAppStore = defineStore('app', {
     state: () => ({
         lobbies: [
             { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
-
+            { nameLobby: 'lobby1', mode: 'default', waitUntilFull: false, numUser: 0 },
         ],
         infoGame: {
             rooms: {
@@ -79,14 +58,18 @@ export const useAppStore = defineStore('app', {
             this.lobbies[0].numUser = 20;
 
         },
-        setModesConfigGame(modes) {
+        setModes(modes) {
             this.lobbies[0].mode = modes;
         },
-        getModesConfigGame() {
+        getModes() {
             return this.lobbies[0].mode;
         },
         getLobbiesName() {
             return this.lobbies;
+        },
+        updateLobbies(lobbies) {
+            this.lobbies[0].nameLobby = lobbies;
+            this.lobbies[0].mode = lobbies;
         },
         setRoomName(roomGame) {
             this.infoGame.rooms.gameRooms[0].roomName = roomGame;
