@@ -4,7 +4,23 @@ export const useAppStore = defineStore('app', {
     state: () => ({
         lobbies: [
             { nameLobby: 'lobby1', mode: 'puteo', waitUntilFull: false, numUser: 0 },
-            { nameLobby: 'lobby1', mode: 'default', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby2', mode: 'default', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby3', mode: 'puteo', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby4', mode: 'default', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby5', mode: 'puteo', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby6', mode: 'default', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby7', mode: 'puteo', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby8', mode: 'default', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby9', mode: 'puteo', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby10', mode: 'default', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby11', mode: 'puteo', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby12', mode: 'default', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby13', mode: 'puteo', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby14', mode: 'default', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby15', mode: 'puteo', waitUntilFull: false, numUser: 0 },
+            { nameLobby: 'lobby16', mode: 'default', waitUntilFull: false, numUser: 0 },
+
+
         ],
         infoGame: {
             rooms: {

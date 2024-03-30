@@ -33,16 +33,10 @@
                                 }" 
                                 class="custom-scroll-panel"
                             >
-                                <ul>
-                                <button 
-                                    class="btn-list-salas" 
-                                    v-for="(lobby, index) in lobbies" 
-                                    :key="index"
-                                    @click="joinPublicRoom(lobby)"
-                                >
-                                    {{ lobby.nameLobby }} | {{ lobby.mode }}
-                                </button>
-                                </ul>
+                            <div class="card flex justify-content-center">
+                                <Listbox v-model="selectedLobby" :options="lobbies" filter optionLabel="nameLobby" class="w-full md:w-14rem" />
+                            </div>
+
                             </ScrollPanel>  
                             </div>
                         <div class="card">
@@ -124,6 +118,7 @@ export default {
         return {
             privateRoomCode: "",
             selectedModes: null,
+            selectedLobby: null,
             showModalConfig: false,
             btnRefresh: false,
             ingredient: '',
