@@ -33,14 +33,15 @@
                                 }" 
                                 class="custom-scroll-panel"
                             >
-                            <div class="card flex justify-content-center">
-                                <Listbox v-model="selectedLobby" :options="lobbies" filter optionLabel="nameLobby" class="w-full md:w-14rem" />
+                            <div class="card flex justify-content-center" id="div-lobbies">
+                                <Listbox v-model="selectedLobby" @click="showJoinLobby = true" :options="lobbies" filter optionLabel="nameLobby" class="w-full md:w-14rem" id="info_lobby" />
+                                
                             </div>
 
                             </ScrollPanel>  
                             </div>
                         <div class="card">
-                            <Paginator :rows="10" :total-records="lobbies.length" ></Paginator>
+                            <Paginator :rows="5" :total-records="lobbies.length" ></Paginator>
                         </div>
                     </div>
                     </div>
@@ -77,7 +78,10 @@
                 </div>
             </div>
             
+            
         </div>
+        
+        
         <div class="card flex justify-content-center">
             <Dialog v-model:visible="visible" modal header="Config Game" :style="{ width: '25rem' }">
                 <span class="p-text-secondary block mb-5">Update your information.</span>
@@ -102,8 +106,26 @@
             </Dialog>
         </div>
         
+       
 
+        
+
+                <!-- Resto del código -->
+            
     </div>
+    <div class="container-join-room-public">
+        <div v-show="showJoinLobby && selectedLobby" class="card flex justify-content-center btn-join-lobby-public">
+            <div class="container-join-public-room">
+                <div class="flex justify-content-center">
+                    <span v-if="selectedLobby && selectedLobby.nameLobby">{{ selectedLobby.nameLobby }}</span>
+                    <Button label="Join" @click="joinPublicRoom" class="" />
+                    <Button label="X" class="" @click="showJoinLobby = false" />
+                </div>
+
+            </div>
+        </div>
+    </div>
+    
     
     
 </template>
@@ -118,10 +140,11 @@ export default {
         return {
             privateRoomCode: "",
             selectedModes: null,
-            selectedLobby: null,
+            selectedLobby: {},
             showModalConfig: false,
             btnRefresh: false,
             ingredient: '',
+            showJoinLobby: false,
             visible: false,
             modes: [
                 { name: 'puteo'},
@@ -152,6 +175,9 @@ export default {
             this.showModalConfig = true;
         },
         joinPublicRoom() {
+            if(this.selectedLobby){
+
+            }
             // Logic to join a public room
             // socket.emit('join', { username: this.users.username, image: this.users.image, email: this.users.email})
             // this.$router.push({ path: '/play'});
@@ -194,7 +220,18 @@ body {
     color: var(--text-color);
 }
 
+.btn-join-lobby-public{
+    /* margin-top: 700px; */
 
+}
+
+.container-join-room-public{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 13vh;
+}
 
 .btn-refresh{
     top: 25%;
@@ -256,10 +293,11 @@ body {
 }
 
 .container-principal {
+    margin: auto;
     display: flex;
     justify-content: center; 
     align-items: center; 
-    height: 100vh;
+    height: 87vh;
     padding-right: 20px;
     padding-left: 20px;
     background-image: url('../assets/Banner.png');
@@ -273,13 +311,14 @@ body {
     justify-content: space-between;
     width: 100%;
     max-width: 1200px;
-    margin-top: 20px;
+    margin-top: 80px;
+    max-height: 80vh;
 
 }
 
 .container-public-room,
 .container-join-room {
-    width: 93%;
+    width: 95%;
     justify-content: center;
     align-items: center;
     background-color: #FFFFFF;
@@ -317,7 +356,8 @@ body {
 .container-join-room{
     border-left: 10px solid #6C5CE7;
     justify-content: center;
-    align-items: center
+    align-items: center;
+    margin-top: 60px;
 }
 
 
