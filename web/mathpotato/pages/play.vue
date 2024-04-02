@@ -11,78 +11,67 @@
                         <img :src="'./_nuxt/assets/Icon_' + user.image + '.png'" alt="image" class="icon"
                             :class="[user.bomba ? 'userWithBomb' : 'userWithout', user.bomba && escudo.activated ? 'shieldUser' : '']"
                             :style="{ 'background-color': user.background }">
-                            
-                        <div id="shieldUser" :class="[escudo.shieldUser] ? '' : 'hidden' "></div>
+
+                        <div id="shieldUser" :class="[escudo.shieldUser] ? '' : 'hidden'"></div>
                     </div>
-                    
+
                     <p class="name" :class="[user.id == this.userPantalla.id ? 'nameUser' : '']">{{ user.username }}</p>
                 </div>
             </div>
             <div id="bombContainer" :class="[gameStarted ? '' : 'hidden']"><img src="@/assets/lePotata.png" alt=""
                     class="bomb" id="bomb"><span class="bombCounter">{{ timer }}</span></div>
-                    
+
 
             <div id="middle">
                 <div id="myModal" class="modal-tutorial" v-show="!gameStarted && userPantalla.tutorial">
                     <div class="modal-tutorial-content">
-                        <div class="explanationSection">
-                            <div class="explanationColumn">
-                                <h2>Si tens la bomba</h2>
-                                <img src="@/assets/Icon_1.png" class="jugador">
-                                <img src="@/assets/LePotata.png" alt="" class="bombIniciar">
-                                <p class="name">Usuari 1</p>
-                                <p>Has de contestar bé a la pregunta o abans que es termini el temps de la bomba, sinó,
-                                    perdràs una vida. Tens un total de 2 vides més una extra. Ves amb compte, la gent et pot
-                                    restar temps i canviar la pregunta.</p>
-                            </div>
-
-                            <div class="explanationColumn2">
-                                <h2>Si no tens la bomba</h2>
-                                <img src="@/assets/Icon_1.png">
-                                <p class="name">Usuari 2</p>
-                                <p>Pots contestar les preguntes per restar temps a l'usuari que té la bomba. Ves amb compte,
-                                    si contestes malament, rebràs la bomba.</p>
-                            </div>
+                        <div class="tutorialContent">
+                            <tutorial @hButton="hideButton" @sButton="showButton"/>
                         </div>
-                        <Button @click="ocultarModal()" label="ACEPTAR!" id="ocultarModal" />
+                        <Button @click="ocultarModal" id="ocultarModal" v-if="showStartButton">ACEPTAR!</Button>
                     </div>
-                    
+
                 </div>
-                <div :class="[gameStarted && userPantalla.tutorial ? '' : 'hidden']" class="gameContainer" v-show="gameStarted">
+                <div :class="[gameStarted && userPantalla.tutorial ? '' : 'hidden']" class="gameContainer"
+                    v-show="gameStarted">
                     <h3>{{ message.pregunta }}</h3>
                     <!-- <div>{{ socket }}</div> -->
-                    <input :disabled="escudo.activated && user !== users[findUsersWithBomb()].id" type="text" name="resposta" id="resposta" @keyup.enter="enviarResposta" v-model="respuesta"
-                    @input="limitarANumeros">
+                    <input :disabled="escudo.activated && user !== users[findUsersWithBomb()].id" type="text"
+                        name="resposta" id="resposta" @keyup.enter="enviarResposta" v-model="respuesta"
+                        @input="limitarANumeros">
                     <!-- <Button @click="enviarResposta" icon="pi pi-check" aria-label="Submit" /> -->
                 </div>
                 <div id="modal-victory" class="modal-victoria" v-show="userPantalla.win">
                     <div class="modal-victoria-content">
                         <img src="@/assets/victory.png" alt="Patata Ganadora" style="width: 250px; height: 200px;">
                         <!-- <p class="victory-text">Victoria</p> -->
-                        <Button @click="replay" >Volver a jugar</Button>
+                        <Button @click="replay">Volver a jugar</Button>
                     </div>
                 </div>
                 <div id="modal-victory" class="modal-victoria" v-show="userPantalla.lost">
                     <div class="modal-victoria-content">
                         <img src="@/assets/defeat.png" alt="Patata Perdedora" style="width: 250px; height: 200px;">
                         <!-- <p class="victory-text">Derrota</p> -->
-                        <Button @click="replay" >Volver a Jugar</Button>
+                        <Button @click="replay">Volver a Jugar</Button>
                     </div>
                 </div>
-                <div id="ModalWaiting" class="modal-tutorial" v-show="!gameStarted && !userPantalla.tutorial && this.showWaitingModal">
+                <div id="ModalWaiting" class="modal-tutorial"
+                    v-show="!gameStarted && !userPantalla.tutorial && this.showWaitingModal">
                     <div class="modal-tutorial-content ">
                         <div class="List">
                             <div v-for="user in users">
                                 <div class="ListItem">
                                     <img :src="'./_nuxt/assets/Icon_' + user.image + '.png'" alt="image" class="icon"
-                                    :style="{ 'background-color': user.background }">
+                                        :style="{ 'background-color': user.background }">
                                     <div>{{ user.username }}</div>
-                                    <div v-if="user.hasClickedStart">Ready</div><div v-else>NotReady</div>
+                                    <div v-if="user.hasClickedStart">Ready</div>
+                                    <div v-else>NotReady</div>
                                 </div>
                             </div>
                         </div>
-                        <div v-if="countdown>-2">{{ countdown }}</div>
-                        <Button @click="startGame" id="startGameButton" :disabled="users.length <= 2" :class="[gameStarted ? 'hidden' : '']">READY!</Button>
+                        <div v-if="countdown > -2">{{ countdown }}</div>
+                        <Button @click="startGame" id="startGameButton" :disabled="users.length <= 2"
+                            :class="[gameStarted ? 'hidden' : '']">READY!</Button>
                     </div>
                 </div>
             </div>
@@ -116,7 +105,7 @@ export default {
     },
 
     computed: {
-        countdown(){
+        countdown() {
             let store = useAppStore();
             return store.getCountdown();
         },
@@ -128,7 +117,7 @@ export default {
             let store = useAppStore();
             return store.getRespostaAnterior();
         },
-        escudo(){
+        escudo() {
             let store = useAppStore();
             return store.getShieldUser();
         },
@@ -148,7 +137,7 @@ export default {
             let store = useAppStore();
             return store.getGameStarted();
         },
-        explodes(){
+        explodes() {
             let store = useAppStore();
             return store.getExplodes();
         }
@@ -178,20 +167,20 @@ export default {
             handler() {
                 if (this.explodes) {
                     this.explosion()
-                    
+
                 }
             }
-            
+
         }
     },
     methods: {
-        explosion(){
+        explosion() {
             document.getElementById("bomb").src = "/_nuxt/assets/Explosion.gif";
             setTimeout(() => {
                 document.getElementById("bomb").src = "/_nuxt/assets/lePotata.png";
                 useAppStore().setExplodes(false);
-            }, 2000/2);
-},
+            }, 2000 / 2);
+        },
         closeModal() {
             this.showModal = false;
         },
@@ -203,7 +192,7 @@ export default {
             this.showWaitingModal = true;
             this.showStartButton = true;
             socket.emit('join', { "username": this.userPantalla.username, "image": this.userPantalla.image, "email": this.userPantalla.email, "tutorial": this.userPantalla.tutorial });
-            
+
         },
         goBack() {
             this.$router.push({ name: '/' });
@@ -219,19 +208,19 @@ export default {
         },
         ocultarModal() {
             this.showModal = false;
-            this.userPantalla.tutorial = false;   
+            this.userPantalla.tutorial = false;
 
         },
         async startGame() {
             let store = useAppStore();
-            this.hasClickedStart= !this.hasClickedStart;
-            let gameButton=document.getElementById("startGameButton");
-            if(this.hasClickedStart){
-                gameButton.innerHTML ="Cancel";
+            this.hasClickedStart = !this.hasClickedStart;
+            let gameButton = document.getElementById("startGameButton");
+            if (this.hasClickedStart) {
+                gameButton.innerHTML = "Cancel";
                 gameButton.classList.add("buttonRed");
                 gameButton.classList.remove("buttonGreen");
-            }else{
-                gameButton.innerHTML ="Ready!";
+            } else {
+                gameButton.innerHTML = "Ready!";
                 gameButton.classList.add("buttonGreen");
                 gameButton.classList.remove("buttonRed");
             }
@@ -268,6 +257,17 @@ export default {
             // Realizar otras acciones necesarias para el usuario (puede que no sea necesario en este punto)
             return store.setGameStarted(true);
 
+        },
+        handleTryEvent() {
+            console.log("try");
+        },
+        showButton() {
+            console.log('AAAAAAAAAAAAAAAAAAA');
+            this.showStartButton = true;
+        },
+        hideButton() {
+            console.log('PENE');
+            this.showStartButton = false;
         },
         getId(index) {
             let size = this.users.length;
@@ -336,7 +336,7 @@ export default {
                     }
             };
         },
-        
+
         async changeBomb() {
             await this.$nextTick(); // Espera hasta que el componente se haya renderizado completamente
             console.log(this.lastUserWithBomb);
@@ -372,7 +372,9 @@ export default {
             }
         },
         findUsersWithBomb() {
-            return this.users.findIndex(user => user.bomba === true);
+            let user=this.users.findIndex(user => user.bomba === true);
+            console.log(user);
+            return user;
         },
     },
     mounted() {
@@ -394,12 +396,21 @@ export default {
     --yPosition: 0;
 }
 
-.buttonRed{
+.tutorialContent {
+    display: block;
+    width: 100%;
+    height: 90%;
+    
+}
+
+.buttonRed {
     background-color: #ED1C2F;
 }
-.buttonGreen{
+
+.buttonGreen {
     background-color: #4CAF50;
 }
+
 .hidden {
     display: none;
 }
@@ -445,9 +456,11 @@ html:lang(ar) {
     border-radius: 20px;
     width: 90%;
 }
-#explosion{
+
+#explosion {
     width: 10vw;
 }
+
 .gameContainer>input {
     width: 80%;
     height: 5vh;
@@ -679,7 +692,7 @@ html:lang(ar) {
     align-items: center;
 }
 
-.modal-victoria-content{
+.modal-victoria-content {
     width: 35vw;
     text-align: center;
     display: flex;
@@ -688,7 +701,7 @@ html:lang(ar) {
     justify-content: center;
 }
 
-.modal-derrota-content{
+.modal-derrota-content {
     width: 35vw;
     background-color: #FCB6BE;
     padding: 15px;
@@ -705,6 +718,9 @@ html:lang(ar) {
 
 .shieldUser {
     background-image: url('../assets/shield-user.png');
+    background-size: cover;
+    width: 7vw;
+    height: 7vw;
     animation-name: fadeOut;
     animation-duration: 1s;
     animation-iteration-count: infinite;
@@ -715,6 +731,7 @@ html:lang(ar) {
     0% {
         opacity: 1;
     }
+
     100% {
         opacity: 0;
     }
@@ -776,13 +793,13 @@ button {
     color: #000;
 }
 
-.ListItem{
+.ListItem {
     display: grid;
     place-items: center;
     grid-template-columns: 1fr 1fr 1fr;
 }
 
-.List{
+.List {
     display: grid;
     grid-template-columns: 1fr 1fr;
 }
@@ -861,7 +878,7 @@ button {
     transition: background-color 0.3s;
 }
 
-#goBackButton{
+#goBackButton {
     margin-top: 2vh;
     background-color: #ED1C2F;
     padding: 15px 25px;
@@ -894,12 +911,14 @@ button {
 .modal-tutorial-content {
     background-color: #f8f9fa;
     padding: 30px;
+    height: 80%;
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
     max-width: 80%;
+    width: 80%;
 }
 
-.modal-victoria{
+.modal-victoria {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -912,7 +931,7 @@ button {
     background-color: rgba(0, 0, 0, 0.7);
 }
 
-.modal-derrota{
+.modal-derrota {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -947,42 +966,44 @@ button {
 /*VICTORY & DEFEAT */
 
 @keyframes growAndBlink {
-  0% {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.5);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1.3);
-    opacity: 0.8;
-  }
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1.3);
+        opacity: 0.8;
+    }
 }
 
 .modal-victoria-content img {
-  animation: growAndBlink 2.5s ease-in-out infinite;
+    animation: growAndBlink 2.5s ease-in-out infinite;
 }
 
 @keyframes slideIn {
-  0% {
-    transform: scale(1);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1.5);
-    opacity: 1;
-  }
+    0% {
+        transform: scale(1);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1.5);
+        opacity: 1;
+    }
 }
 
 .victory-text {
-  font-size: 24px;
-  color: #ffffff;
-  text-align: center;
-  animation: slideIn 2.5s ease-in-out infinite;
+    font-size: 24px;
+    color: #ffffff;
+    text-align: center;
+    animation: slideIn 2.5s ease-in-out infinite;
 }
 
 /* MODAL TUTORIAL */
-
 </style>

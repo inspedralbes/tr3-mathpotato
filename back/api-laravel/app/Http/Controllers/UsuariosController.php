@@ -60,7 +60,8 @@ class usuariosController extends Controller
                     'status' => 1,
                     'username' => $usuario->username,
                     'email' => $usuario->email,
-                    'foto_perfil' => $usuario->foto_perfil
+                    'foto_perfil' => $usuario->foto_perfil,
+                    'tutorial' => $usuario->tutorial
                 ]);
             } else {
                 return response()->json([
@@ -118,7 +119,11 @@ class usuariosController extends Controller
         $request->validate([
             'email' => 'required|string|email',
         ]);
+        
         $usuario = Usuarios::where("email", "=", $request->email)->first();
+        if($usuario->tutorial == 1){
+            $usuario->tutorial = 0;
+        }
         $usuario->num_derrotas = $usuario->num_derrotas + 1;
         $usuario->save();
         return response()->json([
@@ -133,6 +138,9 @@ class usuariosController extends Controller
             'email' => 'required|string|email',
         ]);
         $usuario = Usuarios::where("email", "=", $request->email)->first();
+        if($usuario->tutorial == 1){
+            $usuario->tutorial = 0;
+        }
         $usuario->num_victorias = $usuario->num_victorias + 1;
         $usuario->save();
         return response()->json([

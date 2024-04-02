@@ -11,7 +11,7 @@ socket.on("usersConnected", (usersConnected, roomName) => {
     console.log("*Conectado al servidor*", usersConnected);
     console.log('Sala de juego: ', roomName);
     const store = useAppStore();
-
+    
     // Establece el array de usuarios en Pinia
     store.setUsers(usersConnected);
     store.setRoomName(roomName);
@@ -45,7 +45,13 @@ socket.on("gameStarted", (gameStarted) => {
     store.setGameStarted(gameStarted);
 
 });
+socket.on("salas", (salas) => {
+    console.log('Salas: ', salas);
+    const store = useAppStore();
+    store.setSalas(salas);
 
+    // CAMBIA ESTO SI LOS NOMBRES SON INCORRECTOS
+});
 socket.on("pregunta", (pregunta) => {
     console.log("pregunta -> ", pregunta);
     const store = useAppStore();
