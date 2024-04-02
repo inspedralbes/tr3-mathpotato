@@ -256,7 +256,7 @@ function respostaCorrectaUsuariCorrecte(roomIndex, userWithBomb, gameRooms) {
     }
     gameRooms[roomIndex].timer = gameRooms[roomIndex].timerAnterior;
     console.log("users in room -> ", gameRooms[roomIndex].users);
-    io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
+    io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes":false });
 }
 
 function respostaCorrectaUsuariIncorrecte(roomIndex, userWithBomb, gameRooms) {
@@ -264,7 +264,7 @@ function respostaCorrectaUsuariIncorrecte(roomIndex, userWithBomb, gameRooms) {
     console.log("resposta correcta!");
     gameRooms[roomIndex].users[userWithBomb].bomba = true;
     gameRooms[roomIndex].timer -= 10;
-    io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
+    io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes":false });
 }
 
 async function addToRanking(email) {
@@ -319,7 +319,7 @@ function UserHasNoLives(roomIndex, userWithBomb, roomToEliminate, gameRooms) {
         gameRooms.splice(roomToEliminate, 1);
     } else {
         if (gameRooms[roomIndex].users.length > 1) {
-            io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
+            io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes":false });
         }
 
     }
@@ -335,7 +335,7 @@ function respostaIncorrectaUsuariCorrecte(roomIndex, userWithBomb, gameRooms) {
         UserHasNoLives(roomIndex, userWithBomb, gameRooms[roomIndex], gameRooms);
     }
     if (gameRooms[roomIndex] && gameRooms[roomIndex].users.length > 1 && gameRooms[roomIndex].idGame == check) {
-        io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
+        io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes":true });
     }
 }
 
@@ -349,7 +349,7 @@ function respostaIncorrectaUsuariIncorrecte(roomIndex, userWithBomb, roomEnviada
         console.log(gameRooms[roomIndex].users[userWithBomb].bomba);
         let userBombN = gameRooms[roomIndex].users.findIndex(user => user.id === socket.id);
         gameRooms[roomIndex].users[userBombN].bomba = true;
-        io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
+        io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes":false });
     }
 }
 function respostaIncorrecta(roomIndex, userWithBomb, gameRooms, socket) {
