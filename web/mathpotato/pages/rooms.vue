@@ -1,4 +1,16 @@
 <template>
+        <div class="card">
+        <Toolbar style="border-radius: 3rem; padding: 1rem 1rem 1rem 1.5rem">
+            
+            <template #end>
+                <div class="flex align-items-center gap-3 navbar">
+                    <!-- <Button label="Share" severity="contrast" size="small" /> -->
+                    <Button v-if="guest.email" label="login" @click="login()" severity="contrast" size="small" style="right: 20px; bottom: 3px;" />
+                    <Avatar v-badge.danger="10" class="p-overlay-badge" icon="pi pi-user" size="large" style="cursor: pointer; "/>
+                </div>
+            </template>
+        </Toolbar>
+    </div>
     <div class="container-principal">
         <!-- Public Rooms -->
         <div class="rooms-container">
@@ -41,12 +53,12 @@
 
                             </ScrollPanel>  
                             </div>
-                        <div class="card">
-                            <Button label="Jugar rapido!" @click="playfast" />
-                        </div>
-                        <div class="card">
-                            <Paginator :rows="5" :total-records="lobbies.length" ></Paginator>
-                        </div>
+                            <div class="card">
+                                <Paginator :rows="5" :total-records="lobbies.length" ></Paginator>
+                            </div>
+                            <div class="card">
+                                <Button label="Jugar rapido!" @click="playfast" />
+                            </div>
                     </div>
                     </div>
                 </div>
@@ -57,7 +69,6 @@
         <div class="container-join-room">
             <div class="card flex justify-content-center">
                 <div class="flex flex-column align-items-center code">
-                    <Button v-if="guest.email" label="login" @click="login()" />
                     <div class="font-bold text-xl mb-2 text-join-room">Pon el codigo para unirte!</div>
                     <InputOtp v-model="value" :length="6" style="gap: 0; justify-content: center; padding: 20px;" >
                         <template #default="{ attrs, events, index }">
@@ -283,6 +294,15 @@ body {
 
 }
 
+.btn-login{
+    cursor: pointer;
+}
+
+.navbar{
+    /* padding: 10px; */
+    padding-right: 30px;
+}
+
 .container-join-room-public{
     width: 100%;
     display: flex;
@@ -346,6 +366,9 @@ body {
 
 .container-header{
     padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: right;
     /* flex-direction: column; */
 
 }
