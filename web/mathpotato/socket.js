@@ -11,10 +11,9 @@ socket.on("usersConnected", (usersConnected, roomName) => {
     console.log("*Conectado al servidor*", usersConnected);
     console.log('Sala de juego: ', roomName);
     const store = useAppStore();
-    
+
     // Establece el array de usuarios en Pinia
     store.setUsers(usersConnected);
-    store.setRoomName(roomName);
     store.setUsersInRoom(usersConnected);
     store.setRespostaAnterior(true);
 });
@@ -52,6 +51,7 @@ socket.on("salas", (salas) => {
 
     // CAMBIA ESTO SI LOS NOMBRES SON INCORRECTOS
 });
+
 socket.on("pregunta", (pregunta) => {
     console.log("pregunta -> ", pregunta);
     const store = useAppStore();
@@ -122,6 +122,8 @@ socket.on("updateRanking", (ranking) => {
 
 socket.on("userDataUpdate", (data) => {
     const store = useAppStore();
-    console.log(data)
-    store.setGuestInfo(data);
+    console.log("XOMINO", data.game)
+    store.setGuestInfo(data.user);
+    store.setRoomName(data.game);
+    console.log();
 });

@@ -112,7 +112,7 @@ export default {
     watch: {
         error() {
             if (this.error == 1) {
-                this.$router.push({ path: '/home-user' })
+                this.$router.push({ path: '/rooms' })
             } else {
                 alert('Invalid credentials. Please try again.');
             }

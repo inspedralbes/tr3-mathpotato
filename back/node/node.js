@@ -71,7 +71,10 @@ function findFirstPublicLobby() {
 }
 
 function createLobby(data, socket) {
-    lobbies.push({ "id": makeid(6), "nameLobby": data.name, "games": [], "mode": data.mode, "private": data.private, "leader": socket.id, "WaitUntilFull": data.WaitUntilFull, "uniqueIndicator": 0 });
+    console.log("createLobby");
+    let publicLobby = data.private == "false" ? false : true;
+    lobbies.push({ "id": makeid(6), "nameLobby": data.name, "games": [], "mode": data.mode, "private": publicLobby, "leader": socket.id, "WaitUntilFull": data.WaitUntilFull, "uniqueIndicator": 0 });
+    return lobbies[lobbies.length - 1];
 }
 
 function joinLobby(lobby, socket, data) {
@@ -113,24 +116,24 @@ async function getUser(data, socket) {
         }
         );
         const responseData = await response.json();
-        console.log(responseData.status,"==",1);
+        console.log(responseData.status, "==", 1);
         if (responseData.status === 1) {
             let returnData = responseData;
             returnData.id = socket.id;
             returnData.image = responseData.foto_perfil;
             returnData.username = responseData.username;
             returnData.email = responseData.email;
-            if(responseData.tutorial === 1){
+            if (responseData.tutorial === 1) {
                 returnData.tutorial = true;
             }
-            else{
+            else {
                 returnData.tutorial = false;
             }
             returnData.status = 1;
             socket.emit('loginSuccess', returnData);
 
             // console.log("response.ok....", responseData);
-            
+
             return returnData;
         } else {
             // console.log("response.Notok....", responseData);
@@ -449,7 +452,6 @@ function findLobbieBySocketId(socketId) {
         });
     });
     return rooms;
-
 }
 
 io.on('connection', (socket) => {
@@ -459,9 +461,10 @@ io.on('connection', (socket) => {
     console.log('Salas: ', io.sockets.adapter.rooms);
 
     socket.on('createGame', (data) => {
-
         if (data.MaxPlayers >= 3) {
             createLobby(data, socket);
+            console.log("create game: ", data);
+            socket.emit('roomDone', lobbies[lobbies.length - 1]);
             return false;
         } else {
             socket.emit('error', 'Minim 3 jugadors');
@@ -471,12 +474,13 @@ io.on('connection', (socket) => {
 
     socket.on('join', (data) => {
         let game;
+        let lobby = null;
         console.log("Soy", data);
         console.log("tutorial", data.tutorial);
         let error = false
         if (data.idLobby || data.password) {
             if (data.idLobby) {
-                let lobby = lobbies.find(lobby => lobby.id === data.idLobby);
+                lobby = lobbies.find(lobby => lobby.id === data.idLobby);
                 if ((lobby.private && lobby.password === data.password) || !lobby.private) {
                     game = joinLobby(lobby, socket, data);
                 } else {
@@ -489,7 +493,7 @@ io.on('connection', (socket) => {
                 error = true;
             }
         } else {
-            let lobby = findFirstPublicLobby();
+            lobby = findFirstPublicLobby();
             console.log(lobby);
             if (lobby) {
                 console.log("Hi");
@@ -497,20 +501,21 @@ io.on('connection', (socket) => {
             } else {
                 console.log("No hi");
                 let config = {
-                    name: "Sala publica",
+                    name: "Sala Rapida",
                     mode: "classic",
                     private: false,
                     WaitUntilFull: false
                 }
                 createLobby(config, socket);
-                let lobby = lobbies[lobbies.length - 1];
+                lobby = lobbies[lobbies.length - 1];
                 game = joinLobby(lobby, socket, data);
             }
 
         }
         if (!error) {
+            console.log("game", lobby);
             socket.join(game.idGame);
-            socket.emit('userDataUpdate', game.users[game.users.length - 1]);
+            socket.emit('userDataUpdate', { "user": game.users[game.users.length - 1], "game": lobby.id });
             console.log(game.users);
             io.to(game.idGame).emit('usersConnected', game.users);
             console.log('Salas: ', io.sockets.adapter.rooms);
@@ -565,8 +570,8 @@ io.on('connection', (socket) => {
         // console.log("data to send...", data)
         await getUser(data, socket);
     });
-    
-    
+
+
     socket.on('startGame', () => {
         let lobbyGames = findLobbieBySocketId(socket.id);
         let room = findGameByUserId(lobbyGames, socket.id);
@@ -613,7 +618,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    
+
 
     socket.on('resposta', async (data) => {
         let gameRooms = findLobbieBySocketId(socket.id);
@@ -637,11 +642,11 @@ io.on('connection', (socket) => {
                 respostaIncorrecta(roomIndex, userWithBomb, gameRooms, socket);
 
             }
-            console.log(gameRooms[roomIndex].users[userWithBomb].id,"==",socket.id);
+            console.log(gameRooms[roomIndex].users[userWithBomb].id, "==", socket.id);
             if (socket.id == gameRooms[roomIndex].users[userWithBomb].id) {
                 console.log("NEWPREGUNTA")
                 if (gameRooms[roomIndex] && gameRooms[roomIndex].users.length > 1) {
-                    
+
                     newPregunta(gameRooms[roomIndex]);
                 }
             } else {
@@ -655,7 +660,7 @@ io.on('connection', (socket) => {
 
     });
 
-    
+
     socket.on('leaveRoom', () => {
         let gameRooms = findLobbieBySocketId(socket.id);
         if (gameRooms.length > 0) {
@@ -718,11 +723,11 @@ io.on('connection', (socket) => {
 
     socket.on('getSalas', () => {
         let openLobbies = [];
-        openLobbies=lobbies.filter(lobby => !lobby.private);
-
+        openLobbies = lobbies.filter(lobby => !lobby.private);
+        console.log("perra", openLobbies);
         socket.emit('salas', openLobbies);
     })
-   
+
     socket.on('disconnect', () => {
         let gameRooms = findLobbieBySocketId(socket.id);
         if (gameRooms) {

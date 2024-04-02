@@ -58,6 +58,10 @@
                 <div id="ModalWaiting" class="modal-tutorial"
                     v-show="!gameStarted && !userPantalla.tutorial && this.showWaitingModal">
                     <div class="modal-tutorial-content ">
+                        <div class="code">
+                            {{ roomName }}
+                        </div>
+                        <Divider type="solid" />
                         <div class="List">
                             <div v-for="user in users">
                                 <div class="ListItem">
@@ -140,6 +144,10 @@ export default {
         explodes() {
             let store = useAppStore();
             return store.getExplodes();
+        },
+        roomName(){
+            let store = useAppStore();
+            return store.getRoomName();
         }
 
 

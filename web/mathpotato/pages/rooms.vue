@@ -4,6 +4,8 @@
         <div class="rooms-container">
             <div class="container-public-room">
                 <div class="header-public-room">
+                    <!-- <label for="username" class="font-semibold w-6rem">Username</label>
+                    <InputText v-model="username" id="username" class="flex-auto" autocomplete="off" /> -->
                     <div class="container-svg">
                         <div class="flex justify-content-start">
                             <Button @click="btnRefresh" icon="pi pi-refresh" class="btn-refresh" label="Reload" severity="warning" />
@@ -40,6 +42,9 @@
                             </ScrollPanel>  
                             </div>
                         <div class="card">
+                            <Button label="Jugar rapido!" @click="playfast" />
+                        </div>
+                        <div class="card">
                             <Paginator :rows="5" :total-records="lobbies.length" ></Paginator>
                         </div>
                     </div>
@@ -52,6 +57,7 @@
         <div class="container-join-room">
             <div class="card flex justify-content-center">
                 <div class="flex flex-column align-items-center code">
+                    <Button v-if="!guest.email" label="login" @click="login()" />
                     <div class="font-bold text-xl mb-2 text-join-room">Pon el codigo para unirte!</div>
                     <InputOtp v-model="value" :length="6" style="gap: 0; justify-content: center; padding: 20px;" >
                         <template #default="{ attrs, events, index }">
@@ -62,7 +68,7 @@
                         </template>
                     </InputOtp>
                     <div class="flex justify-content-between mt-5 align-self-stretch">
-                        <Button label="Submit Code" @click="console.log(value)"></Button>
+                        <Button label="Submit Code" @click="joinRoomByCode(value)"></Button>
                     </div>
                 </div>
             </div>
@@ -86,29 +92,31 @@
                 <span class="p-text-secondary block mb-5">Update your information.</span>
                 <Divider type="solid" />
                 <div class="flex align-items-center gap-3 mb-3">
-                    <label for="username" class="font-semibold w-6rem">Name Room</label>
-                    <InputText id="username" class="flex-auto" autocomplete="off" />
+                    <label for="nameRoom" class="font-semibold w-6rem">Name Room</label>
+                    <InputText v-model="nameRoom" id="name" class="flex-auto" autocomplete="off" />
                 </div>
                 <Divider type="solid" />
                 <div class="flex align-items-center radiobutton-div">
-                    <RadioButton v-model="ingredient" inputId="ingredient1" name="pizza" value="Cheese" />
-                    <label for="ingredient1" class="text-radiobutton">Public</label>
-                    <RadioButton v-model="ingredient" inputId="ingredient2" name="pizza" value="Mushroom" />
-                    <label for="ingredient2" class="text-radiobutton">Private</label>
+                    <RadioButton v-model="option" inputId="option1" name="option" value=false />
+                    <label for="option1" class="text-radiobutton">Public</label>
+                    <RadioButton v-model="option" inputId="option2" name="option" value=true />
+                    <label for="option2" class="text-radiobutton">Private</label>
+                </div>
+                <Divider type="solid" />
+                <div class="flex align-items-center radiobutton-div">
+                    <RadioButton v-model="selectedModecreate" inputId="classic" name="classic" value="Classic" />
+                    <label for="classic" class="text-radiobutton">Classic</label>
+                    <RadioButton v-model="selectedModecreate" inputId="puteo" name="puteo" value="Puteo" />
+                    <label for="puteo" class="text-radiobutton">Puteo</label>
                 </div>
                 <Divider type="solid" />
             <div class="flex justify-content-end gap-2 button-modal">
                 <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
-                <Button type="button" label="Save" @click="visible = false"></Button>
+                <Button type="button" label="Create" @click="createGame()"></Button>
                 
                 </div>
             </Dialog>
         </div>
-        
-       
-
-        
-
                 <!-- Resto del código -->
             
     </div>
@@ -142,13 +150,15 @@ export default {
             selectedLobby: {},
             showModalConfig: false,
             btnRefresh: false,
-            ingredient: '',
+            option: '',
+            selectedModecreate: '',
             showJoinLobby: false,
             visible: false,
             modes: [
                 { name: 'puteo'},
                 { name: 'default'}
-            ]
+            ],
+            username: '',
         };
     },
     computed: {
@@ -158,36 +168,84 @@ export default {
         },
         lobbies() {
             let store = useAppStore();
-            return store.getLobbiesName();
+            return store.getSalas();
         },
         updateLobbies(){
             let store = useAppStore();
             return store.updateLobbies();  
+        },
+        guest(){
+            let store = useAppStore();
+            return store.getGuestInfo();
         }
+
         
     },
     methods: {
-        createPrivateRoom() {
+        createGame() {
+            this.visible = false;
             // Logic to create a private room
+            socket.emit('createGame', { name: this.nameRoom, mode: this.selectedModecreate, private: this.option, waitUntilFull: '', MaxPlayers: 6});
+            // this.$router.push({ path: '/play'});
+            console.log("pepepeppepepep");
         },
         ModalConfig(){
             this.showModalConfig = true;
         },
         joinPublicRoom() {
             if(this.selectedLobby){
-                socket.emit('join', { username: this.users.username, image: this.users.image, email: this.users.email, idLobby: this.selectedLobby.idLobby})
-                // this.$router.push({ path: '/play'});
-            }
+                if(this.guest.email === 'none'){
+                    this.username = 'guest_' + Math.floor(Math.random() * 1000000);
+                    this.username = this.username.slice(0, 20);
+                    socket.emit('join', { idLobby: this.selectedLobby.idLobby, username: this.username, image: 1, email: "none", tutorial: true })
+                }else{
+                    socket.emit('join', { idLobby: this.selectedLobby.idLobby, username: this.guest.username, image: this.guest.image, email: this.guest.email, tutorial: this.guest.tutorial })
+                }
+                this.$router.push({ path: '/play'});
+            
             // Logic to join a public room
             // socket.emit('join', { username: this.users.username, image: this.users.image, email: this.users.email})
             // this.$router.push({ path: '/play'});
+            }
+        },
+        joinRoomByCode(code) {
+            // Logic to join a private room
+            if(this.guest.email === 'none'){
+                    this.username = 'guest_' + Math.floor(Math.random() * 1000000);
+                    this.username = this.username.slice(0, 20);
+                    socket.emit('join', { idLobby: code, username: this.username, image: 1, email: "none", tutorial: true })
+                }else{
+            socket.emit('join', { idLobby: code, username: this.guest.username, image: this.guest.image, email: this.guest.email, tutorial: this.guest.tutorial })
+                }
+            this.$router.push({ path: '/play'});
+        },
+        playfast(){
+            if(this.guest.email === 'none'){
+                this.username = 'guest_' + Math.floor(Math.random() * 1000000);
+                this.username = this.username.slice(0, 20);
+                socket.emit('join', { username: this.username, image: 1, email: 'none', tutorial: true }) 
+                this.$router.push({ path: '/play'});
+            }
         },
         refresh() {
             // Logic to refresh the public rooms
 
         },
+        login(){
+            this.$router.push({ path: '/login' });
+        }
+        
         
     },
+    mounted() {
+        socket.emit('getSalas');
+        socket.on('roomDone', (data) => {
+            this.selectedLobby = data.id;
+            this.joinPublicRoom();
+        });
+
+
+    }
 };
 </script>
 

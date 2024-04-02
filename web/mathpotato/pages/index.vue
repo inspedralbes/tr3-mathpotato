@@ -214,7 +214,7 @@ export default {
             this.isMoving = false;
         },
         jugar() {
-            this.$router.push({ path: '/guest' });
+            this.$router.push({ path: '/rooms' });
         },
         login() {
             this.$router.push({ path: '/login' });

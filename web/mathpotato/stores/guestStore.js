@@ -19,9 +19,9 @@ export const useAppStore = defineStore('app', {
         guestInfo: {
             username: '',
             bomba: false,
-            image: './assets/Icon_2.png',
+            image: 1,
             lives: 2,
-            email: '',
+            email: 'none',
             lost: false,
             win: false,
             tutorial: true,
@@ -31,6 +31,7 @@ export const useAppStore = defineStore('app', {
             id_pregunta: "",
             pregunta: "",
         },
+        actualRoomName: '',
         respostaAnterior: true,
         explodes: false,
         timer: 0,
@@ -70,9 +71,15 @@ export const useAppStore = defineStore('app', {
             this.lobbies[0].nameLobby = lobbies;
             this.lobbies[0].mode = lobbies;
         },
-        setRoomName(roomGame) {
-            this.infoGame.rooms.gameRooms[0].roomName = roomGame;
-            console.log(this.infoGame.rooms.gameRooms[0].roomName);
+        setSalas(salas) {
+            this.lobbies = salas;
+        },
+        getSalas() {
+            return this.lobbies;
+        },
+        setRoomName(data) {
+            console.log('RoomName: ', data);
+            this.actualRoomName = data;
         },
         setGameStarted(gameStarted) {
             this.gameStarted = gameStarted;
@@ -89,7 +96,7 @@ export const useAppStore = defineStore('app', {
             return this.infoGame.rooms.gameRooms;
         },
         getRoomName() {
-            return this.infoGame.rooms.gameRooms[0].roomName;
+            return this.actualRoomName;
         },
         setPublicRooms(gameRooms) {
             this.infoGame.rooms.gameRooms[0].roomName = gameRooms;
@@ -129,8 +136,8 @@ export const useAppStore = defineStore('app', {
             this.guestInfo.win = false;
             this.guestInfo.lost = false;
             this.guestInfo.tutorial = data.tutorial;
-            this.guestInfo.shieldUser.activated = data.shieldUser.activated;
-            this.guestInfo.shieldUser.sec = data.shieldUser.sec;
+            // this.guestInfo.shieldUser.activated = data.shieldUser.activated;
+            // this.guestInfo.shieldUser.sec = data.shieldUser.sec;
 
             console.log('*infoGuest*');
             console.log(this.guestInfo.username);
