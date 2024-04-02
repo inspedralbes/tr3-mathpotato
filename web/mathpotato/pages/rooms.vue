@@ -34,8 +34,7 @@
                                 class="custom-scroll-panel"
                             >
                             <div class="card flex justify-content-center" id="div-lobbies">
-                                <Listbox v-model="selectedLobby" @click="showJoinLobby = true" :options="lobbies" filter optionLabel="nameLobby" class="w-full md:w-14rem" id="info_lobby" />
-                                
+                                <Listbox v-model="selectedLobby" @click="showJoinLobby = true" :options="lobbies" filter optionLabel="nameLobby" class="w-full md:w-14rem" id="info_lobby" />           
                             </div>
 
                             </ScrollPanel>  
@@ -176,7 +175,8 @@ export default {
         },
         joinPublicRoom() {
             if(this.selectedLobby){
-
+                socket.emit('join', { username: this.users.username, image: this.users.image, email: this.users.email, idLobby: this.selectedLobby.idLobby})
+                // this.$router.push({ path: '/play'});
             }
             // Logic to join a public room
             // socket.emit('join', { username: this.users.username, image: this.users.image, email: this.users.email})
