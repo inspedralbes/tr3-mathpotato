@@ -529,6 +529,9 @@ html:lang(ar) {
 
 }
 
+#explosion{
+    width: 10vw;
+}
 .imageContainer {
     display: flex;
 

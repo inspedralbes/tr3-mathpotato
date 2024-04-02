@@ -259,7 +259,7 @@ function respostaCorrectaUsuariCorrecte(roomIndex, userWithBomb, gameRooms) {
     }
     gameRooms[roomIndex].timer = gameRooms[roomIndex].timerAnterior;
     console.log("users in room -> ", gameRooms[roomIndex].users);
-    io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
+    io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes":false });
 }
 
 function respostaCorrectaUsuariIncorrecte(roomIndex, userWithBomb, gameRooms) {
@@ -267,7 +267,7 @@ function respostaCorrectaUsuariIncorrecte(roomIndex, userWithBomb, gameRooms) {
     console.log("resposta correcta!");
     gameRooms[roomIndex].users[userWithBomb].bomba = true;
     gameRooms[roomIndex].timer -= 10;
-    io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
+    io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes":false });
 }
 
 async function addToRanking(email) {
@@ -293,6 +293,12 @@ async function updateVictorias(roomIndex, gameRooms) {
         // console.log("entrooo????? --> ", email);
     }
 }
+
+function findLobbieByPassword(password) {
+    let room = lobbies.find(lobby => lobby.id === password);
+    return room;
+}
+
 function UserHasNoLives(roomIndex, userWithBomb, roomToEliminate, gameRooms) {
     if (gameRooms[roomIndex].users[userWithBomb].email !== 'none') {
         var email = gameRooms[roomIndex].users[userWithBomb].email;
@@ -316,7 +322,7 @@ function UserHasNoLives(roomIndex, userWithBomb, roomToEliminate, gameRooms) {
         gameRooms.splice(roomToEliminate, 1);
     } else {
         if (gameRooms[roomIndex].users.length > 1) {
-            io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
+            io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes":false });
         }
 
     }
@@ -332,7 +338,7 @@ function respostaIncorrectaUsuariCorrecte(roomIndex, userWithBomb, gameRooms) {
         UserHasNoLives(roomIndex, userWithBomb, gameRooms[roomIndex], gameRooms);
     }
     if (gameRooms[roomIndex] && gameRooms[roomIndex].users.length > 1 && gameRooms[roomIndex].idGame == check) {
-        io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
+        io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes":true });
     }
 }
 
@@ -346,7 +352,7 @@ function respostaIncorrectaUsuariIncorrecte(roomIndex, userWithBomb, roomEnviada
         console.log(gameRooms[roomIndex].users[userWithBomb].bomba);
         let userBombN = gameRooms[roomIndex].users.findIndex(user => user.id === socket.id);
         gameRooms[roomIndex].users[userBombN].bomba = true;
-        io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true });
+        io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes":false });
     }
 }
 function respostaIncorrecta(roomIndex, userWithBomb, gameRooms, socket) {
@@ -479,6 +485,7 @@ io.on('connection', (socket) => {
         console.log("tutorial", data.tutorial);
         let error = false
         if (data.idLobby || data.password) {
+            let lobby = null;
             if (data.idLobby) {
                 lobby = lobbies.find(lobby => lobby.id === data.idLobby);
                 if ((lobby.private && lobby.password === data.password) || !lobby.private) {
@@ -488,10 +495,7 @@ io.on('connection', (socket) => {
                     error = true;
                 }
 
-            } else {
-                socket.emit('error', 'No existeix aquesta sala');
-                error = true;
-            }
+
         } else {
             lobby = findFirstPublicLobby();
             console.log(lobby);
@@ -572,6 +576,8 @@ io.on('connection', (socket) => {
     });
 
 
+
+
     socket.on('startGame', () => {
         let lobbyGames = findLobbieBySocketId(socket.id);
         let room = findGameByUserId(lobbyGames, socket.id);
@@ -617,6 +623,7 @@ io.on('connection', (socket) => {
 
         }
     });
+
 
 
 
