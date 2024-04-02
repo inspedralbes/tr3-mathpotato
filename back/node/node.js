@@ -290,6 +290,12 @@ async function updateVictorias(roomIndex, gameRooms) {
         // console.log("entrooo????? --> ", email);
     }
 }
+
+function findLobbieByPassword(password) {
+    let room = lobbies.find(lobby => lobby.id === password);
+    return room;
+}
+
 function UserHasNoLives(roomIndex, userWithBomb, roomToEliminate, gameRooms) {
     if (gameRooms[roomIndex].users[userWithBomb].email !== 'none') {
         var email = gameRooms[roomIndex].users[userWithBomb].email;
@@ -485,8 +491,16 @@ io.on('connection', (socket) => {
                 }
 
             } else {
-                socket.emit('error', 'No existeix aquesta sala');
-                error = true;
+                if(data.password){
+                    let room=findLobbieByPassword(data.password);
+                    if(room){
+                        game=joinLobby(room,socket,data)
+                    }
+                    else{
+                        socket.emit('error','No existeix aquesta sala');
+                        error=true;
+                    }
+                }
             }
         } else {
             let lobby = findFirstPublicLobby();
