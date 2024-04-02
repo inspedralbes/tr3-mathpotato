@@ -57,7 +57,7 @@
         <div class="container-join-room">
             <div class="card flex justify-content-center">
                 <div class="flex flex-column align-items-center code">
-                    <Button v-if="!guest.email" label="login" @click="login()" />
+                    <Button v-if="guest.email" label="login" @click="login()" />
                     <div class="font-bold text-xl mb-2 text-join-room">Pon el codigo para unirte!</div>
                     <InputOtp v-model="value" :length="6" style="gap: 0; justify-content: center; padding: 20px;" >
                         <template #default="{ attrs, events, index }">

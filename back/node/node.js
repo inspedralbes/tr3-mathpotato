@@ -294,10 +294,10 @@ async function updateVictorias(roomIndex, gameRooms) {
     }
 }
 
-function findLobbieByPassword(password) {
-    let room = lobbies.find(lobby => lobby.id === password);
-    return room;
-}
+// function findLobbieByPassword(password) {
+//     let room = lobbies.find(lobby => lobby.id === password);
+//     return room;
+// }
 
 function UserHasNoLives(roomIndex, userWithBomb, roomToEliminate, gameRooms) {
     if (gameRooms[roomIndex].users[userWithBomb].email !== 'none') {
@@ -483,9 +483,8 @@ io.on('connection', (socket) => {
         let lobby = null;
         console.log("Soy", data);
         console.log("tutorial", data.tutorial);
-        let error = false
+        let error = false;
         if (data.idLobby || data.password) {
-            let lobby = null;
             if (data.idLobby) {
                 lobby = lobbies.find(lobby => lobby.id === data.idLobby);
                 if ((lobby.private && lobby.password === data.password) || !lobby.private) {
@@ -494,36 +493,37 @@ io.on('connection', (socket) => {
                     socket.emit('error', 'Contrasenya incorrecta');
                     error = true;
                 }
-
-
             } else {
-                lobby = findFirstPublicLobby();
-                console.log(lobby);
-                if (lobby) {
-                    console.log("Hi");
-                    game = joinLobby(lobby, socket, data);
-                } else {
-                    console.log("No hi");
-                    let config = {
-                        name: "Sala Rapida",
-                        mode: "classic",
-                        private: false,
-                        WaitUntilFull: false
-                    }
-                    createLobby(config, socket);
-                    lobby = lobbies[lobbies.length - 1];
-                    game = joinLobby(lobby, socket, data);
+                socket.emit('error', 'No existeix aquesta sala');
+                error = true;
+            }
+        } else {
+            lobby = findFirstPublicLobby();
+            console.log(lobby);
+            if (lobby) {
+                console.log("Hi");
+                game = joinLobby(lobby, socket, data);
+            } else {
+                console.log("No hi");
+                let config = {
+                    name: "Sala Rapida",
+                    mode: "classic",
+                    private: false,
+                    WaitUntilFull: false
                 }
+                createLobby(config, socket);
+                lobby = lobbies[lobbies.length - 1];
+                game = joinLobby(lobby, socket, data);
+            }
 
-            }
-            if (!error) {
-                console.log("game", lobby);
-                socket.join(game.idGame);
-                socket.emit('userDataUpdate', { "user": game.users[game.users.length - 1], "game": lobby.id });
-                console.log(game.users);
-                io.to(game.idGame).emit('usersConnected', game.users);
-                console.log('Salas: ', io.sockets.adapter.rooms);
-            }
+        }
+        if (!error) {
+            console.log("game", lobby);
+            socket.join(game.idGame);
+            socket.emit('userDataUpdate', { "user": game.users[game.users.length - 1], "game": lobby.id });
+            console.log(game.users);
+            io.to(game.idGame).emit('usersConnected', game.users);
+            console.log('Salas: ', io.sockets.adapter.rooms);
         }
     });
 
