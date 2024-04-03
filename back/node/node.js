@@ -60,6 +60,19 @@ function findOpenGame(lobby) {
     return returnData;
 }
 
+function findLobbieByGameroomId(idGame) {
+    let returnData = null;
+    lobbies.forEach(lobby => {
+        lobby.games.forEach(game => {
+            if (game.idGame === idGame) {
+                returnData = lobby;
+            }
+        });
+    });
+    return returnData;
+
+}
+
 function findFirstPublicLobby() {
     let returnData = null;
     lobbies.forEach(lobby => {
@@ -72,8 +85,11 @@ function findFirstPublicLobby() {
 
 function createLobby(data, socket) {
     console.log("createLobby");
-    let publicLobby = data.private == "false" ? false : true;
+    let publicLobby=false;
+    if(typeof data.private === 'string' || data.private instanceof String){publicLobby = data.private == "false" ? false : true;} else {publicLobby = data.private;}
+    
     lobbies.push({ "id": makeid(6), "nameLobby": data.name, "games": [], "mode": data.mode, "private": publicLobby, "leader": socket.id, "WaitUntilFull": data.WaitUntilFull, "uniqueIndicator": 0 });
+    console.log("games",lobbies);
     return lobbies[lobbies.length - 1];
 }
 
@@ -468,9 +484,11 @@ io.on('connection', (socket) => {
 
     socket.on('createGame', (data) => {
         if (data.MaxPlayers >= 3) {
-            createLobby(data, socket);
-            console.log("create game: ", data);
-            socket.emit('roomDone', lobbies[lobbies.length - 1]);
+            let lobbyToJoin=createLobby(data, socket);
+            
+            socket.emit('roomDone', lobbyToJoin);
+            let openLobbies = lobbies.filter(lobby => !lobby.private);
+            socket.broadcast.emit('salas', openLobbies);
             return false;
         } else {
             socket.emit('error', 'Minim 3 jugadors');
@@ -512,6 +530,8 @@ io.on('connection', (socket) => {
                     WaitUntilFull: false
                 }
                 createLobby(config, socket);
+                let openLobbies = lobbies.filter(lobby => !lobby.private);
+                socket.broadcast.emit('salas', openLobbies);
                 lobby = lobbies[lobbies.length - 1];
                 game = joinLobby(lobby, socket, data);
             }
@@ -785,9 +805,24 @@ io.on('connection', (socket) => {
                                 // console.log("entrooo????? --> ", email);
                             }
                             io.to(room.idGame).emit('finishGame', ({ gameStarted: false, timer: 0, username: room.users[0].username, image: room.users[0].image, email: room.users[0].email }));
-                            gameRooms.splice(room.idGame, 1);
+                            
+
                             io.sockets.sockets.get(room.users[0].id).leave(room.idGame);
 
+                        } else{
+                            if (room.users.length < 1) {
+                                let lobbyToEliminate = findLobbieByGameroomId(room.idGame);
+                                console.log('roomToEliminate', room);
+                                let roomIndex = lobbyToEliminate.games.findIndex(room => room.roomName === room.idGame);
+                                lobbyToEliminate.games.splice(roomIndex, 1);
+                                console.log(lobbyToEliminate.games);
+                                if (lobbyToEliminate.games.length < 1) {
+                                    let lobbyIndex = lobbies.findIndex(lobby => lobby.id === lobbyToEliminate.id);
+                                    console.log('lobbyIndex', lobbyIndex);
+                                    lobbies.splice(lobbyIndex, 1);
+                                    
+                                }
+                            }
                         }
                         // console.log('Usuario desconectado: ', usuarioDesconectado);
 

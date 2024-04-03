@@ -1,12 +1,14 @@
 <template>
-        <div class="card">
+    <div class="card">
         <Toolbar style="border-radius: 3rem; padding: 1rem 1rem 1rem 1.5rem">
-            
+
             <template #end>
                 <div class="flex align-items-center gap-3 navbar">
                     <!-- <Button label="Share" severity="contrast" size="small" /> -->
-                    <Button v-if="guest.email" label="login" @click="login()" severity="contrast" size="small" style="right: 20px; bottom: 3px;" />
-                    <Avatar v-badge.danger="10" class="p-overlay-badge" icon="pi pi-user" size="large" style="cursor: pointer; "/>
+                    <Button v-if="guest.email" label="login" @click="login()" severity="contrast" size="small"
+                        style="right: 20px; bottom: 3px;" />
+                    <Avatar v-badge.danger="10" class="p-overlay-badge" image="./_nuxt/assets/Icon_1.png" size="large"
+                        style="cursor: pointer; " />
                 </div>
             </template>
         </Toolbar>
@@ -18,15 +20,11 @@
                 <div class="header-public-room">
                     <!-- <label for="username" class="font-semibold w-6rem">Username</label>
                     <InputText v-model="username" id="username" class="flex-auto" autocomplete="off" /> -->
-                    <div class="container-svg">
-                        <div class="flex justify-content-start">
-                            <Button @click="btnRefresh" icon="pi pi-refresh" class="btn-refresh" label="Reload" severity="warning" />
-                        </div>
-                    </div>
                     <div class="container-select">
                         <div class="card flex justify-content-center select-modes">
                             <FloatLabel class="w-full md:w-20rem">
-                                <MultiSelect id="ms-cities" v-model="selectedModes" :options="modes" optionLabel="name" :maxSelectedLabels="3" class="w-full" />
+                                <MultiSelect id="ms-cities" v-model="selectedModes" :options="modes" optionLabel="name"
+                                    :maxSelectedLabels="3" class="w-full" />
                                 <label for="ms-cities">Modes</label>
                             </FloatLabel>
                         </div>
@@ -37,29 +35,27 @@
                     <div class="card">
                         <div class="flex flex-column md:flex-row gap-5">
                             <div class="flex-auto">
-                            <ScrollPanel 
-                                style="width: 100%; height: 300px" 
-                                :pt="{ 
-                                wrapper: { 
-                                    style: { 'border-right': '10px solid var(--surface-ground)' }
-                                },  
-                                bary: 'hover:bg-primary-400 opacity-100' 
-                                }" 
-                                class="custom-scroll-panel"
-                            >
-                            <div class="card flex justify-content-center" id="div-lobbies">
-                                <Listbox v-model="selectedLobby" @click="showJoinLobby = true" :options="lobbies" filter optionLabel="nameLobby" class="w-full md:w-14rem" id="info_lobby" />           
-                            </div>
+                                <ScrollPanel style="width: 100%; height: 300px" :pt="{
+                        wrapper: {
+                            style: { 'border-right': '10px solid var(--surface-ground)' }
+                        },
+                        bary: 'hover:bg-primary-400 opacity-100'
+                    }" class="custom-scroll-panel">
+                                    <div class="card flex justify-content-center" id="div-lobbies">
+                                        <Listbox v-model="selectedLobby" @click="showJoinLobby = true"
+                                            :options="lobbies" filter optionLabel="nameLobby" class="w-full md:w-14rem"
+                                            id="info_lobby" />
+                                    </div>
 
-                            </ScrollPanel>  
+                                </ScrollPanel>
                             </div>
                             <div class="card">
-                                <Paginator :rows="5" :total-records="lobbies.length" ></Paginator>
+                                <Paginator :rows="5" :total-records="lobbies.length"></Paginator>
                             </div>
                             <div class="card">
                                 <Button label="Jugar rapido!" @click="playfast" />
                             </div>
-                    </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -70,7 +66,7 @@
             <div class="card flex justify-content-center">
                 <div class="flex flex-column align-items-center code">
                     <div class="font-bold text-xl mb-2 text-join-room">Pon el codigo para unirte!</div>
-                    <InputOtp v-model="value" :length="6" style="gap: 0; justify-content: center; padding: 20px;" >
+                    <InputOtp v-model="value" :length="6" style="gap: 0; justify-content: center; padding: 20px;">
                         <template #default="{ attrs, events, index }">
                             <input type="text" v-bind="attrs" v-on="events" class="custom-otp-input" />
                             <div style="padding: 5px;" v-if="index === 3" class="px-3">
@@ -89,15 +85,15 @@
                 <div class="card flex justify-content-center">
                     <div class="font-bold text-xl mb-2 text-create-room">Crea tu propia sala!</div>
                     <Button label="Create!" @click="visible = true" />
-                    <div di="modal-config-game"> 
+                    <div di="modal-config-game">
                     </div>
                 </div>
             </div>
-            
-            
+
+
         </div>
-        
-        
+
+
         <div class="card flex justify-content-center">
             <Dialog v-model:visible="visible" modal header="Config Game" :style="{ width: '25rem' }">
                 <span class="p-text-secondary block mb-5">Update your information.</span>
@@ -121,15 +117,15 @@
                     <label for="puteo" class="text-radiobutton">Puteo</label>
                 </div>
                 <Divider type="solid" />
-            <div class="flex justify-content-end gap-2 button-modal">
-                <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
-                <Button type="button" label="Create" @click="createGame()"></Button>
-                
+                <div class="flex justify-content-end gap-2 button-modal">
+                    <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
+                    <Button type="button" label="Create" @click="createGame()"></Button>
+
                 </div>
             </Dialog>
         </div>
-                <!-- Resto del código -->
-            
+        <!-- Resto del código -->
+
     </div>
     <div class="container-join-room-public">
         <div v-show="showJoinLobby && selectedLobby" class="card flex justify-content-center btn-join-lobby-public">
@@ -143,9 +139,9 @@
             </div>
         </div>
     </div>
-    
-    
-    
+
+
+
 </template>
 
 <script>
@@ -166,14 +162,14 @@ export default {
             showJoinLobby: false,
             visible: false,
             modes: [
-                { name: 'puteo'},
-                { name: 'default'}
+                { name: 'puteo' },
+                { name: 'default' }
             ],
             username: '',
         };
     },
     computed: {
-        users(){
+        users() {
             let store = useAppStore();
             return store.getGuestInfo();
         },
@@ -181,78 +177,78 @@ export default {
             let store = useAppStore();
             return store.getSalas();
         },
-        updateLobbies(){
+        updateLobbies() {
             let store = useAppStore();
-            return store.updateLobbies();  
+            return store.updateLobbies();
         },
-        guest(){
+        guest() {
             let store = useAppStore();
             return store.getGuestInfo();
         }
 
-        
+
     },
     methods: {
         createGame() {
             this.visible = false;
             // Logic to create a private room
-            socket.emit('createGame', { name: this.nameRoom, mode: this.selectedModecreate, private: this.option, waitUntilFull: '', MaxPlayers: 6});
+            socket.emit('createGame', { name: this.nameRoom, mode: this.selectedModecreate, private: this.option, waitUntilFull: '', MaxPlayers: 6 });
             // this.$router.push({ path: '/play'});
             console.log("pepepeppepepep");
         },
-        ModalConfig(){
+        ModalConfig() {
             this.showModalConfig = true;
         },
         joinPublicRoom() {
-            if(this.selectedLobby){
-                if(this.guest.email === 'none'){
+            if (this.selectedLobby) {
+                if (this.guest.email === 'none') {
                     this.username = 'guest_' + Math.floor(Math.random() * 1000000);
                     this.username = this.username.slice(0, 20);
                     socket.emit('join', { idLobby: this.selectedLobby.idLobby, username: this.username, image: 1, email: "none", tutorial: true })
-                }else{
+                } else {
                     socket.emit('join', { idLobby: this.selectedLobby.idLobby, username: this.guest.username, image: this.guest.image, email: this.guest.email, tutorial: this.guest.tutorial })
                 }
-                this.$router.push({ path: '/play'});
-            
-            // Logic to join a public room
-            // socket.emit('join', { username: this.users.username, image: this.users.image, email: this.users.email})
-            // this.$router.push({ path: '/play'});
+                this.$router.push({ path: '/play' });
+
+                // Logic to join a public room
+                // socket.emit('join', { username: this.users.username, image: this.users.image, email: this.users.email})
+                // this.$router.push({ path: '/play'});
             }
         },
         joinRoomByCode(code) {
             // Logic to join a private room
-            if(this.guest.email === 'none'){
-                    this.username = 'guest_' + Math.floor(Math.random() * 1000000);
-                    this.username = this.username.slice(0, 20);
-                    socket.emit('join', { idLobby: code, username: this.username, image: 1, email: "none", tutorial: true })
-                }else{
-            socket.emit('join', { idLobby: code, username: this.guest.username, image: this.guest.image, email: this.guest.email, tutorial: this.guest.tutorial })
-                }
-            this.$router.push({ path: '/play'});
-        },
-        playfast(){
-            if(this.guest.email === 'none'){
+            if (this.guest.email === 'none') {
                 this.username = 'guest_' + Math.floor(Math.random() * 1000000);
                 this.username = this.username.slice(0, 20);
-                socket.emit('join', { username: this.username, image: 1, email: 'none', tutorial: true }) 
-                this.$router.push({ path: '/play'});
+                socket.emit('join', { idLobby: code, username: this.username, image: 1, email: "none", tutorial: true })
+            } else {
+                socket.emit('join', { idLobby: code, username: this.guest.username, image: this.guest.image, email: this.guest.email, tutorial: this.guest.tutorial })
+            }
+            this.$router.push({ path: '/play' });
+        },
+        playfast() {
+            if (this.guest.email === 'none') {
+                this.username = 'guest_' + Math.floor(Math.random() * 1000000);
+                this.username = this.username.slice(0, 20);
+                socket.emit('join', { username: this.username, image: 1, email: 'none', tutorial: true })
+                this.$router.push({ path: '/play' });
             }
         },
         refresh() {
             // Logic to refresh the public rooms
 
         },
-        login(){
+        login() {
             this.$router.push({ path: '/login' });
         }
-        
-        
+
+
     },
     mounted() {
         socket.emit('getSalas');
         socket.on('roomDone', (data) => {
-            this.selectedLobby = data.id;
-            this.joinPublicRoom();
+            
+            this.joinRoomByCode(data.id);
         });
 
 
@@ -267,7 +263,7 @@ body {
     font-family: 'Arial', sans-serif;
     background-color: #F2F2F2;
     /* Color de fondo general */
-    
+
 }
 
 /* */
@@ -289,21 +285,21 @@ body {
     color: var(--text-color);
 }
 
-.btn-join-lobby-public{
+.btn-join-lobby-public {
     /* margin-top: 700px; */
 
 }
 
-.btn-login{
+.btn-login {
     cursor: pointer;
 }
 
-.navbar{
+.navbar {
     /* padding: 10px; */
     padding-right: 30px;
 }
 
-.container-join-room-public{
+.container-join-room-public {
     width: 100%;
     display: flex;
     justify-content: center;
@@ -311,40 +307,41 @@ body {
     height: 13vh;
 }
 
-.btn-refresh{
+.btn-refresh {
     top: 25%;
-    font-size: 0.9em; 
+    font-size: 0.9em;
     padding: 0.5em 0.5em;
 }
 
-.radiobutton-div{
+.radiobutton-div {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.text-radiobutton{
+.text-radiobutton {
     padding-left: 10px;
     padding-right: 10px;
 }
 
-.code{
+.code {
     text-align: center;
 }
+
 .custom-otp-input:focus {
     outline: 2px solid var(--primary-color);
 }
 
-.text-create-room{
+.text-create-room {
     padding-bottom: 20px;
     font-size: 20px;
 }
 
-.text-join-room{
+.text-join-room {
     font-size: 20px;
 }
 
-.btn-create{
+.btn-create {
     padding: 10px 30px;
 
 }
@@ -364,7 +361,7 @@ body {
     border-color: var(--surface-400);
 }
 
-.container-header{
+.container-header {
     padding: 20px;
     display: flex;
     justify-content: space-between;
@@ -376,18 +373,18 @@ body {
 .container-principal {
     margin: auto;
     display: flex;
-    justify-content: center; 
-    align-items: center; 
+    justify-content: center;
+    align-items: center;
     height: 87vh;
     padding-right: 20px;
     padding-left: 20px;
     background-image: url('../assets/Banner.png');
     background-repeat: no-repeat;
     background-position: top;
-    
+
 }
 
-.rooms-container{
+.rooms-container {
     display: flex;
     justify-content: space-between;
     width: 100%;
@@ -409,11 +406,11 @@ body {
     padding: 20px;
 }
 
- .container-select {
+.container-select {
     display: flex;
     align-items: center;
     width: 22%;
-} 
+}
 
 .input-container {
     display: flex;
@@ -434,7 +431,7 @@ body {
     /* Color representativo de MathPotato */
 }
 
-.container-join-room{
+.container-join-room {
     border-left: 10px solid #6C5CE7;
     justify-content: center;
     align-items: center;
@@ -455,7 +452,7 @@ body {
 
 }
 
-.container-svg{
+.container-svg {
     /* background-color: #333; */
     position: relative;
     width: 55%;
@@ -463,7 +460,7 @@ body {
     justify-content: flex-end;
     margin-bottom: 10px;
     padding-right: 20px;
-    
+
 }
 
 .icon {
@@ -518,7 +515,7 @@ body {
     border-bottom: none;
 }
 
-.input{
+.input {
     text-align: center;
 }
 
