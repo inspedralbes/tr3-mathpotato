@@ -85,11 +85,11 @@ function findFirstPublicLobby() {
 
 function createLobby(data, socket) {
     console.log("createLobby");
-    let publicLobby=false;
-    if(typeof data.private === 'string' || data.private instanceof String){publicLobby = data.private == "false" ? false : true;} else {publicLobby = data.private;}
-    
+    let publicLobby = false;
+    if (typeof data.private === 'string' || data.private instanceof String) { publicLobby = data.private == "false" ? false : true; } else { publicLobby = data.private; }
+
     lobbies.push({ "id": makeid(6), "nameLobby": data.name, "games": [], "mode": data.mode, "private": publicLobby, "leader": socket.id, "WaitUntilFull": data.WaitUntilFull, "uniqueIndicator": 0 });
-    console.log("games",lobbies);
+    console.log("games", lobbies);
     return lobbies[lobbies.length - 1];
 }
 
@@ -484,8 +484,8 @@ io.on('connection', (socket) => {
 
     socket.on('createGame', (data) => {
         if (data.MaxPlayers >= 3) {
-            let lobbyToJoin=createLobby(data, socket);
-            
+            let lobbyToJoin = createLobby(data, socket);
+
             socket.emit('roomDone', lobbyToJoin);
             let openLobbies = lobbies.filter(lobby => !lobby.private);
             socket.broadcast.emit('salas', openLobbies);
@@ -656,7 +656,7 @@ io.on('connection', (socket) => {
         console.log("Room index --> ", roomIndex);
         console.log(gameRooms);
         console.log("Pregunta: ", gameRooms[roomIndex].pregunta);
-
+        let control=gameRooms[roomIndex].idGame;
         const preguntaParaEvaluar = gameRooms[roomIndex].pregunta.replace('x', '*');
         const resultatPregunta = eval(preguntaParaEvaluar);
         console.log("Result correct --> ", resultatPregunta);
@@ -670,19 +670,21 @@ io.on('connection', (socket) => {
                 respostaIncorrecta(roomIndex, userWithBomb, gameRooms, socket);
 
             }
-            console.log(gameRooms[roomIndex].users[userWithBomb].id, "==", socket.id);
-            if (socket.id == gameRooms[roomIndex].users[userWithBomb].id) {
-                console.log("NEWPREGUNTA")
-                if (gameRooms[roomIndex] && gameRooms[roomIndex].users.length > 1) {
+            if (gameRooms[roomIndex] != undefined && gameRooms[roomIndex].idGame==control && gameRooms[roomIndex].users.length > 1) {
+                if (socket.id == gameRooms[roomIndex].users[userWithBomb].id) {
+                    console.log("NEWPREGUNTA")
+                    if (gameRooms[roomIndex] && gameRooms[roomIndex].users.length > 1) {
 
-                    newPregunta(gameRooms[roomIndex]);
-                }
-            } else {
-                console.log("NEWPREGUNTA2")
-                if (gameRooms[roomIndex] && gameRooms[roomIndex].users.length > 1 && !gameRooms[roomIndex].shieldUser) {
-                    newPregunta(gameRooms[roomIndex]);
+                        newPregunta(gameRooms[roomIndex]);
+                    }
+                } else {
+                    console.log("NEWPREGUNTA2")
+                    if (gameRooms[roomIndex] && gameRooms[roomIndex].users.length > 1 && !gameRooms[roomIndex].shieldUser) {
+                        newPregunta(gameRooms[roomIndex]);
+                    }
                 }
             }
+
         }
 
 
@@ -805,11 +807,11 @@ io.on('connection', (socket) => {
                                 // console.log("entrooo????? --> ", email);
                             }
                             io.to(room.idGame).emit('finishGame', ({ gameStarted: false, timer: 0, username: room.users[0].username, image: room.users[0].image, email: room.users[0].email }));
-                            
+
 
                             io.sockets.sockets.get(room.users[0].id).leave(room.idGame);
 
-                        } else{
+                        } else {
                             if (room.users.length < 1) {
                                 let lobbyToEliminate = findLobbieByGameroomId(room.idGame);
                                 console.log('roomToEliminate', room);
@@ -820,7 +822,7 @@ io.on('connection', (socket) => {
                                     let lobbyIndex = lobbies.findIndex(lobby => lobby.id === lobbyToEliminate.id);
                                     console.log('lobbyIndex', lobbyIndex);
                                     lobbies.splice(lobbyIndex, 1);
-                                    
+
                                 }
                             }
                         }
