@@ -819,7 +819,7 @@ io.on('connection', (socket) => {
     });
     socket.on('changeSkin', async (data) => {
         // console.log(data);
-        let response = await fetch('http://localhost:8000/api/changeIcon', {
+        let response = await fetch('http://localhost:8000/api/changeProfile', {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {

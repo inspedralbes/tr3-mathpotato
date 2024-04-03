@@ -1,16 +1,46 @@
 <template>
-        <div class="card">
+    <div class="card">
         <Toolbar style="border-radius: 3rem; padding: 1rem 1rem 1rem 1.5rem">
             
             <template #end>
                 <div class="flex align-items-center gap-3 navbar">
                     <!-- <Button label="Share" severity="contrast" size="small" /> -->
-                    <Button v-if="guest.email" label="login" @click="login()" severity="contrast" size="small" style="right: 20px; bottom: 3px;" />
-                    <Avatar v-badge.danger="10" class="p-overlay-badge" icon="pi pi-user" size="large" style="cursor: pointer; "/>
+                    <Button v-if="guest.email == 'none'" label="login" @click="login()" severity="contrast" size="small" style="right: 20px; bottom: 3px;" />
+                    <Avatar v-else v-badge.danger="10" @click="visibleRightprofile = true" class="p-overlay-badge" icon="pi pi-user" size="large" style="cursor: pointer; "/>
                 </div>
             </template>
         </Toolbar>
     </div>
+    <Sidebar v-model:visible="visibleRightprofile" position="right">
+            <div class="">
+                <div v-if="guest.image" @mouseover="showChangeAvatar" class="user-avatar">
+                    <Avatar :image="'./_nuxt/assets/Icon_' + guest.image + '.png'" shape="circle" class="avatar-edit" style="width: 250px; height: 250px; margin-left: auto; margin-right: auto; display: block; border-radius: 50%; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);" />
+                    <Button v-if="showbtn" @click="changeSkin" class="pi pi-pencil" label="change avatar" id="changeButton"/>
+                    <Divider style="padding-top: 40px;" type="solid" />
+                </div>
+                <div class="card" style="padding-bottom: 10px;">
+                    <span class="" >Username: </span>
+                </div>
+                <Inplace>
+                    <template #display>
+                        {{ text || guest.username }}
+                    </template>
+                    
+                    <template #content>
+                        <div class="justify-content-center edit-name">
+                            
+                            <InputText v-model="text" style="width: 70%;" @input="show=true" />
+                            <Button v-if="show" label="save" @click="btnEditUsername(); show = false"></Button>
+                        </div>
+                    </template>
+                </Inplace>
+                <div class="card" style="padding-bottom: 10px; padding-top: 20px;">
+                    <span class="">Email: </span>
+                </div>
+                <InputText disabled ></InputText>
+                
+            </div>
+    </Sidebar>
     <div class="container-principal">
         <!-- Public Rooms -->
         <div class="rooms-container">
@@ -158,10 +188,14 @@ export default {
         return {
             privateRoomCode: "",
             selectedModes: null,
+            showbtn: false,
+            showEditbtn: false,
+            text: null,
             selectedLobby: {},
             showModalConfig: false,
             btnRefresh: false,
             option: '',
+            visibleRightprofile: false,
             selectedModecreate: '',
             showJoinLobby: false,
             visible: false,
@@ -170,6 +204,7 @@ export default {
                 { name: 'default'}
             ],
             username: '',
+            show:true,
         };
     },
     computed: {
@@ -193,6 +228,12 @@ export default {
         
     },
     methods: {
+        showChangeAvatar(){
+            this.showbtn = true;
+        },
+        hideChangeAvatar(){
+            this.showbtn = false;
+        },
         createGame() {
             this.visible = false;
             // Logic to create a private room
@@ -244,9 +285,35 @@ export default {
         },
         login(){
             this.$router.push({ path: '/login' });
-        }
-        
-        
+        },
+        async btnEditUsername(){
+            this.show = false;
+            console.log(this.text);
+                try {
+                    const response = await fetch('http://localhost:8000/api/changeProfile', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+
+                        },
+                        body: JSON.stringify({
+                            email: this.guest.email,
+                            username: this.text,
+                            foto_perfil: this.guest.image
+                        })
+                    });
+    
+                    if (response.ok) {
+                        // Actualización exitosa
+                        console.log('Nombre de usuario actualizado');
+                    } else {
+                        // Error al actualizar
+                        console.error('Error al actualizar el nombre de usuario');
+                    }
+                } catch (error) {
+                    console.error('Error de red:', error);
+                }
+            }   
     },
     mounted() {
         socket.emit('getSalas');
@@ -269,6 +336,12 @@ body {
     /* Color de fondo general */
     
 }
+#changeButton{
+    top: 20px;
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+}
 
 /* */
 
@@ -288,7 +361,21 @@ body {
     transition: outline-color 0.3s;
     color: var(--text-color);
 }
+.btn-edit-name{
+    /* width: 70%; */
+    margin-left: auto;
+    margin-right: auto;
+}
 
+.avatar-edit:hover{
+    opacity: 0.6;
+    cursor: pointer;
+}
+
+.edit-name{
+    display: inline-block;
+    
+}
 .btn-join-lobby-public{
     /* margin-top: 700px; */
 
