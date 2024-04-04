@@ -526,6 +526,7 @@ io.on('connection', (socket) => {
             if (lobby) {
                 console.log("Hi");
                 game = joinLobby(lobby, socket, data);
+                socket.emit('userJoined');
             } else {
                 console.log("No hi");
                 let config = {
@@ -539,6 +540,7 @@ io.on('connection', (socket) => {
                 socket.broadcast.emit('salas', openLobbies);
                 lobby = lobbies[lobbies.length - 1];
                 game = joinLobby(lobby, socket, data);
+                socket.emit('userJoined');
             }
 
         }
@@ -730,7 +732,7 @@ io.on('connection', (socket) => {
                     let usuarioDesconectado = room.users.splice(usuarioDesconectadoIndex, 1);
                     socket.leave(room.roomName);
                     io.to(room.roomName).emit('usersDesconectados', room.users, room.roomName);
-                    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                    // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
                     if (room.users.length == 1 && room.started == true) {
                         room.gameStarted = false;
                         room.timer = 0;
