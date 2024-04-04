@@ -20,16 +20,16 @@
                 <div class="header-public-room">
                     <!-- <label for="username" class="font-semibold w-6rem">Username</label>
                     <InputText v-model="username" id="username" class="flex-auto" autocomplete="off" /> -->
-                    <div class="container-select">
+                    <!-- <div class="container-select">
                         <div class="card flex justify-content-center select-modes">
                             <FloatLabel class="w-full md:w-20rem">
                                 <MultiSelect id="ms-cities" v-model="selectedModes" :options="modes" optionLabel="name"
                                     :maxSelectedLabels="3" class="w-full" />
-                                <label for="ms-cities">Modes</label>
+                                <label for="ms-cities">Modos</label>
                             </FloatLabel>
                         </div>
 
-                    </div>
+                    </div> -->
                 </div>
                 <div class="content-public-room">
                     <div class="card">
@@ -65,7 +65,7 @@
         <div class="container-join-room">
             <div class="card flex justify-content-center">
                 <div class="flex flex-column align-items-center code">
-                    <div class="font-bold text-xl mb-2 text-join-room">Pon el codigo para unirte!</div>
+                    <div class="font-bold text-xl mb-2 text-join-room">¡Pon el codigo para unirte!</div>
                     <div v-if="visibleError">
                         <span class="text-red-500">¡Sala no encontrada!</span>
                     </div>
@@ -87,7 +87,7 @@
             <div class="button-container-createRoom">
                 <div class="card flex justify-content-center">
                     <div class="font-bold text-xl mb-2 text-create-room">Crea tu propia sala!</div>
-                    <Button label="Create!" @click="visible = true" />
+                    <Button label="Crea!" @click="visible = true" />
                     <div di="modal-config-game">
                     </div>
                 </div>
@@ -98,28 +98,27 @@
 
 
         <div class="card flex justify-content-center">
-            <Dialog v-model:visible="visible" modal header="Config Game" :style="{ width: '25rem' }">
-                <span class="p-text-secondary block mb-5">Update your information.</span>
+            <Dialog v-model:visible="visible" modal header="Configuracion de sala" :style="{ width: '25rem' }">
                 <Divider type="solid" />
                 <div class="flex align-items-center gap-3 mb-3">
-                    <label for="nameRoom" class="font-semibold w-6rem">Name Room</label>
+                    <label for="nameRoom" class="font-semibold w-6rem">Nombre de la sala</label>
                     <InputText v-model="nameRoom" id="name" class="flex-auto" autocomplete="off" />
                 </div>
                 <Divider type="solid" />
                 <div class="flex align-items-center radiobutton-div">
                     <RadioButton v-model="option" inputId="option1" name="option" value=false />
-                    <label for="option1" class="text-radiobutton">Public</label>
+                    <label for="option1" class="text-radiobutton">Publica</label>
                     <RadioButton v-model="option" inputId="option2" name="option" value=true />
-                    <label for="option2" class="text-radiobutton">Private</label>
+                    <label for="option2" class="text-radiobutton">Privada</label>
                 </div>
                 <Divider type="solid" />
-                <div class="flex align-items-center radiobutton-div">
+                <!-- <div class="flex align-items-center radiobutton-div">
                     <RadioButton v-model="selectedModecreate" inputId="classic" name="classic" value="Classic" />
                     <label for="classic" class="text-radiobutton">Classic</label>
                     <RadioButton v-model="selectedModecreate" inputId="puteo" name="puteo" value="Puteo" />
                     <label for="puteo" class="text-radiobutton">Puteo</label>
-                </div>
-                <Divider type="solid" />
+                </div> -->
+                <!-- <Divider type="solid" /> -->
                 <div class="flex justify-content-end gap-2 button-modal">
                     <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
                     <Button type="button" label="Create" @click="createGame()"></Button>
@@ -135,7 +134,7 @@
             <div class="container-join-public-room">
                 <div class="flex justify-content-center">
                     <span v-if="selectedLobby && selectedLobby.nameLobby">{{ selectedLobby.nameLobby }}</span>
-                    <Button label="Join" @click="joinPublicRoom" class="" />
+                    <Button label="Unirse" @click="joinPublicRoom" class="" />
                     <Button label="X" class="" @click="showJoinLobby = false" />
                 </div>
 
@@ -476,13 +475,7 @@ body {
 
 }
 
-.icon {
-    transition: transform 0.3s ease-in-out;
-}
 
-.icon:hover {
-    transform: rotate(180deg);
-}
 
 .header-public-room {
     display: flex;
