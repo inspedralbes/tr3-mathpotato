@@ -348,6 +348,7 @@ function UserHasNoLives(roomIndex, userWithBomb, gameRooms) {
 function respostaIncorrectaUsuariCorrecte(roomIndex, userWithBomb, gameRooms) {
     gameRooms[roomIndex].timer = gameRooms[roomIndex].timerAnterior;
     gameRooms[roomIndex].pregActual++;
+    console.log("user bomba: " + gameRooms[roomIndex].users);
     gameRooms[roomIndex].users[userWithBomb].lives--;
     let check = gameRooms[roomIndex].idGame;
     console.log("lives restantes -> " + gameRooms[roomIndex].users[userWithBomb].lives);

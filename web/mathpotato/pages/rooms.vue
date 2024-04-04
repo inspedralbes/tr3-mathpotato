@@ -271,6 +271,8 @@ export default {
                 this.username = 'guest_' + Math.floor(Math.random() * 1000000);
                 this.username = this.username.slice(0, 20);
                 socket.emit('join', { username: this.username, image: 1, email: 'none', tutorial: true })
+            } else{
+                socket.emit('join', { username: this.guest.username, image: this.guest.image, email: this.guest.email, tutorial: this.guest.tutorial })
             }
         },
         refresh() {
