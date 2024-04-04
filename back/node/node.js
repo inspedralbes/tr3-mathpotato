@@ -505,16 +505,19 @@ io.on('connection', (socket) => {
         console.log("tutorial", data.tutorial);
         let error = false;
         if (data.idLobby || data.password) {
+            
             if (data.idLobby) {
                 lobby = lobbies.find(lobby => lobby.id === data.idLobby);
-                if ((lobby.private && lobby.password === data.password) || !lobby.private) {
+                console.log(lobby);
+                if (lobby && ((lobby.private && lobby.password === data.password) || !lobby.private)) {
                     game = joinLobby(lobby, socket, data);
+                    socket.emit('userJoined');
                 } else {
-                    socket.emit('error', 'Contrasenya incorrecta');
+                    socket.emit('joinError', 'Contrasenya incorrecta');
                     error = true;
                 }
             } else {
-                socket.emit('error', 'No existeix aquesta sala');
+                socket.emit('joinError', 'No existeix aquesta sala');
                 error = true;
             }
         } else {

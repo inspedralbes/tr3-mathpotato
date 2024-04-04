@@ -66,7 +66,10 @@
             <div class="card flex justify-content-center">
                 <div class="flex flex-column align-items-center code">
                     <div class="font-bold text-xl mb-2 text-join-room">Pon el codigo para unirte!</div>
-                    <InputOtp v-model="value" :length="6" style="gap: 0; justify-content: center; padding: 20px;">
+                    <div v-if="visibleError">
+                        <span class="text-red-500">¡Sala no encontrada!</span>
+                    </div>
+                    <InputOtp v-model="value" :length="6" style="gap: 0; justify-content: center; padding: 20px;" :invalid="true">
                         <template #default="{ attrs, events, index }">
                             <input type="text" v-bind="attrs" v-on="events" class="custom-otp-input" />
                             <div style="padding: 5px;" v-if="index === 3" class="px-3">
@@ -152,6 +155,7 @@ const visible = ref(false);
 export default {
     data() {
         return {
+            visibleError: false,
             privateRoomCode: "",
             selectedModes: null,
             selectedLobby: {},
@@ -208,7 +212,6 @@ export default {
                 } else {
                     socket.emit('join', { idLobby: this.selectedLobby.idLobby, username: this.guest.username, image: this.guest.image, email: this.guest.email, tutorial: this.guest.tutorial })
                 }
-                this.$router.push({ path: '/play' });
 
                 // Logic to join a public room
                 // socket.emit('join', { username: this.users.username, image: this.users.image, email: this.users.email})
@@ -224,14 +227,12 @@ export default {
             } else {
                 socket.emit('join', { idLobby: code, username: this.guest.username, image: this.guest.image, email: this.guest.email, tutorial: this.guest.tutorial })
             }
-            this.$router.push({ path: '/play' });
         },
         playfast() {
             if (this.guest.email === 'none') {
                 this.username = 'guest_' + Math.floor(Math.random() * 1000000);
                 this.username = this.username.slice(0, 20);
                 socket.emit('join', { username: this.username, image: 1, email: 'none', tutorial: true })
-                this.$router.push({ path: '/play' });
             }
         },
         refresh() {
@@ -249,6 +250,13 @@ export default {
         socket.on('roomDone', (data) => {
             
             this.joinRoomByCode(data.id);
+        });
+        socket.on('joinError', (data) => {
+            this.visibleError = true;
+        });
+        socket.on('userJoined', (data) => {
+            console.log(data);
+            this.$router.push({ path: '/play' });
         });
 
 
@@ -311,6 +319,11 @@ body {
     top: 25%;
     font-size: 0.9em;
     padding: 0.5em 0.5em;
+}
+
+.text-red-500{
+    color: red;
+
 }
 
 .radiobutton-div {
