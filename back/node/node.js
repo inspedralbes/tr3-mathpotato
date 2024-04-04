@@ -315,7 +315,7 @@ async function updateVictorias(roomIndex, gameRooms) {
 //     return room;
 // }
 
-function UserHasNoLives(roomIndex, userWithBomb, roomToEliminate, gameRooms) {
+function UserHasNoLives(roomIndex, userWithBomb, gameRooms) {
     if (gameRooms[roomIndex].users[userWithBomb].email !== 'none') {
         var email = gameRooms[roomIndex].users[userWithBomb].email;
         addToRanking(email);
@@ -333,14 +333,16 @@ function UserHasNoLives(roomIndex, userWithBomb, roomToEliminate, gameRooms) {
     console.log("USERS -> " + gameRooms[roomIndex].users);
     if (gameRooms[roomIndex].users.length == 1 && gameRooms[roomIndex].started == true) {
         updateVictorias(roomIndex, gameRooms);
+        let lobbie=findLobbieByGameroomId(gameRooms[roomIndex].idGame);
         io.to(gameRooms[roomIndex].idGame).emit('finishGame', ({ gameStarted: false, timer: 0, username: gameRooms[roomIndex].users[0].username, image: gameRooms[roomIndex].users[0].image, email: gameRooms[roomIndex].users[0].email }));
         io.sockets.sockets.get(gameRooms[roomIndex].users[0].id).leave(gameRooms[roomIndex].idGame);
-        gameRooms.splice(roomToEliminate, 1);
+        lobbie.games.splice(roomIndex, 1);
+       
     } else {
         if (gameRooms[roomIndex].users.length > 1) {
             io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes": false });
         }
-
+       
     }
 }
 function respostaIncorrectaUsuariCorrecte(roomIndex, userWithBomb, gameRooms) {
@@ -351,7 +353,7 @@ function respostaIncorrectaUsuariCorrecte(roomIndex, userWithBomb, gameRooms) {
     console.log("lives restantes -> " + gameRooms[roomIndex].users[userWithBomb].lives);
 
     if (gameRooms[roomIndex].users[userWithBomb].lives == 0) {
-        UserHasNoLives(roomIndex, userWithBomb, gameRooms[roomIndex], gameRooms);
+        UserHasNoLives(roomIndex, userWithBomb, gameRooms);
     }
     if (gameRooms[roomIndex] && gameRooms[roomIndex].users.length > 1 && gameRooms[roomIndex].idGame == check) {
         io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes": true });
@@ -544,6 +546,7 @@ io.on('connection', (socket) => {
             console.log(game.users);
             io.to(game.idGame).emit('usersConnected', game.users);
             console.log('Salas: ', io.sockets.adapter.rooms);
+            console.log('Salas: ', lobbies[0].games[0].users);
         }
     });
 
@@ -671,6 +674,7 @@ io.on('connection', (socket) => {
 
             }
             if (gameRooms[roomIndex] != undefined && gameRooms[roomIndex].idGame==control && gameRooms[roomIndex].users.length > 1) {
+                userWithBomb = getUserWithBomb(roomIndex, gameRooms);
                 if (socket.id == gameRooms[roomIndex].users[userWithBomb].id) {
                     console.log("NEWPREGUNTA")
                     if (gameRooms[roomIndex] && gameRooms[roomIndex].users.length > 1) {
@@ -723,6 +727,7 @@ io.on('connection', (socket) => {
                     let usuarioDesconectado = room.users.splice(usuarioDesconectadoIndex, 1);
                     socket.leave(room.roomName);
                     io.to(room.roomName).emit('usersDesconectados', room.users, room.roomName);
+                    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
                     if (room.users.length == 1 && room.started == true) {
                         room.gameStarted = false;
                         room.timer = 0;
@@ -737,7 +742,6 @@ io.on('connection', (socket) => {
                             });
                             // console.log("entrooo????? --> ", email);
                         }
-                        gameRooms[room.idRoom].gameStarted = false;
                         io.to(room.roomName).emit('finishGame', ({ gameStarted: false, timer: 0, username: room.users[0].username, image: room.users[0].image, email: room.users[0].email }));
                         gameRooms.splice(room.idRoom, 1);
                         io.sockets.sockets.get(room.users[0].id).leave(room.roomName);
@@ -793,7 +797,6 @@ io.on('connection', (socket) => {
                         socket.leave(room.idGame);
                         io.to(room.idGame).emit('usersDesconectados', room.users, room.idGame);
                         if (room.users.length == 1 && room.started == true) {
-                            room.gameStarted = false;
                             room.timer = 0;
                             let email = room.users[0].email;
                             if (email != 'none') {
@@ -812,9 +815,11 @@ io.on('connection', (socket) => {
                             io.sockets.sockets.get(room.users[0].id).leave(room.idGame);
 
                         } else {
+                            console.log("USERS", room.users);
                             if (room.users.length < 1) {
                                 let lobbyToEliminate = findLobbieByGameroomId(room.idGame);
                                 console.log('roomToEliminate', room);
+                               
                                 let roomIndex = lobbyToEliminate.games.findIndex(room => room.roomName === room.idGame);
                                 lobbyToEliminate.games.splice(roomIndex, 1);
                                 console.log(lobbyToEliminate.games);
