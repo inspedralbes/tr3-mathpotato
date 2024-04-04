@@ -12,7 +12,7 @@ var lastRoom = 0;
 
 app.use(cors());
 const server = createServer(app);
-const URL = "http://127.0.0.1:8000/api/preguntes/random";
+const URL = "http://mathpotato.duckdns.org:8000/api/preguntes/random";
 
 const io = new Server(server, {
     cors: {
@@ -123,7 +123,7 @@ function findIndexRoomBySocketId(socketId, gameRooms) {
 async function getUser(data, socket) {
     try {
         // console.log("data to send...", data)
-        const response = await fetch('http://localhost:8000/api/login', {
+        const response = await fetch('http://mathpotato.duckdns.org:8000/api/login', {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {
@@ -287,7 +287,7 @@ function respostaCorrectaUsuariIncorrecte(roomIndex, userWithBomb, gameRooms) {
 }
 
 async function addToRanking(email) {
-    let response = await fetch('http://localhost:8000/api/updateDerrotas', {
+    let response = await fetch('http://mathpotato.duckdns.org:8000/api/updateDerrotas', {
         method: 'POST',
         body: JSON.stringify({ email }),
         headers: {
@@ -299,7 +299,7 @@ async function updateVictorias(roomIndex, gameRooms) {
     let email = gameRooms[roomIndex].users[0].email;
     // console.log(email);
     if (email !== 'none') {
-        let response = await fetch('http://localhost:8000/api/updateVictorias', {
+        let response = await fetch('http://mathpotato.duckdns.org:8000/api/updateVictorias', {
             method: 'POST',
             body: JSON.stringify({ email }),
             headers: {
@@ -333,16 +333,16 @@ function UserHasNoLives(roomIndex, userWithBomb, gameRooms) {
     console.log("USERS -> " + gameRooms[roomIndex].users);
     if (gameRooms[roomIndex].users.length == 1 && gameRooms[roomIndex].started == true) {
         updateVictorias(roomIndex, gameRooms);
-        let lobbie=findLobbieByGameroomId(gameRooms[roomIndex].idGame);
+        let lobbie = findLobbieByGameroomId(gameRooms[roomIndex].idGame);
         io.to(gameRooms[roomIndex].idGame).emit('finishGame', ({ gameStarted: false, timer: 0, username: gameRooms[roomIndex].users[0].username, image: gameRooms[roomIndex].users[0].image, email: gameRooms[roomIndex].users[0].email }));
         io.sockets.sockets.get(gameRooms[roomIndex].users[0].id).leave(gameRooms[roomIndex].idGame);
         lobbie.games.splice(roomIndex, 1);
-       
+
     } else {
         if (gameRooms[roomIndex].users.length > 1) {
             io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes": false });
         }
-       
+
     }
 }
 function respostaIncorrectaUsuariCorrecte(roomIndex, userWithBomb, gameRooms) {
@@ -505,7 +505,7 @@ io.on('connection', (socket) => {
         console.log("tutorial", data.tutorial);
         let error = false;
         if (data.idLobby || data.password) {
-            
+
             if (data.idLobby) {
                 lobby = lobbies.find(lobby => lobby.id === data.idLobby);
                 console.log(lobby);
@@ -577,7 +577,7 @@ io.on('connection', (socket) => {
 
     socket.on('register', async (userData) => {
         console.log(userData);
-        const response = await fetch('http://localhost:8000/api/register', {
+        const response = await fetch('http://mathpotato.duckdns.org:8000/api/register', {
             method: 'POST',
             body: JSON.stringify(userData),
             headers: {
@@ -664,7 +664,7 @@ io.on('connection', (socket) => {
         console.log("Room index --> ", roomIndex);
         console.log(gameRooms);
         console.log("Pregunta: ", gameRooms[roomIndex].pregunta);
-        let control=gameRooms[roomIndex].idGame;
+        let control = gameRooms[roomIndex].idGame;
         const preguntaParaEvaluar = gameRooms[roomIndex].pregunta.replace('x', '*');
         const resultatPregunta = eval(preguntaParaEvaluar);
         console.log("Result correct --> ", resultatPregunta);
@@ -678,7 +678,7 @@ io.on('connection', (socket) => {
                 respostaIncorrecta(roomIndex, userWithBomb, gameRooms, socket);
 
             }
-            if (gameRooms[roomIndex] != undefined && gameRooms[roomIndex].idGame==control && gameRooms[roomIndex].users.length > 1) {
+            if (gameRooms[roomIndex] != undefined && gameRooms[roomIndex].idGame == control && gameRooms[roomIndex].users.length > 1) {
                 userWithBomb = getUserWithBomb(roomIndex, gameRooms);
                 if (socket.id == gameRooms[roomIndex].users[userWithBomb].id) {
                     console.log("NEWPREGUNTA")
@@ -719,7 +719,7 @@ io.on('connection', (socket) => {
                         var email = room.users[usuarioDesconectadoIndex].email;
 
 
-                        let response = await fetch('http://localhost:8000/api/updateDerrotas', {
+                        let response = await fetch('http://mathpotato.duckdns.org:8000/api/updateDerrotas', {
                             method: 'POST',
                             body: JSON.stringify({ email }),
                             headers: {
@@ -738,7 +738,7 @@ io.on('connection', (socket) => {
                         room.timer = 0;
                         let email = room.users[0].email;
                         if (email != 'none') {
-                            let response = await fetch('http://localhost:8000/api/updateVictorias', {
+                            let response = await fetch('http://mathpotato.duckdns.org:8000/api/updateVictorias', {
                                 method: 'POST',
                                 body: JSON.stringify({ email }),
                                 headers: {
@@ -788,7 +788,7 @@ io.on('connection', (socket) => {
 
 
                             // let response = await console.log("Connected!!!!!!!!!!");
-                            let response = await fetch('http://localhost:8000/api/updateDerrotas', {
+                            let response = await fetch('http://mathpotato.duckdns.org:8000/api/updateDerrotas', {
                                 method: 'POST',
                                 body: JSON.stringify({ email }),
                                 headers: {
@@ -805,7 +805,7 @@ io.on('connection', (socket) => {
                             room.timer = 0;
                             let email = room.users[0].email;
                             if (email != 'none') {
-                                let response = await fetch('http://localhost:8000/api/updateVictorias', {
+                                let response = await fetch('http://mathpotato.duckdns.org:8000/api/updateVictorias', {
                                     method: 'POST',
                                     body: JSON.stringify({ email }),
                                     headers: {
@@ -824,7 +824,7 @@ io.on('connection', (socket) => {
                             if (room.users.length < 1) {
                                 let lobbyToEliminate = findLobbieByGameroomId(room.idGame);
                                 console.log('roomToEliminate', room);
-                               
+
                                 let roomIndex = lobbyToEliminate.games.findIndex(room => room.roomName === room.idGame);
                                 lobbyToEliminate.games.splice(roomIndex, 1);
                                 console.log(lobbyToEliminate.games);
@@ -853,7 +853,7 @@ io.on('connection', (socket) => {
         // console.log(data);
     });
     socket.on('getRanking', async () => {
-        let response = await fetch('http://localhost:8000/api/ranking', {
+        let response = await fetch('http://mathpotato.duckdns.org:8000/api/ranking', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -866,7 +866,7 @@ io.on('connection', (socket) => {
     });
     socket.on('changeSkin', async (data) => {
         // console.log(data);
-        let response = await fetch('http://localhost:8000/api/changeIcon', {
+        let response = await fetch('http://mathpotato.duckdns.org:8000/api/changeIcon', {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {
