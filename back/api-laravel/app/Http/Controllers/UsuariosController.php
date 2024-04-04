@@ -79,21 +79,28 @@ class usuariosController extends Controller
     public function logout()
     {
     }
-    public function changeIcon(Request $request)
+    public function changeProfile(Request $request)
     {
+
         $request->validate([
+            'username' => 'required|string|max:50',
             'foto_perfil' => [
                 'required',
                 Rule::in(['1', '2', '3', '4', '5', '6', '7', '8', '9']),
             ],
-            'email' => 'required|string|email',
         ]);
+       
         $usuario = Usuarios::where("email", "=", $request->email)->first();
+        $usuario->username = $request->username;
         $usuario->foto_perfil = $request->foto_perfil;
+
         $usuario->save();
+
         return response()->json([
             'status' => 1,
-            'foto_perfil' => $usuario->foto_perfil
+            'username' => $usuario->username,
+            'foto_perfil' => $usuario->foto_perfil,
+
         ]);
     }
 
@@ -119,9 +126,9 @@ class usuariosController extends Controller
         $request->validate([
             'email' => 'required|string|email',
         ]);
-        
+
         $usuario = Usuarios::where("email", "=", $request->email)->first();
-        if($usuario->tutorial == 1){
+        if ($usuario->tutorial == 1) {
             $usuario->tutorial = 0;
         }
         $usuario->num_derrotas = $usuario->num_derrotas + 1;
@@ -138,7 +145,7 @@ class usuariosController extends Controller
             'email' => 'required|string|email',
         ]);
         $usuario = Usuarios::where("email", "=", $request->email)->first();
-        if($usuario->tutorial == 1){
+        if ($usuario->tutorial == 1) {
             $usuario->tutorial = 0;
         }
         $usuario->num_victorias = $usuario->num_victorias + 1;
