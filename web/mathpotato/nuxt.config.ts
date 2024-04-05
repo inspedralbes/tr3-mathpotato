@@ -19,7 +19,7 @@ export default defineNuxtConfig({
       // unstyled: true,
     },
     components: {
-      include: ['InputText', 'Button', 'AnimateOnScroll', 'Dialog', 'ScrollPanel', 'Paginator', 'InputOtp', 'Divider', 'RadioButton', 'Carousel', 'MultiSelect', 'FloatLabel', 'Listbox', 'Toolbar', 'Avatar', 'Sidebar', 'Inplace', 'Checkbox']
+      include: ['InputText', 'Button', 'AnimateOnScroll', 'Dialog', 'ScrollPanel', 'Paginator', 'InputOtp', 'Divider', 'RadioButton', 'Carousel', 'MultiSelect', 'FloatLabel', 'Listbox', 'Toolbar', 'Avatar', 'Sidebar', 'Inplace', 'Checkbox', 'InlineMessage', 'Message', 'ConfirmDialog', 'Image', 'Toast', 'Fieldset']
     },
 
   },

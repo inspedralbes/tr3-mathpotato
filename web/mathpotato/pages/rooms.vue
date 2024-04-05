@@ -13,12 +13,56 @@
     </div>
     <Sidebar v-model:visible="visibleRightprofile" position="right">
             <div class="">
-                <div v-if="guest.image" @mouseover="showChangeAvatar" class="user-avatar">
+                <div v-if="guest.image" @mouseover="showChangeAvatar" class="user-avatar" :style="{ height: avatarHeight }">
                     <Avatar :image="'./_nuxt/assets/Icon_' + guest.image + '.png'" shape="circle" class="avatar-edit" style="width: 250px; height: 250px; margin-left: auto; margin-right: auto; display: block; border-radius: 50%; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);" />
-                    <Button v-if="showbtn" @click="changeSkin" class="pi pi-pencil" label="change avatar" id="changeButton"/>
+                    <br>
+                    <!-- <Button v-if="showbtn" @click="changeSkin" class="pi pi-pencil" label="change avatar" id="changeButton"/> -->
+                    <Fieldset legend="Change Skin" :toggleable="true" :collapsed="true" >
+                        <p class="m-0">
+                            <div id="image_gallery" >
+                                <div>
+                                    <input type="radio" name="image" id="1" value="1" v-model="imatgeSeleccionada">
+                                    <label for="1"><Avatar :image="'./_nuxt/assets/Icon_1.png'" shape="circle" class="avatar-edit" style="width: 75px; height: 75px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="image" id="2" value="2" v-model="imatgeSeleccionada">
+                                    <label for="2"><Avatar :image="'./_nuxt/assets/Icon_2.png'" shape="circle" class="avatar-edit" style="width: 75px; height: 75px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="image" id="3" value="3" v-model="imatgeSeleccionada">
+                                    <label for="3"><Avatar :image="'./_nuxt/assets/Icon_3.png'" shape="circle" class="avatar-edit" style="width: 75px; height: 75px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="image" id="4" value="4" v-model="imatgeSeleccionada">
+                                    <label for="4"><Avatar :image="'./_nuxt/assets/Icon_4.png'" shape="circle" class="avatar-edit" style="width: 75px; height: 75px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="image" id="5" value="5" v-model="imatgeSeleccionada">
+                                    <label for="5"><Avatar :image="'./_nuxt/assets/Icon_5.png'" shape="circle" class="avatar-edit" style="width: 75px; height: 75px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="image" id="6" value="6" v-model="imatgeSeleccionada">
+                                    <label for="6"><Avatar :image="'./_nuxt/assets/Icon_6.png'" shape="circle" class="avatar-edit" style="width: 75px; height: 75px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="image" id="7" value="7" v-model="imatgeSeleccionada">
+                                    <label for="7"><Avatar :image="'./_nuxt/assets/Icon_7.png'" shape="circle" class="avatar-edit" style="width: 75px; height: 75px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="image" id="8" value="8" v-model="imatgeSeleccionada">
+                                    <label for="8"><Avatar :image="'./_nuxt/assets/Icon_8.png'" shape="circle" class="avatar-edit" style="width: 75px; height: 75px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="image" id="9" value="9" v-model="imatgeSeleccionada">
+                                    <label for="9"><Avatar :image="'./_nuxt/assets/Icon_9.png'" shape="circle" class="avatar-edit" style="width: 75px; height: 75px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                </div>
+                            
+                            </div>
+                            <Button label="save" class="" />
+                        </p>
+                    </Fieldset>
                     <Divider style="padding-top: 40px;" type="solid" />
-                </div>
-                <div class="card" style="padding-bottom: 10px;">
+                    <div class="card" style="padding-bottom: 10px;">
                     <span class="" >Username: </span>
                 </div>
                 <Inplace>
@@ -34,10 +78,15 @@
                         </div>
                     </template>
                 </Inplace>
-                <div class="card" style="padding-bottom: 10px; padding-top: 20px;">
-                    <span class="">Email: </span>
+                <Toast />
+                <ConfirmDialog></ConfirmDialog>
+                <div class="card flex flex-wrap gap-2 justify-content-center">
+                    <Button @click="confirm()" label="Sign Out" severity="danger" outlined></Button>
                 </div>
-                <InputText disabled ></InputText>
+                </div>
+                
+                
+                
                 
             </div>
     </Sidebar>
@@ -189,12 +238,14 @@ export default {
             privateRoomCode: "",
             selectedModes: null,
             showbtn: false,
+            avatarHeight: '350px',
             showEditbtn: false,
             text: null,
             selectedLobby: {},
             showModalConfig: false,
             btnRefresh: false,
             option: '',
+            imatgeSeleccionada: '1',
             visibleRightprofile: false,
             selectedModecreate: '',
             showJoinLobby: false,
@@ -228,11 +279,32 @@ export default {
         
     },
     methods: {
+        confirm() {
+            this.$confirm.require({
+                message: '¿Seguro que quieres cerrar sesión?',
+                header: 'Cerrar Sesión',
+                icon: 'pi pi-info-circle',
+                rejectLabel: 'No',
+                acceptLabel: 'Si',
+                rejectClass: 'p-button-secondary p-button-outlined',
+                acceptClass: 'p-button-danger',
+                accept: () => {
+                    this.$toast.add({ severity: 'info', summary: 'Confirmed', detail: 'Record deleted', life: 3000 });
+                },
+                reject: () => {
+                    this.$toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+                }
+            });
+        },
         showChangeAvatar(){
             this.showbtn = true;
         },
         hideChangeAvatar(){
             this.showbtn = false;
+        },
+        changeSkin(){
+            this.avatarHeight = '550px';
+            
         },
         createGame() {
             this.visible = false;
@@ -279,9 +351,16 @@ export default {
                 this.$router.push({ path: '/play'});
             }
         },
-        refresh() {
-            // Logic to refresh the public rooms
-
+        
+            // document.getElementById(this.guest.image).checked = true;
+        setCheckedOnUserImage() {
+            console.log('image:', this.guest.image);
+            
+            const imageElement = document.getElementById(this.guest.image);
+            if (imageElement) {
+                
+                imageElement.checked = true;
+            }
         },
         login(){
             this.$router.push({ path: '/login' });
@@ -320,10 +399,19 @@ export default {
         socket.on('roomDone', (data) => {
             this.selectedLobby = data.id;
             this.joinPublicRoom();
+
         });
+        if(this.guest.email !== 'none'){
+            this.setCheckedOnUserImage();
+        }
+    },
+    // watch: {
+    //     guest() {
+    //         this.setCheckedOnUserImage();
+    //     },
+        
+    // },
 
-
-    }
 };
 </script>
 
@@ -343,8 +431,32 @@ body {
     margin-left: auto;
 }
 
-/* */
+#image_gallery{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+}
 
+input[type="radio"]{
+    display: none;
+}
+
+.avatar-edit{
+    /* background-color: blanchedalmond; */
+    /* border: 1px solid black; */
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+}
+
+input[type="radio"]:checked + label>.avatar-edit{
+    border: 2px solid #007bff;
+}
+
+/* */
+.p-fieldset-legend{
+    background-color: #0ec69bc9;
+    width: 100%;
+}
 .custom-otp-input {
     width: 48px;
     height: 48px;
