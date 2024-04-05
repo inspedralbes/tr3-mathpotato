@@ -199,7 +199,7 @@ export default {
             this.hasClickedStart = false;
             this.showWaitingModal = true;
             this.showStartButton = true;
-            socket.emit('join', {"idLobby": this.roomName, "username": this.userPantalla.username, "image": this.userPantalla.image, "email": this.userPantalla.email, "tutorial": this.userPantalla.tutorial });
+            socket.emit('newGameSameRoom', {"idLobby": this.roomName, "username": this.userPantalla.username, "image": this.userPantalla.image, "email": this.userPantalla.email, "tutorial": this.userPantalla.tutorial });
 
         },
         goBack() {
