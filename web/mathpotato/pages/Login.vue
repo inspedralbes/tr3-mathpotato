@@ -114,7 +114,7 @@ export default {
         login() {
             console.log(this.email);
             const encryptedPassword = CryptoJS.SHA256(this.password).toString();
-            socket.emit('login', { email: this.email, password: encryptedPassword });
+            socket.emit('login', { email: this.email, password: encryptedPassword});
         }
     },
 };

@@ -13,6 +13,7 @@ var lastRoom = 0;
 app.use(cors());
 const server = createServer(app);
 const URL = "http://127.0.0.1:8000/api/preguntes/random";
+// const token = localStorage.getItem('token');
 
 const io = new Server(server, {
     cors: {
@@ -105,6 +106,8 @@ function findIndexRoomBySocketId(socketId, gameRooms) {
 }
 
 async function getUser(data, socket) {
+
+
     try {
         // console.log("data to send...", data)
         const response = await fetch('http://localhost:8000/api/login', {
@@ -116,8 +119,11 @@ async function getUser(data, socket) {
         }
         );
         const responseData = await response.json();
+
         console.log(responseData.status, "==", 1);
-        if (responseData.status === 1) {
+        if (responseData.token && responseData.status === 1) {
+            // console.log("token", responseData.token);
+            // localStorage.setItem('tokeeeeeeeen', responseData.token);
             let returnData = responseData;
             returnData.id = socket.id;
             returnData.image = responseData.foto_perfil;
@@ -802,9 +808,7 @@ io.on('connection', (socket) => {
         let roomIndex = gameRooms.findIndex(room => room.roomName === roomName);
         gameRooms.splice(roomIndex, 1);
     });
-    socket.on('login', (data) => {
-        // console.log(data);
-    });
+
     socket.on('getRanking', async () => {
         let response = await fetch('http://localhost:8000/api/ranking', {
             method: 'GET',

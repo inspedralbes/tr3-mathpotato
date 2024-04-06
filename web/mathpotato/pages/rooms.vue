@@ -22,39 +22,39 @@
                             <div id="image_gallery" >
                                 <div>
                                     <input type="radio" name="image" id="1" value="1" v-model="imatgeSeleccionada">
-                                    <label for="1"><Avatar :image="'./_nuxt/assets/Icon_1.png'" shape="circle" class="avatar-edit" style="width: 75px; height: 75px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                    <label for="1"><Avatar :image="'./_nuxt/assets/Icon_1.png'" shape="circle" class="avatar-edit" style="width: 65px; height: 65px; margin-left: auto; margin-right: auto; display: block;" /></label>
                                 </div>
                                 <div>
                                     <input type="radio" name="image" id="2" value="2" v-model="imatgeSeleccionada">
-                                    <label for="2"><Avatar :image="'./_nuxt/assets/Icon_2.png'" shape="circle" class="avatar-edit" style="width: 75px; height: 75px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                    <label for="2"><Avatar :image="'./_nuxt/assets/Icon_2.png'" shape="circle" class="avatar-edit" style="width: 65px; height: 65px; margin-left: auto; margin-right: auto; display: block;" /></label>
                                 </div>
                                 <div>
                                     <input type="radio" name="image" id="3" value="3" v-model="imatgeSeleccionada">
-                                    <label for="3"><Avatar :image="'./_nuxt/assets/Icon_3.png'" shape="circle" class="avatar-edit" style="width: 75px; height: 75px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                    <label for="3"><Avatar :image="'./_nuxt/assets/Icon_3.png'" shape="circle" class="avatar-edit" style="width: 65px; height: 65px; margin-left: auto; margin-right: auto; display: block;" /></label>
                                 </div>
                                 <div>
                                     <input type="radio" name="image" id="4" value="4" v-model="imatgeSeleccionada">
-                                    <label for="4"><Avatar :image="'./_nuxt/assets/Icon_4.png'" shape="circle" class="avatar-edit" style="width: 75px; height: 75px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                    <label for="4"><Avatar :image="'./_nuxt/assets/Icon_4.png'" shape="circle" class="avatar-edit" style="width: 65px; height: 65px; margin-left: auto; margin-right: auto; display: block;" /></label>
                                 </div>
                                 <div>
                                     <input type="radio" name="image" id="5" value="5" v-model="imatgeSeleccionada">
-                                    <label for="5"><Avatar :image="'./_nuxt/assets/Icon_5.png'" shape="circle" class="avatar-edit" style="width: 75px; height: 75px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                    <label for="5"><Avatar :image="'./_nuxt/assets/Icon_5.png'" shape="circle" class="avatar-edit" style="width: 65px; height: 65px; margin-left: auto; margin-right: auto; display: block;" /></label>
                                 </div>
                                 <div>
                                     <input type="radio" name="image" id="6" value="6" v-model="imatgeSeleccionada">
-                                    <label for="6"><Avatar :image="'./_nuxt/assets/Icon_6.png'" shape="circle" class="avatar-edit" style="width: 75px; height: 75px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                    <label for="6"><Avatar :image="'./_nuxt/assets/Icon_6.png'" shape="circle" class="avatar-edit" style="width: 65px; height: 65px; margin-left: auto; margin-right: auto; display: block;" /></label>
                                 </div>
                                 <div>
                                     <input type="radio" name="image" id="7" value="7" v-model="imatgeSeleccionada">
-                                    <label for="7"><Avatar :image="'./_nuxt/assets/Icon_7.png'" shape="circle" class="avatar-edit" style="width: 75px; height: 75px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                    <label for="7"><Avatar :image="'./_nuxt/assets/Icon_7.png'" shape="circle" class="avatar-edit" style="width: 65px; height: 65px; margin-left: auto; margin-right: auto; display: block;" /></label>
                                 </div>
                                 <div>
                                     <input type="radio" name="image" id="8" value="8" v-model="imatgeSeleccionada">
-                                    <label for="8"><Avatar :image="'./_nuxt/assets/Icon_8.png'" shape="circle" class="avatar-edit" style="width: 75px; height: 75px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                    <label for="8"><Avatar :image="'./_nuxt/assets/Icon_8.png'" shape="circle" class="avatar-edit" style="width: 65px; height: 65px; margin-left: auto; margin-right: auto; display: block;" /></label>
                                 </div>
                                 <div>
                                     <input type="radio" name="image" id="9" value="9" v-model="imatgeSeleccionada">
-                                    <label for="9"><Avatar :image="'./_nuxt/assets/Icon_9.png'" shape="circle" class="avatar-edit" style="width: 75px; height: 75px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                    <label for="9"><Avatar :image="'./_nuxt/assets/Icon_9.png'" shape="circle" class="avatar-edit" style="width: 65px; height: 65px; margin-left: auto; margin-right: auto; display: block;" /></label>
                                 </div>
                             
                             </div>
@@ -63,8 +63,8 @@
                     </Fieldset>
                     <Divider style="padding-top: 40px;" type="solid" />
                     <div class="card" style="padding-bottom: 10px;">
-                    <span class="" >Username: </span>
-                </div>
+                        <span class="" >Username: </span>
+                    </div>
                 <Inplace>
                     <template #display>
                         {{ text || guest.username }}
@@ -78,15 +78,16 @@
                         </div>
                     </template>
                 </Inplace>
+                    <div class="card" style="padding-top: 20px; padding-bottom: 10px;">
+                        <span class="" >Email: </span>
+                    </div>
+                    <InputText v-model="guest.email" disabled style="width: 100%;" />
                 <Toast />
                 <ConfirmDialog></ConfirmDialog>
-                <div class="card flex flex-wrap gap-2 justify-content-center">
-                    <Button @click="confirm()" label="Sign Out" severity="danger" outlined></Button>
+                <div class="btn-sign-out">
+                    <Button @click="logout()" label="Log Out" severity="danger" outlined></Button>
                 </div>
                 </div>
-                
-                
-                
                 
             </div>
     </Sidebar>
@@ -99,7 +100,7 @@
                     <InputText v-model="username" id="username" class="flex-auto" autocomplete="off" /> -->
                     <div class="container-svg">
                         <div class="flex justify-content-start">
-                            <Button @click="btnRefresh" icon="pi pi-refresh" class="btn-refresh" label="Reload" severity="warning" />
+                            <!-- <Button @click="btnRefresh" icon="pi pi-refresh" class="btn-refresh" label="Reload" severity="warning" /> -->
                         </div>
                     </div>
                     <div class="container-select">
@@ -135,7 +136,8 @@
                             <div class="card">
                                 <Paginator :rows="5" :total-records="lobbies.length" ></Paginator>
                             </div>
-                            <div class="card">
+                            <!-- <Divider type="solid" /> -->
+                            <div class="card btn-jugar-rapido">
                                 <Button label="Jugar rapido!" @click="playfast" />
                             </div>
                     </div>
@@ -275,14 +277,12 @@ export default {
             let store = useAppStore();
             return store.getGuestInfo();
         }
-
-        
     },
     methods: {
         confirm() {
             this.$confirm.require({
                 message: '¿Seguro que quieres cerrar sesión?',
-                header: 'Cerrar Sesión',
+                header: 'Log Out',
                 icon: 'pi pi-info-circle',
                 rejectLabel: 'No',
                 acceptLabel: 'Si',
@@ -290,6 +290,7 @@ export default {
                 acceptClass: 'p-button-danger',
                 accept: () => {
                     this.$toast.add({ severity: 'info', summary: 'Confirmed', detail: 'Record deleted', life: 3000 });
+                    // logout();
                 },
                 reject: () => {
                     this.$toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
@@ -368,31 +369,35 @@ export default {
         async btnEditUsername(){
             this.show = false;
             console.log(this.text);
-                try {
-                    const response = await fetch('http://localhost:8000/api/changeProfile', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
+            try {
+                const response = await fetch('http://localhost:8000/api/changeProfile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
 
-                        },
-                        body: JSON.stringify({
-                            email: this.guest.email,
-                            username: this.text,
-                            foto_perfil: this.guest.image
-                        })
-                    });
-    
-                    if (response.ok) {
-                        // Actualización exitosa
-                        console.log('Nombre de usuario actualizado');
-                    } else {
-                        // Error al actualizar
-                        console.error('Error al actualizar el nombre de usuario');
-                    }
-                } catch (error) {
-                    console.error('Error de red:', error);
+                    },
+                    body: JSON.stringify({
+                        email: this.guest.email,
+                        username: this.text,
+                        foto_perfil: this.guest.image
+                    })
+                });
+
+                if (response.ok) {
+                    // Actualización exitosa
+                    console.log('Nombre de usuario actualizado');
+                } else {
+                    // Error al actualizar
+                    console.error('Error al actualizar el nombre de usuario');
                 }
-            }   
+            } catch (error) {
+                console.error('Error de red:', error);
+            }
+        },
+        async logout(){
+            console.log(this.guest.email);
+            socket.emit('logout', { email: this.guest.email });
+        },               
     },
     mounted() {
         socket.emit('getSalas');
@@ -421,8 +426,7 @@ body {
     padding: 0;
     font-family: 'Arial', sans-serif;
     background-color: #F2F2F2;
-    /* Color de fondo general */
-    
+        
 }
 #changeButton{
     top: 20px;
@@ -437,13 +441,28 @@ body {
     gap: 2px;
 }
 
+.btn-jugar-rapido{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.btn-sign-out{
+    display: flex;
+    justify-content: center;
+    /* margin-top: auto; */
+    margin-top: 90%;
+    margin-left: 50%;
+    /* margin-bottom: auto; */
+
+}
+
 input[type="radio"]{
     display: none;
 }
 
 .avatar-edit{
-    /* background-color: blanchedalmond; */
-    /* border: 1px solid black; */
     cursor: pointer;
     box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
 }
@@ -452,7 +471,6 @@ input[type="radio"]:checked + label>.avatar-edit{
     border: 2px solid #007bff;
 }
 
-/* */
 .p-fieldset-legend{
     background-color: #0ec69bc9;
     width: 100%;
@@ -472,7 +490,9 @@ input[type="radio"]:checked + label>.avatar-edit{
     border-right: 0 none;
     transition: outline-color 0.3s;
     color: var(--text-color);
+
 }
+
 .btn-edit-name{
     /* width: 70%; */
     margin-left: auto;
@@ -486,11 +506,6 @@ input[type="radio"]:checked + label>.avatar-edit{
 
 .edit-name{
     display: inline-block;
-    
-}
-.btn-join-lobby-public{
-    /* margin-top: 700px; */
-
 }
 
 .btn-login{

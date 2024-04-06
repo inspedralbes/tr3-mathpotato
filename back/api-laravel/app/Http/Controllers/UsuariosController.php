@@ -31,9 +31,12 @@ class usuariosController extends Controller
 
                 $usuario->save();
 
+                $token = $usuario->createToken('myapptoken')->plainTextToken;
+
                 return response()->json([
                     'status' => 1,
-                    'message' => 'usuari creat correctament'
+                    'message' => 'usuari creat correctament',
+                    'token' => $token,
                 ]);
             }
         } catch (\Exception $e) {
@@ -56,12 +59,16 @@ class usuariosController extends Controller
 
         if ($usuario) {
             if (Hash::check($request->password, $usuario->password)) {
+                $token = $usuario->createToken('myapptoken')->plainTextToken;
+
                 return response()->json([
                     'status' => 1,
                     'username' => $usuario->username,
                     'email' => $usuario->email,
                     'foto_perfil' => $usuario->foto_perfil,
-                    'tutorial' => $usuario->tutorial
+                    'tutorial' => $usuario->tutorial,
+                    'message' => 'Usuario logeado correctamente',
+                    'token' => $token
                 ]);
             } else {
                 return response()->json([
@@ -76,12 +83,17 @@ class usuariosController extends Controller
             ]);
         }
     }
-    public function logout()
+    public function logout(Request $request)
     {
+        auth()->user()->tokens()->delete();
+
+        return response()->json([
+            'status' => 1,
+            'message' => 'Sesión cerrada correctamente'
+        ]);
     }
     public function changeProfile(Request $request)
     {
-
         $request->validate([
             'username' => 'required|string|max:50',
             'foto_perfil' => [
@@ -89,7 +101,7 @@ class usuariosController extends Controller
                 Rule::in(['1', '2', '3', '4', '5', '6', '7', '8', '9']),
             ],
         ]);
-       
+
         $usuario = Usuarios::where("email", "=", $request->email)->first();
         $usuario->username = $request->username;
         $usuario->foto_perfil = $request->foto_perfil;
