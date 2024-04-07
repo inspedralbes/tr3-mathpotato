@@ -25,6 +25,7 @@ export const useAppStore = defineStore('app', {
             lost: false,
             win: false,
             tutorial: true,
+            token: '',
         },
         users: [],
         pregunta: {
@@ -136,6 +137,7 @@ export const useAppStore = defineStore('app', {
             this.guestInfo.win = false;
             this.guestInfo.lost = false;
             this.guestInfo.tutorial = data.tutorial;
+            this.guestInfo.token = data.token;
             // this.guestInfo.shieldUser.activated = data.shieldUser.activated;
             // this.guestInfo.shieldUser.sec = data.shieldUser.sec;
 
@@ -150,6 +152,8 @@ export const useAppStore = defineStore('app', {
         clearGuestInfo() {
             this.guestInfo.username = '';
             this.guestInfo.id = '';
+            this.guestInfo.bomba = false;
+            this.guestInfo.email = '';
         },
         setShieldUser(shieldUser) {
             this.shieldUser.activated = shieldUser.activated;

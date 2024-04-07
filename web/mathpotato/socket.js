@@ -104,8 +104,14 @@ socket.on("loginSuccess", (data) => {
     const store = useAppStore();
     store.setError(data.status);
     console.log(data);
-    let user = { username: data.username, id: data.id, image: data.image, email: data.email, tutorial: data.tutorial };
+    let user = { username: data.username, id: data.id, image: data.image, email: data.email, tutorial: data.tutorial, token: data.token };
     store.setGuestInfo(user);
+});
+
+socket.on("logoutSuccess", (data) => {
+    console.log('Logout correcto: ', data);
+    const store = useAppStore();
+    store.clearGuestInfo();
 });
 
 socket.on("changeSkinSuccess", (data) => {

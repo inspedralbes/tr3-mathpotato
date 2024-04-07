@@ -396,7 +396,7 @@ export default {
         },
         async logout(){
             console.log(this.guest.email);
-            socket.emit('logout', { email: this.guest.email });
+            socket.emit('logout', { email: this.guest.email, token: this.guest.token });
         },               
     },
     mounted() {

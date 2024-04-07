@@ -4,6 +4,7 @@ import { createServer } from 'node:http';
 import { Server } from 'socket.io';
 import { join } from 'path';
 import mysql from 'mysql';
+// const fetch = require('node-fetch');
 
 const app = express();
 
@@ -119,7 +120,7 @@ async function getUser(data, socket) {
         }
         );
         const responseData = await response.json();
-
+        console.log("login data", responseData);
         console.log(responseData.status, "==", 1);
         if (responseData.token && responseData.status === 1) {
             // console.log("token", responseData.token);
@@ -129,6 +130,7 @@ async function getUser(data, socket) {
             returnData.image = responseData.foto_perfil;
             returnData.username = responseData.username;
             returnData.email = responseData.email;
+            returnData.token = responseData.token;
             if (responseData.tutorial === 1) {
                 returnData.tutorial = true;
             }
@@ -581,6 +583,40 @@ io.on('connection', (socket) => {
         // console.log("data to send...", data)
         await getUser(data, socket);
     });
+
+    socket.on('logout', async (data) => {
+        await logoutUser(data, socket);
+    });
+
+    async function logoutUser(data, socket) {
+        console.log("data logout", data);
+        console.log("logout email", data.email);
+        console.log("logout token", data.token);
+        try {
+            const response = await fetch('http://localhost:8000/api/logout', {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + data.token
+                }
+            });
+
+            const responseData = await response.json();
+            console.log("login data", responseData);
+            if (responseData.token && responseData.status === 1) {
+                let returnDataLogout = responseData;
+                returnDataLogout.status = 1;
+                returnDataLogout.email = responseData.email;
+                returnDataLogout.token = responseData.token;
+                console.log("response returnData ", returnDataLogout);
+                socket.emit('logoutSuccess', returnDataLogout);
+                console.log("response.ok....logout complete", responseData);
+            }
+        } catch (error) {
+            console.log("error logout", error);
+        }
+    }
 
 
 
