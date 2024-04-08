@@ -77,10 +77,10 @@ export default {
 
             this.$router.push({ path: '/play' });
         },
-        guardarDades() {
-            socket.emit('changeSkin', { email: this.users.email, foto_perfil: this.imatgeSeleccionada });
-            this.visible = false;
-        },
+        // guardarDades() {
+        //     socket.emit('changeSkin', { email: this.users.email, foto_perfil: this.imatgeSeleccionada });
+        //     this.visible = false;
+        // },
     },
 }
 </script>

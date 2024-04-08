@@ -115,10 +115,11 @@ socket.on("logoutSuccess", (data) => {
     location.reload();
 });
 
-socket.on("changeSkinSuccess", (data) => {
+socket.on("changeProfile", (data) => {
     console.log('Cambio de skin correcto: ', data);
     const store = useAppStore();
-    store.setGuestImage(data);
+    store.setUpdateProfile(data);
+    
 });
 
 socket.on("updateRanking", (ranking) => {

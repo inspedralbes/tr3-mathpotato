@@ -846,31 +846,34 @@ io.on('connection', (socket) => {
     });
 
     socket.on('getRanking', async () => {
-        let response = await fetch('http://localhost:8000/api/ranking', {
+        const response = await fetch('http://localhost:8000/api/ranking', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             },
         });
-        let ranking = await response.json();
+        const ranking = await response.json();
         // console.log(ranking);
         socket.emit('updateRanking', await ranking);
 
     });
-    socket.on('changeSkin', async (data) => {
-        // console.log(data);
-        let response = await fetch('http://localhost:8000/api/changeProfile', {
+
+    socket.on('updateProfile', async (data) => {
+        console.log("change skin...", data);
+
+        const response = await fetch('http://localhost:8000/api/changeProfile', {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {
                 'Content-Type': 'application/json'
             }
         });
-        let responseData = await response.json();
-        if (responseData.status == 1) {
-            // console.log("Icono cambiado correctamente");
+        const responseData = await response.json();
+
+        if (responseData.status === 1) {
+            console.log("Icono cambiado correctamente");
             // console.log(data.foto_perfil);
-            socket.emit('changeSkinSuccess', data.foto_perfil);
+            socket.emit('changeProfile', data);
         }
     });
 });

@@ -97,7 +97,7 @@
                                 </div>
                             
                             </div>
-                            <Button label="save" class="" />
+                            <Button label="save" @click="updateSkin" class="" />
                         </p>
                     </Fieldset>
                     <Divider style="padding-top: 40px;" type="solid" />
@@ -320,7 +320,11 @@ export default {
         ranking(){
             const store = useAppStore();
             return store.getRanking();
-        }
+        },
+        updateProfile(){
+            let store = useAppStore();
+            return store.getUpdateProfile();
+        },
     },
     methods: {
         getRanking(){
@@ -424,30 +428,14 @@ export default {
         async btnEditUsername(){
             this.show = false;
             console.log(this.text);
-            try {
-                const response = await fetch('http://localhost:8000/api/changeProfile', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-
-                    },
-                    body: JSON.stringify({
-                        email: this.guest.email,
-                        username: this.text,
-                        foto_perfil: this.guest.image
-                    })
-                });
-
-                if (response.ok) {
-                    // Actualización exitosa
-                    console.log('Nombre de usuario actualizado');
-                } else {
-                    // Error al actualizar
-                    console.error('Error al actualizar el nombre de usuario');
-                }
-            } catch (error) {
-                console.error('Error de red:', error);
-            }
+            console.log('update username...');
+            socket.emit('updateProfile', { email: this.guest.email, username: this.text, foto_perfil: this.guest.image });
+        },
+        async updateSkin(){
+            console.log('cambiando la skin...');
+            socket.emit('updateProfile', { email: this.guest.email, username: this.guest.username, foto_perfil: this.imatgeSeleccionada });
+            console.log('skin cambiada!');
+            // this.updateProfile();
         },
         async logout(){
             console.log(this.guest.email);
@@ -457,7 +445,6 @@ export default {
     watch: {
         ranking(){
             console.log('ranking:', this.ranking.ranking[0].username);
-        
         }
 
     },

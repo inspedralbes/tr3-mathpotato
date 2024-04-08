@@ -100,6 +100,7 @@ class usuariosController extends Controller
     public function changeProfile(Request $request)
     {
         $request->validate([
+            'email' => 'required|string|email', 
             'username' => 'required|string|max:50',
             'foto_perfil' => [
                 'required',

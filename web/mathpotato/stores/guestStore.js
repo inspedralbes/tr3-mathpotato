@@ -191,6 +191,15 @@ export const useAppStore = defineStore('app', {
             console.log('Imagen: ', image);
             this.guestInfo.image = image;
         },
+        setUpdateProfile(data) {
+            console.log("data updateProfile", data);
+            this.guestInfo.image = data.foto_perfil;
+            this.guestInfo.email = data.email;
+            this.guestInfo.username = data.username;
+        },
+        getUpdateProfile() {
+            return this.guestInfo;
+        },
         setRanking(ranking) {
             this.ranking = ranking;
         },
