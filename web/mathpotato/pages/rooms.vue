@@ -18,21 +18,23 @@
     <div class="card flex justify-content-center">
         <Dialog v-model:visible="visibleRanking" modal header="Ranking" :style="{ width: '50rem'}">
             <div class="container-ranking">
+                <span>Rank</span>
                 <span>Username</span>
                 <span>Victories</span>
                 <span>% Victories</span>
             </div>    
             <Divider type="solid" />
-                <div class="flex align-items-center gap-3 mb-3">
+                <div class="flex align-items-center gap-3 mb-3 data-ranking">
                     <div class="ranking">
                         <div v-for="(player, index) in ranking.ranking" :key="player.id" class="player-card"
                     :class="{ 'even-row': index % 2 === 0, 'odd-row': index % 2 !== 0 }">
                     
                     <span class="rank">{{ index + 1 }}. </span>
                     <span class="username">{{ player.username }}</span>
-                    <span class="victories">Victorias: <span class="victories-number">{{ player.num_victorias
+                    <span class="victories"> <span class="victories-number">{{ player.num_victorias
                     }}</span></span>
-                    <span class="victories-porcentaje">% Victorias: <span class="victories-number-porcentaje">{{ calculateVictoryPercentage(player) }}</span></span>
+                    <span class="victories-porcentaje"> <span class="victories-number-porcentaje">{{ calculateVictoryPercentage(player) }}</span></span>
+                    <Divider type="solid" />
                 </div>
                     </div>
                 </div>
@@ -56,7 +58,7 @@
                     <Avatar :image="'./_nuxt/assets/Icon_' + guest.image + '.png'" shape="circle" class="avatar-edit" style="width: 250px; height: 250px; margin-left: auto; margin-right: auto; display: block; border-radius: 50%; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);" />
                     <br>
                     <!-- <Button v-if="showbtn" @click="changeSkin" class="pi pi-pencil" label="change avatar" id="changeButton"/> -->
-                    <Fieldset legend="Change Skin" :toggleable="true" :collapsed="true" >
+                    <Fieldset legend="Cambiar Skin" :toggleable="true" :collapsed="true" >
                         <p class="m-0">
                             <div id="image_gallery" >
                                 <div>
@@ -102,7 +104,7 @@
                     </Fieldset>
                     <Divider style="padding-top: 40px;" type="solid" />
                     <div class="card" style="padding-bottom: 10px;">
-                        <span class="" >Username: </span>
+                        <span class="username-edit" >Username: </span>
                     </div>
                 <Inplace>
                     <template #display>
@@ -121,10 +123,14 @@
                         <span class="" >Email: </span>
                     </div>
                     <InputText v-model="guest.email" disabled style="width: 100%;" />
-                <Toast />
+                    <div class="card flex justify-content-center" style="padding-top: 20px; padding-bottom: 10px;">
+                        <span >Sugerencias: </span>
+                    </div>
+                    <Textarea v-model="value_sugerencias" autoResize rows="5" cols="28" style="width: 100%;"/>
+                    <Toast />
                 <ConfirmDialog></ConfirmDialog>
                 <div class="btn-sign-out">
-                    <Button @click="confirm()" label="Sign Out" severity="danger" outlined></Button>
+                    <Button @click="confirm()" label="Sign Out" severity="danger" outlined style=""></Button>
                 </div>
                 </div>
                 
@@ -208,7 +214,7 @@
             <div class="button-container-createRoom">
                 <div class="card flex justify-content-center">
                     <div class="font-bold text-xl mb-2 text-create-room">Crea tu propia sala!</div>
-                    <Button label="Create!" @click="visible = true" />
+                    <Button label="Crear!" @click="visible = true" />
                     <div di="modal-config-game"> 
                     </div>
                 </div>
@@ -277,6 +283,7 @@ export default {
     data() {
         return {
             privateRoomCode: "",
+            value_sugerencias: '',
             selectedModes: null,
             showbtn: false,
             avatarHeight: '350px',
@@ -497,9 +504,15 @@ body {
     gap: 2px;
 }
 
+.player-card{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+
+}
+
 .container-ranking{
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     justify-content: center;
     align-items: center;
 }
@@ -511,11 +524,24 @@ body {
     margin-top: 20px;
 }
 
+.data-ranking{
+    /* display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
+    justify-content: center; */
+
+}
+
+.p-inplace-display{
+    color: #ffa500;
+}
+
 .btn-sign-out{
     display: flex;
+    position: absolute;
     justify-content: center;
     /* margin-top: auto; */
-    margin-top: 90%;
+    margin-top: 60%;
     margin-left: 50%;
     /* margin-bottom: auto; */
 

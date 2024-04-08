@@ -8,7 +8,6 @@ export default defineNuxtConfig({
   modules: [
     '@pinia/nuxt',
     'nuxt-primevue',
-
   ],
   primevue: {
 
@@ -19,7 +18,7 @@ export default defineNuxtConfig({
       // unstyled: true,
     },
     components: {
-      include: ['InputText', 'Dropdown','InputIcon','IconField','Column', 'Datable', 'Button', 'AnimateOnScroll', 'Dialog', 'ScrollPanel', 'Paginator', 'InputOtp', 'Divider', 'RadioButton', 'Carousel', 'MultiSelect', 'FloatLabel', 'Listbox', 'Toolbar', 'Avatar', 'Sidebar', 'Inplace', 'Checkbox', 'InlineMessage', 'Message', 'ConfirmDialog', 'Image', 'Toast', 'Fieldset']
+      include: ['InputText', 'Textarea','Dropdown','InputIcon','IconField','Column', 'Datable', 'Button', 'AnimateOnScroll', 'Dialog', 'ScrollPanel', 'Paginator', 'InputOtp', 'Divider', 'RadioButton', 'Carousel', 'MultiSelect', 'FloatLabel', 'Listbox', 'Toolbar', 'Avatar', 'Sidebar', 'Inplace', 'Checkbox', 'InlineMessage', 'Message', 'ConfirmDialog', 'Image', 'Toast', 'Fieldset']
     },
 
   },
