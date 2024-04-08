@@ -194,6 +194,7 @@ export default {
             email: '',
             password: '',
             passwordConfirmation: '',
+            token: '',
             imatgeSeleccionada: '1',
             tutorial: true,
             visibleChangeSkin: false,

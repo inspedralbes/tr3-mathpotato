@@ -556,7 +556,7 @@ io.on('connection', (socket) => {
 
 
     socket.on('register', async (userData) => {
-        console.log(userData);
+        console.log("register", userData);
         const response = await fetch('http://localhost:8000/api/register', {
             method: 'POST',
             body: JSON.stringify(userData),
@@ -568,7 +568,9 @@ io.on('connection', (socket) => {
         if (responseData.status === 1) {
             userData.status = 1;
             userData.id = socket.id;
+            userData.token = responseData.token;
             userData.image = userData.foto_perfil;
+            console.log("register...ok", userData);
             // console.log("userData", userData);
             socket.emit('loginSuccess', userData);
             return responseData;
@@ -603,11 +605,11 @@ io.on('connection', (socket) => {
             });
 
             const responseData = await response.json();
-            console.log("login data", responseData);
+            // console.log("login data", responseData);
             if (responseData.status === 1) {
                 let returnDataLogout = responseData;
                 returnDataLogout.status = 1;
-                console.log("response returnData ", returnDataLogout);
+                // console.log("response returnData ", returnDataLogout);
                 socket.emit('logoutSuccess', returnDataLogout);
                 console.log("response.ok....logout complete", responseData);
             }

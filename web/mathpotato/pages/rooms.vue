@@ -2,14 +2,53 @@
     <div class="card">
         <Toolbar style="border-radius: 3rem; padding: 1rem 1rem 1rem 1.5rem">
             
+            <template #start>
+                <div class="flex align-items-center gap-3 navbar">
+                    <Button label="Ranking" @click="RankingView()" text plain/>
+                </div>
+            </template>
             <template #end>
                 <div class="flex align-items-center gap-3 navbar">
-                    <!-- <Button label="Share" severity="contrast" size="small" /> -->
                     <Button v-if="guest.email == 'none'" label="login" @click="login()" severity="contrast" size="small" style="right: 20px; bottom: 3px;" />
-                    <Avatar v-else v-badge.danger="10" @click="visibleRightprofile = true" class="p-overlay-badge" icon="pi pi-user" size="large" style="cursor: pointer; "/>
+                    <Avatar v-else v-badge.danger="10" @click="visibleRightprofile = true" class="p-overlay-badge" icon="pi pi-user" size="large" style="cursor: pointer; " />
                 </div>
             </template>
         </Toolbar>
+    </div>
+    <div class="card flex justify-content-center">
+        <Dialog v-model:visible="visibleRanking" modal header="Ranking" :style="{ width: '50rem'}">
+            <div class="container-ranking">
+                <span>Username</span>
+                <span>Victories</span>
+                <span>% Victories</span>
+            </div>    
+            <Divider type="solid" />
+                <div class="flex align-items-center gap-3 mb-3">
+                    <div class="ranking">
+                        <div v-for="(player, index) in ranking.ranking" :key="player.id" class="player-card"
+                    :class="{ 'even-row': index % 2 === 0, 'odd-row': index % 2 !== 0 }">
+                    
+                    <span class="rank">{{ index + 1 }}. </span>
+                    <span class="username">{{ player.username }}</span>
+                    <span class="victories">Victorias: <span class="victories-number">{{ player.num_victorias
+                    }}</span></span>
+                    <span class="victories-porcentaje">% Victorias: <span class="victories-number-porcentaje">{{ calculateVictoryPercentage(player) }}</span></span>
+                </div>
+                    </div>
+                </div>
+                <!-- <div class="flex align-items-center gap-3 mb-3">
+                    <DataTable :value="ranking.ranking" @click="console.log(getRanking())" paginator :rows="5" :rowsPerPageOptions="[5, 10]" tableStyle="min-width: 50rem">
+                        <Column field="username" header="Username" style="width: 33%;"></Column>
+                        <Column field="num_victorias" header="Victorias" style="width: 33%;"></Column>
+                        <Column field="'victoriesPercentage'" header="% Victorias" style="width: 33%;"></Column>
+                    </DataTable>
+                </div> -->
+                <Divider type="solid" />
+                
+            <div class="flex justify-content-end gap-2 button-modal">
+                <Button type="button" label="Salir" severity="danger" @click="visibleRanking = false"></Button>
+            </div>
+        </Dialog>
     </div>
     <Sidebar v-model:visible="visibleRightprofile" position="right">
             <div class="">
@@ -252,6 +291,7 @@ export default {
             selectedModecreate: '',
             showJoinLobby: false,
             visible: false,
+            visibleRanking: false,
             modes: [
                 { name: 'puteo'},
                 { name: 'default'}
@@ -276,9 +316,24 @@ export default {
         guest(){
             let store = useAppStore();
             return store.getGuestInfo();
+        },
+        ranking(){
+            const store = useAppStore();
+            return store.getRanking();
         }
     },
     methods: {
+        getRanking(){
+            console.log('getRanking');
+            socket.emit('getRanking');  
+        },
+        RankingView(){
+            this.visibleRanking = true;
+        },  
+        calculateVictoryPercentage(player) {
+            const percentage = player.num_victorias / (player.num_victorias + player.num_derrotas) * 100;
+            return isNaN(percentage) ? 0 : Math.round(percentage);
+        },
         confirm() {
             this.$confirm.require({
                 message: '¿Seguro que quieres cerrar sesión?',
@@ -399,6 +454,13 @@ export default {
             socket.emit('logout', { email: this.guest.email, token: this.guest.token });
         },               
     },
+    watch: {
+        ranking(){
+            console.log('ranking:', this.ranking.ranking[0].username);
+        
+        }
+
+    },
     mounted() {
         socket.emit('getSalas');
         socket.on('roomDone', (data) => {
@@ -409,7 +471,14 @@ export default {
         if(this.guest.email !== 'none'){
             this.setCheckedOnUserImage();
         }
+
+        this.getRanking();
+        setInterval(this.data, 60000);
+
     },
+    beforeDestroy(){
+        clearInterval(this.intervalId);
+    }
     // watch: {
     //     guest() {
     //         this.setCheckedOnUserImage();
@@ -439,6 +508,13 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 2px;
+}
+
+.container-ranking{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    justify-content: center;
+    align-items: center;
 }
 
 .btn-jugar-rapido{

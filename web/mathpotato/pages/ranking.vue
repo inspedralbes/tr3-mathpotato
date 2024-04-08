@@ -7,8 +7,10 @@
             </div>
 
             <div class="ranking">
+                
                 <div v-for="(player, index) in ranking.ranking" :key="player.id" class="player-card"
                     :class="{ 'even-row': index % 2 === 0, 'odd-row': index % 2 !== 0 }">
+                    
                     <span class="rank">{{ index + 1 }}. </span>
                     <span class="username">{{ player.username }}</span>
                     <span class="victories">Victorias: <span class="victories-number">{{ player.num_victorias
@@ -41,6 +43,13 @@
     top: 5%;
     left: 5%;
     z-index: 1;
+}
+
+.container-ranking{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    justify-content: center;
+    align-content: center;
 }
 
 /* Estilos para el botón de login */

@@ -32,7 +32,6 @@ class usuariosController extends Controller
                 $usuario->save();
 
                 $token = $usuario->createToken('myapptoken')->plainTextToken;
-
                 return response()->json([
                     'status' => 1,
                     'message' => 'usuari creat correctament',
@@ -46,7 +45,7 @@ class usuariosController extends Controller
             ]);
         }
     }
-
+    
     public function login(Request $request)
     {
         $request->validate([
@@ -59,6 +58,11 @@ class usuariosController extends Controller
 
         if ($usuario) {
             if (Hash::check($request->password, $usuario->password)) {
+                // dd([
+                //     'password' => $request->password,
+                //     'hashed_password' => Hash::make($request->password),
+                //     'stored_password' => $usuario->password
+                // ]);
                 $token = $usuario->createToken('myapptoken')->plainTextToken;
 
                 return response()->json([
@@ -72,6 +76,7 @@ class usuariosController extends Controller
                 ]);
             } else {
                 return response()->json([
+
                     'status' => 0,
                     'message' => 'Contrasenya incorrecta'
                 ]);
