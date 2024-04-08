@@ -153,7 +153,7 @@ export const useAppStore = defineStore('app', {
             this.guestInfo.username = '';
             this.guestInfo.id = '';
             this.guestInfo.bomba = false;
-            this.guestInfo.email = '';
+            this.guestInfo.email = 'none';
         },
         setShieldUser(shieldUser) {
             this.shieldUser.activated = shieldUser.activated;

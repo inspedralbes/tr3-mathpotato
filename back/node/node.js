@@ -604,11 +604,9 @@ io.on('connection', (socket) => {
 
             const responseData = await response.json();
             console.log("login data", responseData);
-            if (responseData.token && responseData.status === 1) {
+            if (responseData.status === 1) {
                 let returnDataLogout = responseData;
                 returnDataLogout.status = 1;
-                returnDataLogout.email = responseData.email;
-                returnDataLogout.token = responseData.token;
                 console.log("response returnData ", returnDataLogout);
                 socket.emit('logoutSuccess', returnDataLogout);
                 console.log("response.ok....logout complete", responseData);

@@ -85,7 +85,7 @@
                 <Toast />
                 <ConfirmDialog></ConfirmDialog>
                 <div class="btn-sign-out">
-                    <Button @click="logout()" label="Log Out" severity="danger" outlined></Button>
+                    <Button @click="confirm()" label="Sign Out" severity="danger" outlined></Button>
                 </div>
                 </div>
                 
@@ -290,7 +290,7 @@ export default {
                 acceptClass: 'p-button-danger',
                 accept: () => {
                     this.$toast.add({ severity: 'info', summary: 'Confirmed', detail: 'Record deleted', life: 3000 });
-                    // logout();
+                    this.logout();
                 },
                 reject: () => {
                     this.$toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });

@@ -112,6 +112,7 @@ socket.on("logoutSuccess", (data) => {
     console.log('Logout correcto: ', data);
     const store = useAppStore();
     store.clearGuestInfo();
+    location.reload();
 });
 
 socket.on("changeSkinSuccess", (data) => {
