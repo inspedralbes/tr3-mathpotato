@@ -1,15 +1,15 @@
 import express, { response } from 'express';
 import cors from 'cors';
-import { createServer } from 'node:http';
+import { createServer, get } from 'node:http';
 import { Server } from 'socket.io';
 import { join } from 'path';
 import mysql from 'mysql';
+import { start } from 'node:repl';
 
 const app = express();
 
 var lobbies = [];
-var lastRoom = 0;
-
+var pinga = 0;
 app.use(cors());
 const server = createServer(app);
 const URL = "http://127.0.0.1:8000/api/preguntes/random";
@@ -49,7 +49,7 @@ function makeid(length) {
 function findGameIndex(gameRooms, room) {
     console.log(gameRooms);
     for (let i = 0; i < gameRooms.length; i++) {
-        
+
         if (gameRooms[i].idGame === room.idGame) {
             return i;
         }
@@ -202,7 +202,7 @@ function findGameByUserId(lobbyGames, socket) {
     lobbyGames.forEach(game => {
         game.users.forEach(user => {
             if (user.id === socket) {
-                console.log("user.id", user.id ,"==", socket);
+                console.log("user.id", user.id, "==", socket);
                 returnData = game;
             }
         });
@@ -274,7 +274,7 @@ function respostaCorrecta(game, socket) {
 function respostaCorrectaUsuariCorrecte(game) {
     let userWithBomb = getUserWithBomb(game);
     game.users[getUserWithBomb(game)].bomba = false;
-    
+
     console.log("user bomba: " + game.users[userWithBomb].bomba);
     if (userWithBomb == game.users.length - 1) {
         game.users[0].bomba = true;
@@ -331,24 +331,28 @@ async function updateVictorias(roomIndex, gameRooms) {
 // }
 
 function UserHasNoLives(userThatDied, game) {
+    console.log("PENEEEEEEEEEEEEEEEE", userThatDied)
     if (userThatDied.email !== 'none') {
         var email = userThatDied.email;
         addToRanking(email);
     }
+
+    let socket = io.sockets.sockets.get(userThatDied.id);
+    socket.leave(game.idGame);
+    socket.emit('userLost', userThatDied);
+    let userIndex = game.users.findIndex(user => user.id === userThatDied.id);
     if (getUserWithBomb(game) == game.users.length - 1) {
+        console.log("ILLO")
         game.users[0].bomba = true;
     }
     else {
         game.users[getUserWithBomb(game) + 1].bomba = true;
     }
-    let socket = io.sockets.sockets.get(userThatDied.id);
-    socket.leave(game.idGame);
-    socket.emit('userLost', userThatDied);
-    game.users.splice(getUserWithBomb(game), 1);
+    game.users.splice(userIndex, 1);
     console.log("USERS -> " + game.users);
     if (game.users.length == 1 && game.started == true) {
-        let gameRooms=findLobbieByGameroomId(game.idGame);
-        let roomIndex=findGameIndex(gameRooms.games, game);
+        let gameRooms = findLobbieByGameroomId(game.idGame);
+        let roomIndex = findGameIndex(gameRooms.games, game);
         updateVictorias(roomIndex, gameRooms.games);
         io.to(game.idGame).emit('finishGame', ({ gameStarted: false, timer: 0, username: game.users[0].username, image: game.users[0].image, email: game.users[0].email }));
         io.sockets.sockets.get(game.users[0].id).leave(game.idGame);
@@ -356,8 +360,11 @@ function UserHasNoLives(userThatDied, game) {
 
     } else {
         if (game.users.length > 1) {
+            console.log("CHOTOOOOOOOOOOOOOOOOOOOOO", game.users);
             io.to(game.idGame).emit('changeBomb', { "arrayUsers": game.users, "bombChange": true, "explodes": false });
-
+            if (game.timer <= 0) {
+                startTimer(game.idGame, getSocketWithBomb(game));
+            }
         }
 
     }
@@ -368,26 +375,30 @@ function respostaIncorrectaUsuariCorrecte(game) {
     game.users[getUserWithBomb(game)].lives--;
     let check = game.idGame;
     console.log("lives restantes -> ", game.users[getUserWithBomb(game)].lives);
-    let userThatDied=game.users[getUserWithBomb(game)];
+    let userThatDied = game.users[getUserWithBomb(game)];
     if (userThatDied.lives == 0) {
-        
+
         UserHasNoLives(userThatDied, game);
     }
     if (game && game.users.length > 1 && game.idGame == check) {
         io.to(game.idGame).emit('changeBomb', { "arrayUsers": game.users, "bombChange": true, "explodes": true });
+        if (game.timer <= 0) {
+            let socket = io.sockets.sockets.get(game.users[getUserWithBomb(game)].id);
+            startTimer(game.idGame, socket);
+        }
     }
 }
 
 function respostaIncorrectaUsuariIncorrecte(game, socket) {
 
-    
-        console.log("resposta incorrecta!");
-        game.pregActual++;
-        game.users[getUserWithBomb(game)].bomba = false;
-        let userBombN = game.users.findIndex(user => user.id === socket.id);
-        game.users[userBombN].bomba = true;
-        io.to(game.idGame).emit('changeBomb', { "arrayUsers": game.users, "bombChange": true, "explodes": false });
-    
+
+    console.log("resposta incorrecta!");
+    game.pregActual++;
+    game.users[getUserWithBomb(game)].bomba = false;
+    let userBombN = game.users.findIndex(user => user.id === socket.id);
+    game.users[userBombN].bomba = true;
+    io.to(game.idGame).emit('changeBomb', { "arrayUsers": game.users, "bombChange": true, "explodes": false });
+
 }
 function respostaIncorrecta(game, socket) {
     console.log("resposta incorrecta!");
@@ -470,15 +481,15 @@ async function startTimer(idRoom, socket) {
             } else {
                 if (game.started == true && game.timer <= 0) {
                     let lobby = findLobbieByGameroomId(idRoom);
-                    console.log("DALOBBY",lobby);
+                    console.log("DALOBBY", lobby);
                     respostaIncorrectaUsuariCorrecte(game);
                     if (game && game.users.length > 1 && game.idGame == idRoom) {
                         newPregunta(game);
                     }
                     console.log("timer acabado en", game);
 
-                        game.timerAnterior = game.timer;
-                        startTimer(game.idGame, socket);
+                    game.timerAnterior = game.timer;
+                    startTimer(game.idGame, socket);
                 }
             }
         }
@@ -741,8 +752,8 @@ io.on('connection', (socket) => {
         let gameRooms = findLobbieBySocketId(socket.id);
         console.log("gameRooms --> ", gameRooms);
         console.log("data --> ", data);
-        let game= findGameByUserId(gameRooms, socket.id);
-        let control =   game.idGame;
+        let game = findGameByUserId(gameRooms, socket.id);
+        let control = game.idGame;
         const preguntaParaEvaluar = game.pregunta.replace('x', '*');
         const resultatPregunta = eval(preguntaParaEvaluar);
         console.log("Result correct --> ", resultatPregunta);
@@ -758,7 +769,7 @@ io.on('connection', (socket) => {
             }
             game = findGameByUserId(gameRooms, socket.id);
             if (game != undefined && game.idGame == control && game.users.length > 1) {
-                if (socket.id == game.users[ getUserWithBomb(game)].id) {
+                if (socket.id == game.users[getUserWithBomb(game)].id) {
                     console.log("NEWPREGUNTA")
                     if (game && game.users.length > 1) {
 
@@ -766,7 +777,7 @@ io.on('connection', (socket) => {
                     }
                 } else {
                     console.log("NEWPREGUNTA2")
-                    if (game && game.users.length > 1 && !game.shieldUser) {
+                    if (game && game.users.length > 1) {
                         newPregunta(game);
                     }
                 }
