@@ -42,7 +42,7 @@
                         bary: 'hover:bg-primary-400 opacity-100'
                     }" class="custom-scroll-panel">
                                     <div class="card flex justify-content-center" id="div-lobbies">
-                                        <Listbox v-model="selectedLobby" @click="showJoinLobby = true"
+                                        <Listbox v-model="selectedLobby" @click="joinRoomByCode(selectedLobby.idLobby)"
                                             :options="lobbies" filter optionLabel="nameLobby" class="w-full md:w-14rem"
                                             id="info_lobby" />
                                     </div>
@@ -112,13 +112,6 @@
                     <label for="option2" class="text-radiobutton">Privada</label>
                 </div>
                 <Divider type="solid" />
-                <!-- <div class="flex align-items-center radiobutton-div">
-                    <RadioButton v-model="selectedModecreate" inputId="classic" name="classic" value="Classic" />
-                    <label for="classic" class="text-radiobutton">Classic</label>
-                    <RadioButton v-model="selectedModecreate" inputId="puteo" name="puteo" value="Puteo" />
-                    <label for="puteo" class="text-radiobutton">Puteo</label>
-                </div> -->
-                <!-- <Divider type="solid" /> -->
                 <div class="flex justify-content-end gap-2 button-modal">
                     <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
                     <Button type="button" label="Create" @click="createGame()"></Button>
@@ -128,18 +121,6 @@
         </div>
         <!-- Resto del código -->
 
-    </div>
-    <div class="container-join-room-public">
-        <div v-show="showJoinLobby && selectedLobby" class="card flex justify-content-center btn-join-lobby-public">
-            <div class="container-join-public-room">
-                <div class="flex justify-content-center">
-                    <span v-if="selectedLobby && selectedLobby.nameLobby">{{ selectedLobby.nameLobby }}</span>
-                    <Button label="Unirse" @click="joinPublicRoom" class="" />
-                    <Button label="X" class="" @click="showJoinLobby = false" />
-                </div>
-
-            </div>
-        </div>
     </div>
 
 

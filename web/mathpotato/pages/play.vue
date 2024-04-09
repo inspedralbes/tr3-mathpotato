@@ -46,6 +46,7 @@
                         <img src="@/assets/victory.png" alt="Patata Ganadora" style="width: 250px; height: 200px;">
                         <!-- <p class="victory-text">Victoria</p> -->
                         <Button @click="replay">Volver a jugar</Button>
+                        <Button @click="BackToRoom">Volver al menú</Button>
                     </div>
                 </div>
                 <div id="modal-victory" class="modal-victoria" v-show="userPantalla.lost">
@@ -53,6 +54,7 @@
                         <img src="@/assets/defeat.png" alt="Patata Perdedora" style="width: 250px; height: 200px;">
                         <!-- <p class="victory-text">Derrota</p> -->
                         <Button @click="replay">Volver a Jugar</Button>
+                        <Button @click="BackToRoom">Volver al menú</Button>
                     </div>
                 </div>
                 <div id="ModalWaiting" class="modal-tutorial"
@@ -182,6 +184,12 @@ export default {
         }
     },
     methods: {
+        BackToRoom() {
+            useAppStore().setCountdown(-2);
+            useAppStore().setGameStarted(false);
+            useAppStore.users = [];
+            this.$router.push({ name: 'rooms' });
+        },
         explosion() {
             document.getElementById("bomb").src = "/_nuxt/assets/Explosion.gif";
             setTimeout(() => {

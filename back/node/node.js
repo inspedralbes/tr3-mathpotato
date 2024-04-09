@@ -331,7 +331,6 @@ async function updateVictorias(roomIndex, gameRooms) {
 // }
 
 function UserHasNoLives(userThatDied, game) {
-    console.log("PENEEEEEEEEEEEEEEEE", userThatDied)
     if (userThatDied.email !== 'none') {
         var email = userThatDied.email;
         addToRanking(email);
@@ -360,7 +359,6 @@ function UserHasNoLives(userThatDied, game) {
 
     } else {
         if (game.users.length > 1) {
-            console.log("CHOTOOOOOOOOOOOOOOOOOOOOO", game.users);
             io.to(game.idGame).emit('changeBomb', { "arrayUsers": game.users, "bombChange": true, "explodes": false });
             if (game.timer <= 0) {
                 startTimer(game.idGame, getSocketWithBomb(game));
@@ -373,14 +371,13 @@ function respostaIncorrectaUsuariCorrecte(game) {
     game.timer = game.timerAnterior;
     game.pregActual++;
     game.users[getUserWithBomb(game)].lives--;
-    let check = game.idGame;
     console.log("lives restantes -> ", game.users[getUserWithBomb(game)].lives);
     let userThatDied = game.users[getUserWithBomb(game)];
     if (userThatDied.lives == 0) {
 
         UserHasNoLives(userThatDied, game);
     }
-    if (game && game.users.length > 1 && game.idGame == check) {
+    if (game && game.users.length > 1) {
         io.to(game.idGame).emit('changeBomb', { "arrayUsers": game.users, "bombChange": true, "explodes": true });
         if (game.timer <= 0) {
             let socket = io.sockets.sockets.get(game.users[getUserWithBomb(game)].id);
