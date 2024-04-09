@@ -2,7 +2,11 @@
 export default defineNuxtConfig({
   css: ['./assets/css/normalize.css', 'primevue/resources/themes/lara-light-teal/theme.css', 'primeicons/primeicons.css'],
   devtools: { enabled: true },
-
+  server:{
+    host: '0',
+    port: 3000
+  },
+  ssr: true,
   modules: [
     '@pinia/nuxt',
     'nuxt-primevue',
