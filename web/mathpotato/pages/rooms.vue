@@ -17,27 +17,30 @@
     </div>
     <div class="card flex justify-content-center">
         <Dialog v-model:visible="visibleRanking" modal header="Ranking" :style="{ width: '50rem'}">
-            <div class="container-ranking">
+            <div  class="container-ranking">
                 <span>Rank</span>
                 <span>Username</span>
                 <span>Victories</span>
                 <span>% Victories</span>
             </div>    
             <Divider type="solid" />
-                <div class="flex align-items-center gap-3 mb-3 data-ranking">
-                    <div class="ranking">
-                        <div v-for="(player, index) in ranking.ranking" :key="player.id" class="player-card"
-                    :class="{ 'even-row': index % 2 === 0, 'odd-row': index % 2 !== 0 }">
+            <div v-if="guest.email != 'none'" class="flex align-items-center gap-3 mb-3 data-ranking">
+                <div class="ranking">
+                    <div v-for="(player, index) in ranking.ranking" :key="player.id" class="player-card"
+                        :class="{ 'even-row': index % 2 === 0, 'odd-row': index % 2 !== 0 }">
                     
-                    <span class="rank">{{ index + 1 }}. </span>
-                    <span class="username">{{ player.username }}</span>
-                    <span class="victories"> <span class="victories-number">{{ player.num_victorias
-                    }}</span></span>
-                    <span class="victories-porcentaje"> <span class="victories-number-porcentaje">{{ calculateVictoryPercentage(player) }}</span></span>
-                    <Divider type="solid" />
-                </div>
+                        <span class="rank">{{ index + 1 }}. </span>
+                        <span class="username">{{ player.username }}</span>
+                        <span class="victories"> <span class="victories-number">{{ player.num_victorias }}</span></span>
+                        <span class="victories-porcentaje"> <span class="victories-number-porcentaje">{{ calculateVictoryPercentage(player) }}</span></span>
+                        <!-- {{ rankingSocket(player) }} -->
                     </div>
                 </div>
+            </div>
+            <div v-else class="flex align-items-center gap-3 mb-3 data-ranking">
+                
+            </div>
+            
                 <!-- <div class="flex align-items-center gap-3 mb-3">
                     <DataTable :value="ranking.ranking" @click="console.log(getRanking())" paginator :rows="5" :rowsPerPageOptions="[5, 10]" tableStyle="min-width: 50rem">
                         <Column field="username" header="Username" style="width: 33%;"></Column>
@@ -400,6 +403,10 @@ export default {
             // this.$router.push({ path: '/play'});
             }
         },
+        rankingSocket(){
+            socket.emit('getRanking');
+            
+        },
         joinRoomByCode(code) {
             // Logic to join a private room
             if(this.guest.email === 'none'){
@@ -444,11 +451,13 @@ export default {
             console.log(this.text);
             console.log('update username...');
             socket.emit('updateProfile', { email: this.guest.email, username: this.text, foto_perfil: this.guest.image });
+            this.$toast.add({ severity: 'success', summary: 'Username cambiado', detail: 'Tu username ha sido cambiado con éxito', life: 3000 });
         },
         async updateSkin(){
             console.log('cambiando la skin...');
             socket.emit('updateProfile', { email: this.guest.email, username: this.guest.username, foto_perfil: this.imatgeSeleccionada });
             console.log('skin cambiada!');
+            this.$toast.add({ severity: 'success', summary: 'Skin cambiada', detail: 'Tu skin ha sido cambiada con éxito', life: 3000 });
             // this.updateProfile();
         },
         async logout(){
@@ -511,11 +520,117 @@ body {
     gap: 2px;
 }
 
-.player-card{
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+.data-ranking {
+        width: 100%;
+        font-family: Arial, sans-serif;
+    }
 
-}
+    /* Estilos de cada tarjeta de jugador */
+    .player-card {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        margin-bottom: 5px;
+    }
+
+    /* Estilos de fila par */
+    .even-row {
+        background-color: #f2f2f2;
+    }
+
+    /* Estilos de fila impar */
+    .odd-row {
+        background-color: #e6e6e6;
+    }
+
+    /* Estilos del número de rango */
+    .rank {
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    /* Estilos del nombre de usuario */
+    .username {
+        flex: 1;
+        margin-right: 10px;
+    }
+
+    /* Estilos del número de victorias */
+    .victories {
+        margin-right: 10px;
+    }
+
+    /* Estilos del porcentaje de victorias */
+    .victories-porcentaje {
+        margin-right: 10px;
+    }
+
+    /* Estilos del número de victorias y porcentaje */
+    .victories-number,
+    .victories-number-porcentaje {
+        font-weight: bold;
+    }
+
+    /* Estilos para los primeros tres lugares */
+    .player-card:nth-child(-n+1) .rank::before {
+        content: ' 🥇';
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        margin-right: 5px;
+        border-radius: 30%;
+    }
+
+    .player-card:nth-child(n+2) .rank::before {
+        content: ' 🥈';
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        margin-right: 5px;
+    }
+
+    .player-card:nth-child(n+3) .rank::before {
+        content: ' 🥉';
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        margin-right: 5px;
+        border-radius: 30%;
+    }
+
+    .player-card:nth-child(n+4) .rank::before {
+        content: ' ';
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        margin-right: 5px;
+        border-radius: 30%;
+    }
+
+    .player-card:nth-child(n+5) .rank::before {
+        content: ' ';
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        margin-right: 5px;
+        border-radius: 30%;
+    }
+
+    .player-card:nth-child(1) .rank::before {
+        /* background-color: gold; */
+    }
+
+    .player-card:nth-child(2) .rank::before {
+        /* background-color: silver;  */
+    }
+
+    .player-card:nth-child(3) .rank::before {
+        /* background-color: #cd7f32;  */
+    }
 
 .container-ranking{
     display: grid;
@@ -531,13 +646,7 @@ body {
     margin-top: 20px;
 }
 
-.data-ranking{
-    /* display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    align-items: center;
-    justify-content: center; */
 
-}
 
 .p-inplace-display{
     color: #ffa500;
@@ -737,6 +846,10 @@ input[type="radio"]:checked + label>.avatar-edit{
 .btn-refesh {
     cursor: pointer;
     margin-left: 20px;
+}
+
+.p-toolbar p-component{
+    border-radius: none;
 }
 
 .container-public-room {
