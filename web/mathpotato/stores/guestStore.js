@@ -36,6 +36,7 @@ export const useAppStore = defineStore('app', {
         respostaAnterior: true,
         explodes: false,
         timer: 0,
+        sugerencia: 0,
         gameStarted: false,
         gameWinner: false,
         error: "",
@@ -85,6 +86,12 @@ export const useAppStore = defineStore('app', {
         setGameStarted(gameStarted) {
             this.gameStarted = gameStarted;
 
+        },
+        setSugerenciaCompletada(data) {
+            this.sugerencia = data.sugerencia;
+        },
+        getSugerencias() {
+            return this.sugerencia;
         },
         getGameStarted() {
             return this.gameStarted;

@@ -122,6 +122,12 @@ socket.on("changeProfile", (data) => {
     
 });
 
+socket.on("sugerencias", (data) => {
+    console.log('Sugerencia: ', data);
+    const store = useAppStore();
+    store.setSugerenciaCompletada(data);
+});
+
 socket.on("updateRanking", (ranking) => {
     console.log("HOLAAAAAAAAAAAAAAAA")
     const store = useAppStore();

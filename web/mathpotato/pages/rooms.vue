@@ -124,9 +124,10 @@
                     </div>
                     <InputText v-model="guest.email" disabled style="width: 100%;" />
                     <div class="card flex justify-content-center" style="padding-top: 20px; padding-bottom: 10px;">
-                        <span >Sugerencias: </span>
+                        <span >Sugerencias de mejora: </span>
                     </div>
                     <Textarea v-model="value_sugerencias" autoResize rows="5" cols="28" style="width: 100%;"/>
+                    <Button v-if="value_sugerencias != ''" label="enviar" @click="enviarSugerencias" />
                     <Toast />
                 <ConfirmDialog></ConfirmDialog>
                 <div class="btn-sign-out">
@@ -431,6 +432,12 @@ export default {
         },
         login(){
             this.$router.push({ path: '/login' });
+        },
+        async enviarSugerencias(){
+            console.log('enviando sugerencias de...', this.value_sugerencias, this.guest.email);
+            socket.emit('sugerencias', { sugerencia: this.value_sugerencias, usuario_email: this.guest.email});
+            this.$toast.add({ severity: 'success', summary: 'Sugerencias enviadas', detail: 'Gracias por tu aportación', life: 3000 });
+            this.value_sugerencias = '';
         },
         async btnEditUsername(){
             this.show = false;

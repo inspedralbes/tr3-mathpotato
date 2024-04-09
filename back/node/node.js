@@ -590,6 +590,30 @@ io.on('connection', (socket) => {
         await logoutUser(data, socket);
     });
 
+    socket.on('sugerencias', async (data) => {
+        console.log("sugerencia", data);
+        try{
+            const response = await fetch('http://localhost:8000/api/createSugerencia', {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const responseData = await response.json();
+            console.log("sugerencias data", responseData);
+            if(responseData.status === 1){
+                let returnDataSend = responseData;
+                returnDataSend.status = 1;
+                socket.emit('sugerenciasSuccess', returnDataSend);
+                console.log("sugerencia creada correctamente", responseData);
+            }
+        }catch(error){
+            console.log("error sugerencias", error);
+        }
+    });
+
     async function logoutUser(data, socket) {
         console.log("data logout", data);
         console.log("logout email", data.email);
