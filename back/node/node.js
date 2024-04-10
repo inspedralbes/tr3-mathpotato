@@ -877,7 +877,7 @@ io.on('connection', (socket) => {
             },
         });
         const ranking = await response.json();
-        // console.log(ranking);
+        console.log(ranking);
         socket.emit('updateRanking', await ranking);
 
     });

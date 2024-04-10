@@ -43,7 +43,7 @@
                 </div>
                 <div id="modal-victory" class="modal-victoria" v-show="userPantalla.win">
                     <div class="modal-victoria-content">
-                        <img src="@/assets/victory.png" alt="Patata Ganadora" style="width: 250px; height: 200px;">
+                        <img src="@/assets/Victoria.png" alt="Patata Ganadora" style="width: 250px; height: 200px;">
                         <!-- <p class="victory-text">Victoria</p> -->
                         <Button @click="replay">Volver a jugar</Button>
                     </div>

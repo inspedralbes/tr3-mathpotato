@@ -10,36 +10,39 @@
             <template #end>
                 <div class="flex align-items-center gap-3 navbar">
                     <Button v-if="guest.email == 'none'" label="login" @click="login()" severity="contrast" size="small" style="right: 20px; bottom: 3px;" />
-                    <Avatar v-else v-badge.danger="10" @click="visibleRightprofile = true" class="p-overlay-badge" icon="pi pi-user" size="large" style="cursor: pointer; " />
+                    <Avatar v-else @click="visibleRightprofile = true" class="p-overlay-badge" :image="'./_nuxt/assets/Icon_'+guest.image+'.png'"  size="large" style="cursor: pointer; " />
                 </div>
             </template>
         </Toolbar>
     </div>
     <div class="card flex justify-content-center">
         <Dialog v-model:visible="visibleRanking" modal header="Ranking" :style="{ width: '50rem'}">
-            <div  class="container-ranking">
-                <span>Rank</span>
-                <span>Username</span>
-                <span>Victories</span>
-                <span>% Victories</span>
-            </div>    
-            <Divider type="solid" />
-            <div v-if="guest.email != 'none'" class="flex align-items-center gap-3 mb-3 data-ranking">
-                <div class="ranking">
-                    <div v-for="(player, index) in ranking.ranking" :key="player.id" class="player-card"
-                        :class="{ 'even-row': index % 2 === 0, 'odd-row': index % 2 !== 0 }">
-                    
-                        <span class="rank">{{ index + 1 }}. </span>
-                        <span class="username">{{ player.username }}</span>
-                        <span class="victories"> <span class="victories-number">{{ player.num_victorias }}</span></span>
-                        <span class="victories-porcentaje"> <span class="victories-number-porcentaje">{{ calculateVictoryPercentage(player) }}</span></span>
-                        <!-- {{ rankingSocket(player) }} -->
+            <div >
+                <div v-if="guest.email == 'none'">
+                    <Message :closable="false">Si quieres que se guarden tus estadisticas, ¡logueate!</Message>
+                </div>
+                <div  class="container-ranking">
+                    <span>Rank</span>
+                    <span>Username</span>
+                    <span>Victories</span>
+                    <span>% Victories</span>
+                </div>    
+                <Divider type="solid" />
+                <div  class="flex align-items-center gap-3 mb-3 data-ranking">
+                    <div class="ranking">
+                        <div v-for="(player, index) in ranking.ranking" :key="player.id" class="player-card"
+                            :class="{ 'highlighted': guest.username===player.username ,'even-row': index % 2 === 0, 'odd-row': index % 2 !== 0 }">
+                            <span class="rank">{{ index + 1 }}. </span>
+                            <span class="username-rank">{{ player.username }}</span>
+                            <span class="victories"> <span class="victories-number">{{ player.num_victorias }}</span></span>
+                            <span class="victories-porcentaje"> <span class="victories-number-porcentaje">{{ calculateVictoryPercentage(player) }}</span></span>
+                            <!-- {{ rankingSocket(player) }} -->
+                        </div>
                     </div>
                 </div>
             </div>
-            <div v-else class="flex align-items-center gap-3 mb-3 data-ranking">
-                
-            </div>
+            
+            
             
                 <!-- <div class="flex align-items-center gap-3 mb-3">
                     <DataTable :value="ranking.ranking" @click="console.log(getRanking())" paginator :rows="5" :rowsPerPageOptions="[5, 10]" tableStyle="min-width: 50rem">
@@ -102,7 +105,7 @@
                                 </div>
                             
                             </div>
-                            <Button label="save" @click="updateSkin" class="" />
+                            <Button label="save" @click="updateSkin" class="buttonSave" />
                         </p>
                     </Fieldset>
                     <Divider style="padding-top: 40px;" type="solid" />
@@ -329,7 +332,7 @@ export default {
             return store.getGuestInfo();
         },
         ranking(){
-            const store = useAppStore();
+            let store = useAppStore();
             return store.getRanking();
         },
         updateProfile(){
@@ -338,12 +341,9 @@ export default {
         },
     },
     methods: {
-        getRanking(){
-            console.log('getRanking');
-            socket.emit('getRanking');  
-        },
         RankingView(){
             this.visibleRanking = true;
+
         },  
         calculateVictoryPercentage(player) {
             const percentage = player.num_victorias / (player.num_victorias + player.num_derrotas) * 100;
@@ -359,11 +359,11 @@ export default {
                 rejectClass: 'p-button-secondary p-button-outlined',
                 acceptClass: 'p-button-danger',
                 accept: () => {
-                    this.$toast.add({ severity: 'info', summary: 'Confirmed', detail: 'Record deleted', life: 3000 });
+                    this.$toast.add({ severity: 'info', summary: 'Confirmado', detail: '¡Sesión cerrada correctamente!', life: 5000 });
                     this.logout();
                 },
                 reject: () => {
-                    this.$toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+                    this.$toast.add({ severity: 'error', summary: 'Cancelado', detail: '¡Cierre de sesión cancelado!', life: 4000 });
                 }
             });
         },
@@ -403,10 +403,6 @@ export default {
             // this.$router.push({ path: '/play'});
             }
         },
-        rankingSocket(){
-            socket.emit('getRanking');
-            
-        },
         joinRoomByCode(code) {
             // Logic to join a private room
             if(this.guest.email === 'none'){
@@ -426,6 +422,7 @@ export default {
                 this.$router.push({ path: '/play'});
             }
         },
+
         
             // document.getElementById(this.guest.image).checked = true;
         setCheckedOnUserImage() {
@@ -468,6 +465,7 @@ export default {
     watch: {
         ranking(){
             console.log('ranking:', this.ranking.ranking[0].username);
+
         }
 
     },
@@ -481,8 +479,9 @@ export default {
         if(this.guest.email !== 'none'){
             this.setCheckedOnUserImage();
         }
+        socket.emit('getRanking');
 
-        this.getRanking();
+        // this.getRanking();
         setInterval(this.data, 60000);
 
     },
@@ -520,6 +519,9 @@ body {
     gap: 2px;
 }
 
+
+
+
 .data-ranking {
         width: 100%;
         font-family: Arial, sans-serif;
@@ -547,6 +549,9 @@ body {
         background-color: #e6e6e6;
     }
 
+    .highlighted{
+    background-color:#ffa500;
+}
     /* Estilos del número de rango */
     .rank {
         font-weight: bold;
@@ -679,6 +684,7 @@ input[type="radio"]:checked + label>.avatar-edit{
 .p-fieldset-legend{
     background-color: #0ec69bc9;
     width: 100%;
+    padding: 0;
 }
 .custom-otp-input {
     width: 48px;
@@ -963,5 +969,17 @@ input[type="radio"]:checked + label>.avatar-edit{
 .btn-createRoom:hover {
     background-color: #5A4DB3;
     /* Color representativo de MathPotato (oscurecido) */
+}
+
+.buttonSave{
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    margin-top: 6%;
+    margin-bottom: 2%;
+}
+
+.p-fieldset-content{
+    padding: 0;
 }
 </style>
