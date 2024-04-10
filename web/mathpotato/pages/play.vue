@@ -134,18 +134,20 @@ export default {
         },
         timer() {
             let store = useAppStore();
-            let timer= store.getTimer();
+            let timer = store.getTimer();
             if (timer < 10) {
-                if(this.users[this.findUsersWithBomb()].id==this.userPantalla.id){
-                    this.showTension = true;
-                }
+              
+                    if (this.users[this.findUsersWithBomb()] && this.userPantalla && this.users[this.findUsersWithBomb()].id == this.userPantalla.id) {
+                        this.showTension = true;
+                    }
                 
                 return "0" + timer;
-                
+
             } else {
                 this.showTension = false;
                 return timer;
             }
+            return timer
         },
         message() {
             let store = useAppStore();
@@ -579,7 +581,7 @@ html:lang(ar) {
 
 #tension {
     background: rgb(36, 0, 0);
-    background: radial-gradient(circle, rgba(36, 0, 0, 0) 0%,rgba(36, 0, 0, 0) 55%,  rgb(90, 16, 16) 100%);
+    background: radial-gradient(circle, rgba(36, 0, 0, 0) 0%, rgba(36, 0, 0, 0) 55%, rgb(90, 16, 16) 100%);
     display: inline-block;
     width: 100vw;
     height: 100vh;
@@ -599,10 +601,12 @@ html:lang(ar) {
     0% {
         opacity: 100%;
     }
-    20%{
+
+    20% {
         opacity: 20%;
     }
-    100%{
+
+    100% {
         opacity: 100%;
     }
 }
