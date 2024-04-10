@@ -173,4 +173,25 @@ class usuariosController extends Controller
             'num_victorias' => $usuario->num_victorias
         ]);
     }
+
+    public function checkLogros(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|string|email',
+        ]);
+
+        $usuario = Usuarios::where("email", "=", $request->email)->first();
+        $logros = [
+            'has jugado 10 partidas' => $usuario->num_victorias + $usuario->num_derrotas >= 10,
+            'has ganado 5 partidas' => $usuario->num_victorias >= 5,
+            'has ganado 15 partidas' => $usuario->num_victorias >= 15,
+            'se llama pol' => $usuario->username == 'pol',
+            'se llama ermengol' => $usuario->username == 'ermengol',
+            'se llama alvaro' => $usuario->username == 'alvaro',
+        ];
+        
+        return response()->json([
+            'logros' => $logros
+        ]);
+    }
 }

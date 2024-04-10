@@ -5,6 +5,7 @@
             <template #start>
                 <div class="flex align-items-center gap-3 navbar">
                     <Button label="Ranking" @click="RankingView()" text plain/>
+                    <Button label="Logros" @click="LogrosView()" text plain/>
                 </div>
             </template>
             <template #end>
@@ -55,6 +56,28 @@
                 
             <div class="flex justify-content-end gap-2 button-modal">
                 <Button type="button" label="Salir" severity="danger" @click="visibleRanking = false"></Button>
+            </div>
+        </Dialog>
+    </div>
+    <div class="card flex justify-content-center">
+        <Dialog v-model:visible="visibleLogros" modal header="Logros" :style="{ width: '70rem'}">
+            <div>
+                <div v-if="guest.email == 'none'">
+                    <Message :closable="false">Para obtener recompensas debes logearte!</Message>
+                    <div class="card flex justify-content-center">
+                        <div class="flex justify-center items-center">
+                            
+                        </div>
+                    </div>
+                </div>
+                <div v-else>
+                    <div>
+
+                    </div> 
+                </div>
+            </div>
+            <div class="flex justify-content-end gap-2 button-modal">
+                <Button type="button" label="Salir" severity="danger" @click="visibleLogros = false"></Button>
             </div>
         </Dialog>
     </div>
@@ -133,14 +156,28 @@
                     </div>
                     <Textarea v-model="value_sugerencias" autoResize rows="5" cols="28" style="width: 100%;"/>
                     <Button v-if="value_sugerencias != ''" label="enviar" @click="enviarSugerencias" />
+                    <div class="card flex justify-content-center logros" style="padding-top: 20px;">
+                        <div class="lg1">
+                            <Tag value="15 partidas ganadas" severity="danger"></Tag>
+                        </div>
+                        <div class="lg2">
+                            <Tag value="20 partidas jugadas" severity="warning"></Tag>
+                        </div>
+                        <div class="lg3">
+                            <Tag value="3 partidas seguidas ganadas" severity="info"></Tag>
+                        </div>
+                    </div>
+                    <div class="card flex justify-content-center">
+                        <div class="btn-sign-out">
+                            <Button @click="confirm()" label="Sign Out" severity="danger" outlined style=""></Button>
+                        </div>
+                    </div>
                     <Toast />
                 <ConfirmDialog></ConfirmDialog>
-                <div class="btn-sign-out">
-                    <Button @click="confirm()" label="Sign Out" severity="danger" outlined style=""></Button>
-                </div>
-                </div>
                 
             </div>
+                
+        </div>
     </Sidebar>
     <div class="container-principal">
         <div class="rooms-container">
@@ -271,6 +308,7 @@ export default {
             showJoinLobby: false,
             visible: false,
             visibleRanking: false,
+            visibleLogros: false,
             modes: [
                 { name: 'puteo' },
                 { name: 'default' }
@@ -316,6 +354,9 @@ export default {
             this.visibleRanking = true;
 
         },  
+        LogrosView(){
+            this.visibleLogros = true;
+        },
         calculateVictoryPercentage(player) {
             const percentage = player.num_victorias / (player.num_victorias + player.num_derrotas) * 100;
             return isNaN(percentage) ? 0 : Math.round(percentage);
@@ -531,6 +572,35 @@ body {
         margin-right: 10px;
     }
 
+    .lock-logros{
+        display: block;
+        margin-left: left;
+        margin-right: right;
+    }
+
+    .logros{
+        display: block;
+        width: 100%;
+    }
+
+    .lg1{
+        justify-content: center;
+        align-items: center;
+        padding-bottom: 5px;
+    }
+
+    .lg2{
+        justify-content: center;
+        align-items: center;
+        padding-bottom: 5px;
+    }
+
+    .lg3{
+        justify-content: center;
+        align-items: center;
+        padding-bottom: 5px;
+    }
+
     /* Estilos del número de victorias */
     .victories {
         margin-right: 10px;
@@ -629,7 +699,7 @@ body {
     position: absolute;
     justify-content: center;
     /* margin-top: auto; */
-    margin-top: 60%;
+    margin-top: 25%;
     margin-left: 50%;
     /* margin-bottom: auto; */
 
