@@ -1,5 +1,6 @@
 <template>
     <div id="background">
+        <div id="tension" v-if="this.showTension"></div>
         <div id="grid">
             <div v-for="(user, index) in users" :id="getId(index)">
                 <div class="user" :id="'user' + index">
@@ -26,7 +27,7 @@
                 <div id="myModal" class="modal-tutorial" v-show="!gameStarted && userPantalla.tutorial">
                     <div class="modal-tutorial-content">
                         <div class="tutorialContent">
-                            <tutorial @hButton="hideButton" @sButton="showButton"/>
+                            <tutorial @hButton="hideButton" @sButton="showButton" />
                         </div>
                         <Button @click="ocultarModal" id="ocultarModal" v-if="showStartButton">ACEPTAR!</Button>
                     </div>
@@ -106,7 +107,7 @@ export default {
             hasClickedStart: false,
             shieldUser: {},
             user: socket.id,
-
+            showTension: false,
         };
     },
 
@@ -133,7 +134,18 @@ export default {
         },
         timer() {
             let store = useAppStore();
-            return store.getTimer();
+            let timer= store.getTimer();
+            if (timer < 10) {
+                if(this.users[this.findUsersWithBomb()].id==this.userPantalla.id){
+                    this.showTension = true;
+                }
+                
+                return "0" + timer;
+                
+            } else {
+                this.showTension = false;
+                return timer;
+            }
         },
         message() {
             let store = useAppStore();
@@ -147,7 +159,7 @@ export default {
             let store = useAppStore();
             return store.getExplodes();
         },
-        roomName(){
+        roomName() {
             let store = useAppStore();
             return store.getRoomName();
         }
@@ -206,7 +218,7 @@ export default {
             this.hasClickedStart = false;
             this.showWaitingModal = true;
             this.showStartButton = true;
-            socket.emit('newGameSameRoom', {"idLobby": this.roomName, "username": this.userPantalla.username, "image": this.userPantalla.image, "email": this.userPantalla.email, "tutorial": this.userPantalla.tutorial });
+            socket.emit('newGameSameRoom', { "idLobby": this.roomName, "username": this.userPantalla.username, "image": this.userPantalla.image, "email": this.userPantalla.email, "tutorial": this.userPantalla.tutorial });
 
         },
         goBack() {
@@ -387,7 +399,7 @@ export default {
             }
         },
         findUsersWithBomb() {
-            let user=this.users.findIndex(user => user.bomba === true);
+            let user = this.users.findIndex(user => user.bomba === true);
             console.log(user);
             return user;
         },
@@ -415,7 +427,7 @@ export default {
     display: block;
     width: 100%;
     height: 90%;
-    
+
 }
 
 .buttonRed {
@@ -537,9 +549,10 @@ html:lang(ar) {
 
 }
 
-#explosion{
+#explosion {
     width: 10vw;
 }
+
 .imageContainer {
     display: flex;
 
@@ -562,6 +575,36 @@ html:lang(ar) {
     height: 100vh;
     margin-left: auto;
     margin-right: auto;
+}
+
+#tension {
+    background: rgb(36, 0, 0);
+    background: radial-gradient(circle, rgba(36, 0, 0, 0) 0%,rgba(36, 0, 0, 0) 55%,  rgb(90, 16, 16) 100%);
+    display: inline-block;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    position: absolute;
+    z-index: 0;
+    animation: heartbeat 1.25s infinite;
+    overflow: hidden;
+}
+
+#tension::before,
+#tension::after {
+    content: "";
+}
+
+@keyframes heartbeat {
+    0% {
+        opacity: 100%;
+    }
+    20%{
+        opacity: 20%;
+    }
+    100%{
+        opacity: 100%;
+    }
 }
 
 #middle {
