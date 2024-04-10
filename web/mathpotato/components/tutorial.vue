@@ -26,6 +26,11 @@
       Si perds totes les vides, perdràs la partida, si ets l'ultim en peu guanyaras la partida.
     </div>
     <div class="explanationSection">
+      <div>
+        <Button v-if="page > 1" icon="pi pi-arrow-left" severity="success" text raised rounded aria-label="Arrow left"
+          @click="latestPage()" />
+      </div>
+
       <div id="background">
         <div id="grid">
           <div id="topmid">
@@ -87,11 +92,12 @@
           </div>
         </div>
       </div>
+      <div><Button v-if="page < 7" icon="pi pi-arrow-right" severity="success" text raised rounded
+          aria-label="Arrow rigth" @click="nextPage()" /></div>
 
     </div>
     <div>
-      <button @click="nextPage()" v-if="page < 7">Next</button>
-      <button @click="latestPage()" v-if="page > 1">Latest</button>
+
     </div>
   </div>
 </template>
@@ -156,14 +162,14 @@ export default {
         document.getElementById("shieldUser").classList.remove("shielduserTutorial");
         document.getElementById("resposta").value = "7";
         setTimeout(() => {
-          if(this.lives == 2){
+          if (this.lives == 2) {
             this.lives--;
-          document.getElementById("bombCounter").innerHTML = "30";
-          document.getElementById("pregunta").innerHTML = "3×3";
-          document.getElementById("resposta").value = "";
-          this.hideButton();
+            document.getElementById("bombCounter").innerHTML = "30";
+            document.getElementById("pregunta").innerHTML = "3×3";
+            document.getElementById("resposta").value = "";
+            this.hideButton();
           }
-         
+
         }, 1000);
       }
       if (this.page == 6) {
@@ -643,6 +649,10 @@ button {
 
 
 .explanationSection {
+  display: grid;
+  grid-template-columns: 1fr 35fr 1fr;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   height: 50vh;
 }

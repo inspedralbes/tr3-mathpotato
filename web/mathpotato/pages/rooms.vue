@@ -194,7 +194,7 @@ export default {
                 if (this.guest.email === 'none') {
                     this.username = 'guest_' + Math.floor(Math.random() * 1000000);
                     this.username = this.username.slice(0, 20);
-                    socket.emit('join', { idLobby: this.selectedLobby.idLobby, username: this.username, image: 1, email: "none", tutorial: true })
+                    socket.emit('join', { idLobby: this.selectedLobby.idLobby, username: this.username, image: 1, email: "none", tutorial: this.guest.tutorial})
                 } else {
                     socket.emit('join', { idLobby: this.selectedLobby.idLobby, username: this.guest.username, image: this.guest.image, email: this.guest.email, tutorial: this.guest.tutorial })
                 }
