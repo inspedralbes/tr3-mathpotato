@@ -185,9 +185,8 @@ export default {
     },
     methods: {
         BackToRoom() {
-            useAppStore().setCountdown(-2);
-            useAppStore().setGameStarted(false);
-            useAppStore.users = [];
+            useAppStore().setDefaultValues();
+            socket.emit('outOfRoom')
             this.$router.push({ name: 'rooms' });
         },
         explosion() {
@@ -461,6 +460,7 @@ html:lang(ar) {
 }
 
 .gameContainer {
+    background-color: #6d5c3d;
     display: flex;
     flex-direction: column;
     align-items: center;

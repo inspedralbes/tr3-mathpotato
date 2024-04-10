@@ -506,7 +506,11 @@ function findLobbieBySocketId(socketId) {
     });
     return rooms;
 }
+function getLobbieByUserOnUserList(socket) {
+    let room = lobbies.find(lobby => lobby.users.includes(socket.id));
+    return room;
 
+}
 io.on('connection', (socket) => {
     console.log("User connected.");
     console.log(socket.id);
@@ -526,7 +530,20 @@ io.on('connection', (socket) => {
             return true;
         }
     });
-
+    socket.on('outOfRoom', () => {
+        let lobby = getLobbieByUserOnUserList(socket);
+        if (lobby) {
+            let userIndex = "";
+            do {
+                userIndex = lobby.users.findIndex(user => user === socket.id);
+                if (userIndex != -1) {
+                    
+                    lobby.users.splice(userIndex, 1);
+                }
+            } while (userIndex != -1);
+            
+        }
+    });
     socket.on('join', (data) => {
         let game;
         let lobby = null;
@@ -547,8 +564,10 @@ io.on('connection', (socket) => {
                     if (!check) {
                         game = joinLobby(lobby, socket, data);
                         lobby.users.push(socket.id);
+                        console.log("game", game);
                         socket.emit('userJoined');
                     } else {
+                        console.log("ESTA PINGA")
                         socket.emit('joinError', 'Ya estas en esta sala');
                         error = true;
                     }
@@ -569,6 +588,7 @@ io.on('connection', (socket) => {
                 for (let i = 0; i < lobbies.length; i++) {
                     for (let j = 0; j < lobbies[i].users.length; j++) {
                         if (lobbies[i].users[j] === socket.id) {
+                            console.log(lobbies[i].users[j], "===", socket.id);
                             check = true;
                         }
                     }
@@ -578,7 +598,7 @@ io.on('connection', (socket) => {
                     lobby.users.push(socket.id);
                     socket.emit('userJoined');
                 } else {
-                    console.log("PINGA")
+                    console.log("PINGATAS")
                     socket.emit('joinError', 'Ya estas en una sala');
                 }
             } else {
@@ -613,7 +633,7 @@ io.on('connection', (socket) => {
 
         }
         if (!error) {
-            console.log("game", lobby);
+            console.log("game", game);
             socket.join(game.idGame);
             socket.emit('userDataUpdate', { "user": game.users[game.users.length - 1], "game": lobby.id });
             console.log(game.users);
@@ -784,7 +804,6 @@ io.on('connection', (socket) => {
 
 
     });
-
 
     socket.on('leaveRoom', () => {
         let gameRooms = findLobbieBySocketId(socket.id);

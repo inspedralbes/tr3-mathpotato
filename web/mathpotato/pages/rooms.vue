@@ -42,7 +42,7 @@
                         bary: 'hover:bg-primary-400 opacity-100'
                     }" class="custom-scroll-panel">
                                     <div class="card flex justify-content-center" id="div-lobbies">
-                                        <Listbox v-model="selectedLobby" @click="joinRoomByCode(selectedLobby.idLobby)"
+                                        <Listbox v-model="selectedLobby"
                                             :options="lobbies" filter optionLabel="nameLobby" class="w-full md:w-14rem"
                                             id="info_lobby" />
                                     </div>
@@ -138,7 +138,7 @@ export default {
             visibleError: false,
             privateRoomCode: "",
             selectedModes: null,
-            selectedLobby: {},
+            selectedLobby: null,
             showModalConfig: false,
             btnRefresh: false,
             option: '',
@@ -172,6 +172,12 @@ export default {
 
 
     },
+    watch: {
+        selectedLobby() {
+            console.log(this.selectedLobby.id);
+            this.joinRoomByCode(this.selectedLobby.id);
+        }
+    },
     methods: {
         createGame() {
             this.visible = false;
@@ -203,6 +209,7 @@ export default {
             if (this.guest.email === 'none') {
                 this.username = 'guest_' + Math.floor(Math.random() * 1000000);
                 this.username = this.username.slice(0, 20);
+                console.log("PINGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",code);
                 socket.emit('join', { idLobby: code, username: this.username, image: 1, email: "none", tutorial: true })
             } else {
                 socket.emit('join', { idLobby: code, username: this.guest.username, image: this.guest.image, email: this.guest.email, tutorial: this.guest.tutorial })
