@@ -264,18 +264,6 @@
                 <!-- Resto del código -->
             
     </div>
-    <div class="container-join-room-public">
-        <div v-show="showJoinLobby && selectedLobby" class="card flex justify-content-center btn-join-lobby-public">
-            <div class="container-join-public-room">
-                <div class="flex justify-content-center">
-                    <span v-if="selectedLobby && selectedLobby.nameLobby">{{ selectedLobby.nameLobby }}</span>
-                    <Button label="Join" @click="joinPublicRoom" class="" />
-                    <Button label="X" class="" @click="showJoinLobby = false" />
-                </div>
-
-            </div>
-        </div>
-    </div>
     
     
     
