@@ -48,6 +48,41 @@ export const useAppStore = defineStore('app', {
         }
     }),
     actions: {
+        setDefaultValues() {
+            this.lobbies = [
+                { idLobby: '', nameLobby: '', mode: '', waitUntilFull: false, numUser: 0 },
+            ],
+                this.infoGame = {
+                    rooms: {
+                        gameRooms: [
+                            {
+                                users: [
+                                    { username: '', bomba: false, tutorial: true, image: './assets/Icon_2.png' }
+                                ]
+                            },
+                        ],
+                    }
+                },
+                this.users = [],
+                this.pregunta = {
+                    id_pregunta: "",
+                    pregunta: "",
+                },
+                this.actualRoomName = '',
+                this.respostaAnterior = true,
+                this.explodes = false,
+                this.timer = 0,
+                this.gameStarted = false,
+                this.gameWinner = false,
+                this.error = "",
+                this.ranking = [],
+                this.public = false,
+                this.countdown = -2,
+                this.shieldUser = {
+                    activated: false,
+                    sec: 0
+                }
+        },
         setCountdown(countdown) {
             this.countdown = countdown;
         },
@@ -59,6 +94,12 @@ export const useAppStore = defineStore('app', {
             this.lobbies[0].mode = lobbies;
             this.lobbies[0].numUser = 20;
 
+        },
+        setOpen(data) {
+            this.open = data;
+        },
+        getOpen() {
+            return this.open;
         },
         setModes(modes) {
             this.lobbies[0].mode = modes;

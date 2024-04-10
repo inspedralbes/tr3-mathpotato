@@ -43,9 +43,10 @@
                 </div>
                 <div id="modal-victory" class="modal-victoria" v-show="userPantalla.win">
                     <div class="modal-victoria-content">
-                        <img src="@/assets/Victoria.png" alt="Patata Ganadora" style="width: 250px; height: 200px;">
+                        <img src="@/assets/Victoria_win.png" alt="Patata Ganadora" style="width: 250px; height: 200px;">
                         <!-- <p class="victory-text">Victoria</p> -->
                         <Button @click="replay">Volver a jugar</Button>
+                        <Button @click="BackToRoom">Volver al menú</Button>
                     </div>
                 </div>
                 <div id="modal-victory" class="modal-victoria" v-show="userPantalla.lost">
@@ -53,6 +54,7 @@
                         <img src="@/assets/defeat.png" alt="Patata Perdedora" style="width: 250px; height: 200px;">
                         <!-- <p class="victory-text">Derrota</p> -->
                         <Button @click="replay">Volver a Jugar</Button>
+                        <Button @click="BackToRoom">Volver al menú</Button>
                     </div>
                 </div>
                 <div id="ModalWaiting" class="modal-tutorial"
@@ -60,13 +62,13 @@
                     <div class="modal-tutorial-content ">
                         
                         <div class="code">
-                            <svg  xmlns="http://www.w3.org/2000/svg" class="icon-unlock icon-tabler icon-tabler-lock-open" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <svg v-if="open" xmlns="http://www.w3.org/2000/svg" class="icon-unlock icon-tabler icon-tabler-lock-open" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                 <path d="M5 11m0 2a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2z" />
                                 <path d="M12 16m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
                                 <path d="M8 11v-5a4 4 0 0 1 8 0" />
                             </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon-lock icon-tabler icon-tabler-lock" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="icon-lock icon-tabler icon-tabler-lock" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                 <path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6z" />
                                 <path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" />
@@ -162,6 +164,10 @@ export default {
         roomName(){
             let store = useAppStore();
             return store.getRoomName();
+        },
+        open(){
+            let store = useAppStore();
+            return store.getOpen();
         }
 
 
@@ -196,6 +202,11 @@ export default {
         }
     },
     methods: {
+        BackToRoom() {
+            useAppStore().setDefaultValues();
+            socket.emit('outOfRoom')
+            this.$router.push({ name: 'rooms' });
+        },
         explosion() {
             document.getElementById("bomb").src = "/_nuxt/assets/Explosion.gif";
             setTimeout(() => {
@@ -213,7 +224,7 @@ export default {
             this.hasClickedStart = false;
             this.showWaitingModal = true;
             this.showStartButton = true;
-            socket.emit('join', { "username": this.userPantalla.username, "image": this.userPantalla.image, "email": this.userPantalla.email, "tutorial": this.userPantalla.tutorial });
+            socket.emit('newGameSameRoom', {"idLobby": this.roomName, "username": this.userPantalla.username, "image": this.userPantalla.image, "email": this.userPantalla.email, "tutorial": this.userPantalla.tutorial });
 
         },
         goBack() {
@@ -473,6 +484,7 @@ html:lang(ar) {
 }
 
 .gameContainer {
+    background-color: #6d5c3d;
     display: flex;
     flex-direction: column;
     align-items: center;

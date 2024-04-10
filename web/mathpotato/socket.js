@@ -7,14 +7,15 @@ const URL = "localhost:5175";
 
 export const socket = io(URL);
 
-socket.on("usersConnected", (usersConnected, roomName) => {
+socket.on("usersConnected", (data) => {
     console.log("*Conectado al servidor*", usersConnected);
     console.log('Sala de juego: ', roomName);
     const store = useAppStore();
 
     // Establece el array de usuarios en Pinia
-    store.setUsers(usersConnected);
-    store.setUsersInRoom(usersConnected);
+    store.setUsers(data.users);
+    store.setUsersInRoom(data.users);
+    store.setOpen(data.public);
     store.setRespostaAnterior(true);
 });
 
@@ -119,7 +120,7 @@ socket.on("changeProfile", (data) => {
     console.log('Cambio de skin correcto: ', data);
     const store = useAppStore();
     store.setUpdateProfile(data);
-    
+
 });
 
 socket.on("sugerencias", (data) => {

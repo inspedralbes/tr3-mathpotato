@@ -63,7 +63,6 @@
                 <div v-if="guest.image" @mouseover="showChangeAvatar" class="user-avatar" :style="{ height: avatarHeight }">
                     <Avatar :image="'./_nuxt/assets/Icon_' + guest.image + '.png'" shape="circle" class="avatar-edit" style="width: 250px; height: 250px; margin-left: auto; margin-right: auto; display: block; border-radius: 50%; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);" />
                     <br>
-                    <!-- <Button v-if="showbtn" @click="changeSkin" class="pi pi-pencil" label="change avatar" id="changeButton"/> -->
                     <Fieldset legend="Cambiar Skin" :toggleable="true" :collapsed="true" >
                         <p class="m-0">
                             <div id="image_gallery" >
@@ -144,22 +143,20 @@
             </div>
     </Sidebar>
     <div class="container-principal">
-        <!-- Public Rooms -->
         <div class="rooms-container">
             <div class="container-public-room">
                 <div class="header-public-room">
-                    <!-- <label for="username" class="font-semibold w-6rem">Username</label>
-                    <InputText v-model="username" id="username" class="flex-auto" autocomplete="off" /> -->
                     <div class="container-svg">
                         <div class="flex justify-content-start">
-                            <!-- <Button @click="btnRefresh" icon="pi pi-refresh" class="btn-refresh" label="Reload" severity="warning" /> -->
+
                         </div>
                     </div>
                     <div class="container-select">
                         <div class="card flex justify-content-center select-modes">
                             <FloatLabel class="w-full md:w-20rem">
-                                <MultiSelect id="ms-cities" v-model="selectedModes" :options="modes" optionLabel="name" :maxSelectedLabels="3" class="w-full" />
-                                <label for="ms-cities">Modes</label>
+                                <MultiSelect id="ms-cities" v-model="selectedModes" :options="modes" optionLabel="name"
+                                    :maxSelectedLabels="3" class="w-full" />
+                                <label for="ms-cities">Modos</label>
                             </FloatLabel>
                         </div>
 
@@ -169,30 +166,28 @@
                     <div class="card">
                         <div class="flex flex-column md:flex-row gap-5">
                             <div class="flex-auto">
-                            <ScrollPanel 
-                                style="width: 100%; height: 300px" 
-                                :pt="{ 
-                                wrapper: { 
-                                    style: { 'border-right': '10px solid var(--surface-ground)' }
-                                },  
-                                bary: 'hover:bg-primary-400 opacity-100' 
-                                }" 
-                                class="custom-scroll-panel"
-                            >
-                            <div class="card flex justify-content-center" id="div-lobbies">
-                                <Listbox v-model="selectedLobby" @click="showJoinLobby = true" :options="lobbies" filter optionLabel="nameLobby" class="w-full md:w-14rem" id="info_lobby" />           
-                            </div>
+                                <ScrollPanel style="width: 100%; height: 300px" :pt="{
+                        wrapper: {
+                            style: { 'border-right': '10px solid var(--surface-ground)' }
+                        },
+                        bary: 'hover:bg-primary-400 opacity-100'
+                    }" class="custom-scroll-panel">
+                                    <div class="card flex justify-content-center" id="div-lobbies">
+                                        <Listbox v-model="selectedLobby"
+                                            :options="lobbies" filter optionLabel="nameLobby" class="w-full md:w-14rem"
+                                            id="info_lobby" />
+                                    </div>
 
-                            </ScrollPanel>  
+                                </ScrollPanel>
                             </div>
                             <div class="card">
-                                <Paginator :rows="5" :total-records="lobbies.length" ></Paginator>
+                                <Paginator :rows="5" :total-records="lobbies.length"></Paginator>
                             </div>
                             <!-- <Divider type="solid" /> -->
                             <div class="card btn-jugar-rapido">
                                 <Button label="Jugar rapido!" @click="playfast" />
                             </div>
-                    </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -202,8 +197,11 @@
         <div class="container-join-room">
             <div class="card flex justify-content-center">
                 <div class="flex flex-column align-items-center code">
-                    <div class="font-bold text-xl mb-2 text-join-room">Pon el codigo para unirte!</div>
-                    <InputOtp v-model="value" :length="6" style="gap: 0; justify-content: center; padding: 20px;" >
+                    <div class="font-bold text-xl mb-2 text-join-room">¡Pon el codigo para unirte!</div>
+                    <div v-if="visibleError">
+                        <span class="text-red-500">¡Sala no encontrada!</span>
+                    </div>
+                    <InputOtp v-model="value" :length="6" style="gap: 0; justify-content: center; padding: 20px;" :invalid="true">
                         <template #default="{ attrs, events, index }">
                             <input type="text" v-bind="attrs" v-on="events" class="custom-otp-input" />
                             <div style="padding: 5px;" v-if="index === 3" class="px-3">
@@ -226,47 +224,39 @@
                     </div>
                 </div>
             </div>
-            
-            
+
+
         </div>
-        
-        
+
+
         <div class="card flex justify-content-center">
-            <Dialog v-model:visible="visible" modal header="Config Game" :style="{ width: '25rem' }">
-                <span class="p-text-secondary block mb-5">Update your information.</span>
+            <Dialog v-model:visible="visible" modal header="Configuracion de sala" :style="{ width: '25rem' }">
                 <Divider type="solid" />
                 <div class="flex align-items-center gap-3 mb-3">
-                    <label for="nameRoom" class="font-semibold w-6rem">Name Room</label>
+                    <label for="nameRoom" class="font-semibold w-6rem">Nombre de la sala</label>
                     <InputText v-model="nameRoom" id="name" class="flex-auto" autocomplete="off" />
                 </div>
                 <Divider type="solid" />
                 <div class="flex align-items-center radiobutton-div">
                     <RadioButton v-model="option" inputId="option1" name="option" value=false />
-                    <label for="option1" class="text-radiobutton">Public</label>
+                    <label for="option1" class="text-radiobutton">Publica</label>
                     <RadioButton v-model="option" inputId="option2" name="option" value=true />
-                    <label for="option2" class="text-radiobutton">Private</label>
+                    <label for="option2" class="text-radiobutton">Privada</label>
                 </div>
                 <Divider type="solid" />
-                <div class="flex align-items-center radiobutton-div">
-                    <RadioButton v-model="selectedModecreate" inputId="classic" name="classic" value="Classic" />
-                    <label for="classic" class="text-radiobutton">Classic</label>
-                    <RadioButton v-model="selectedModecreate" inputId="puteo" name="puteo" value="Puteo" />
-                    <label for="puteo" class="text-radiobutton">Puteo</label>
-                </div>
-                <Divider type="solid" />
-            <div class="flex justify-content-end gap-2 button-modal">
-                <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
-                <Button type="button" label="Create" @click="createGame()"></Button>
-                
+                <div class="flex justify-content-end gap-2 button-modal">
+                    <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
+                    <Button type="button" label="Create" @click="createGame()"></Button>
+
                 </div>
             </Dialog>
         </div>
-                <!-- Resto del código -->
-            
+        <!-- Resto del código -->
+
     </div>
-    
-    
-    
+
+
+
 </template>
 
 <script>
@@ -277,6 +267,7 @@ const visible = ref(false);
 export default {
     data() {
         return {
+            visibleError: false,
             privateRoomCode: "",
             value_sugerencias: '',
             selectedModes: null,
@@ -295,15 +286,15 @@ export default {
             visible: false,
             visibleRanking: false,
             modes: [
-                { name: 'puteo'},
-                { name: 'default'}
+                { name: 'puteo' },
+                { name: 'default' }
             ],
             username: '',
             show:true,
         };
     },
     computed: {
-        users(){
+        users() {
             let store = useAppStore();
             return store.getGuestInfo();
         },
@@ -311,11 +302,11 @@ export default {
             let store = useAppStore();
             return store.getSalas();
         },
-        updateLobbies(){
+        updateLobbies() {
             let store = useAppStore();
-            return store.updateLobbies();  
+            return store.updateLobbies();
         },
-        guest(){
+        guest() {
             let store = useAppStore();
             return store.getGuestInfo();
         },
@@ -327,6 +318,12 @@ export default {
             let store = useAppStore();
             return store.getUpdateProfile();
         },
+    },
+    watch: {
+        selectedLobby() {
+            console.log(this.selectedLobby.id);
+            this.joinRoomByCode(this.selectedLobby.id);
+        }
     },
     methods: {
         RankingView(){
@@ -368,42 +365,41 @@ export default {
         createGame() {
             this.visible = false;
             // Logic to create a private room
-            socket.emit('createGame', { name: this.nameRoom, mode: this.selectedModecreate, private: this.option, waitUntilFull: '', MaxPlayers: 6});
+            socket.emit('createGame', { name: this.nameRoom, mode: this.selectedModecreate, private: this.option, waitUntilFull: '', MaxPlayers: 6 });
             // this.$router.push({ path: '/play'});
             console.log("pepepeppepepep");
         },
-        ModalConfig(){
+        ModalConfig() {
             this.showModalConfig = true;
         },
         joinPublicRoom() {
-            if(this.selectedLobby){
-                if(this.guest.email === 'none'){
+            if (this.selectedLobby) {
+                if (this.guest.email === 'none') {
                     this.username = 'guest_' + Math.floor(Math.random() * 1000000);
                     this.username = this.username.slice(0, 20);
                     socket.emit('join', { idLobby: this.selectedLobby.idLobby, username: this.username, image: 1, email: "none", tutorial: true })
-                }else{
+                } else {
                     socket.emit('join', { idLobby: this.selectedLobby.idLobby, username: this.guest.username, image: this.guest.image, email: this.guest.email, tutorial: this.guest.tutorial })
                 }
-                this.$router.push({ path: '/play'});
-            
-            // Logic to join a public room
-            // socket.emit('join', { username: this.users.username, image: this.users.image, email: this.users.email})
-            // this.$router.push({ path: '/play'});
+
+                // Logic to join a public room
+                // socket.emit('join', { username: this.users.username, image: this.users.image, email: this.users.email})
+                // this.$router.push({ path: '/play'});
             }
         },
         joinRoomByCode(code) {
             // Logic to join a private room
-            if(this.guest.email === 'none'){
-                    this.username = 'guest_' + Math.floor(Math.random() * 1000000);
-                    this.username = this.username.slice(0, 20);
-                    socket.emit('join', { idLobby: code, username: this.username, image: 1, email: "none", tutorial: true })
-                }else{
-            socket.emit('join', { idLobby: code, username: this.guest.username, image: this.guest.image, email: this.guest.email, tutorial: this.guest.tutorial })
-                }
-            this.$router.push({ path: '/play'});
+            if (this.guest.email === 'none') {
+                this.username = 'guest_' + Math.floor(Math.random() * 1000000);
+                this.username = this.username.slice(0, 20);
+                console.log("PINGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",code);
+                socket.emit('join', { idLobby: code, username: this.username, image: 1, email: "none", tutorial: true })
+            } else {
+                socket.emit('join', { idLobby: code, username: this.guest.username, image: this.guest.image, email: this.guest.email, tutorial: this.guest.tutorial })
+            }
         },
-        playfast(){
-            if(this.guest.email === 'none'){
+        playfast() {
+            if (this.guest.email === 'none') {
                 this.username = 'guest_' + Math.floor(Math.random() * 1000000);
                 this.username = this.username.slice(0, 20);
                 socket.emit('join', { username: this.username, image: 1, email: 'none', tutorial: true }) 
@@ -422,7 +418,7 @@ export default {
                 imageElement.checked = true;
             }
         },
-        login(){
+        login() {
             this.$router.push({ path: '/login' });
         },
         async enviarSugerencias(){
@@ -460,9 +456,15 @@ export default {
     mounted() {
         socket.emit('getSalas');
         socket.on('roomDone', (data) => {
-            this.selectedLobby = data.id;
-            this.joinPublicRoom();
-
+            
+            this.joinRoomByCode(data.id);
+        });
+        socket.on('joinError', (data) => {
+            this.visibleError = true;
+        });
+        socket.on('userJoined', (data) => {
+            console.log(data);
+            this.$router.push({ path: '/play' });
         });
         if(this.guest.email !== 'none'){
             this.setCheckedOnUserImage();
@@ -471,18 +473,10 @@ export default {
 
         // this.getRanking();
         setInterval(this.data, 60000);
-
     },
     beforeDestroy(){
         clearInterval(this.intervalId);
     }
-    // watch: {
-    //     guest() {
-    //         this.setCheckedOnUserImage();
-    //     },
-        
-    // },
-
 };
 </script>
 
@@ -538,7 +532,7 @@ body {
     }
 
     .highlighted{
-    background-color:#ffa500;
+    background-color:#ffa600b8;
 }
     /* Estilos del número de rango */
     .rank {
@@ -707,16 +701,16 @@ input[type="radio"]:checked + label>.avatar-edit{
     display: inline-block;
 }
 
-.btn-login{
+.btn-login {
     cursor: pointer;
 }
 
-.navbar{
+.navbar {
     /* padding: 10px; */
     padding-right: 30px;
 }
 
-.container-join-room-public{
+.container-join-room-public {
     width: 100%;
     display: flex;
     justify-content: center;
@@ -724,40 +718,46 @@ input[type="radio"]:checked + label>.avatar-edit{
     height: 13vh;
 }
 
-.btn-refresh{
+.btn-refresh {
     top: 25%;
-    font-size: 0.9em; 
+    font-size: 0.9em;
     padding: 0.5em 0.5em;
 }
 
-.radiobutton-div{
+.text-red-500{
+    color: red;
+
+}
+
+.radiobutton-div {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.text-radiobutton{
+.text-radiobutton {
     padding-left: 10px;
     padding-right: 10px;
 }
 
-.code{
+.code {
     text-align: center;
 }
+
 .custom-otp-input:focus {
     outline: 2px solid var(--primary-color);
 }
 
-.text-create-room{
+.text-create-room {
     padding-bottom: 20px;
     font-size: 20px;
 }
 
-.text-join-room{
+.text-join-room {
     font-size: 20px;
 }
 
-.btn-create{
+.btn-create {
     padding: 10px 30px;
 
 }
@@ -777,7 +777,7 @@ input[type="radio"]:checked + label>.avatar-edit{
     border-color: var(--surface-400);
 }
 
-.container-header{
+.container-header {
     padding: 20px;
     display: flex;
     justify-content: space-between;
@@ -789,18 +789,18 @@ input[type="radio"]:checked + label>.avatar-edit{
 .container-principal {
     margin: auto;
     display: flex;
-    justify-content: center; 
-    align-items: center; 
+    justify-content: center;
+    align-items: center;
     height: 87vh;
     padding-right: 20px;
     padding-left: 20px;
     background-image: url('../assets/Banner.png');
     background-repeat: no-repeat;
     background-position: top;
-    
+
 }
 
-.rooms-container{
+.rooms-container {
     display: flex;
     justify-content: space-between;
     width: 100%;
@@ -822,11 +822,11 @@ input[type="radio"]:checked + label>.avatar-edit{
     padding: 20px;
 }
 
- .container-select {
+.container-select {
     display: flex;
     align-items: center;
     width: 22%;
-} 
+}
 
 .input-container {
     display: flex;
@@ -851,7 +851,7 @@ input[type="radio"]:checked + label>.avatar-edit{
     /* Color representativo de MathPotato */
 }
 
-.container-join-room{
+.container-join-room {
     border-left: 10px solid #6C5CE7;
     justify-content: center;
     align-items: center;
@@ -872,7 +872,7 @@ input[type="radio"]:checked + label>.avatar-edit{
 
 }
 
-.container-svg{
+.container-svg {
     /* background-color: #333; */
     position: relative;
     width: 55%;
@@ -880,16 +880,10 @@ input[type="radio"]:checked + label>.avatar-edit{
     justify-content: flex-end;
     margin-bottom: 10px;
     padding-right: 20px;
-    
+
 }
 
-.icon {
-    transition: transform 0.3s ease-in-out;
-}
 
-.icon:hover {
-    transform: rotate(180deg);
-}
 
 .header-public-room {
     display: flex;
@@ -935,7 +929,7 @@ input[type="radio"]:checked + label>.avatar-edit{
     border-bottom: none;
 }
 
-.input{
+.input {
     text-align: center;
 }
 

@@ -1,16 +1,15 @@
 import express, { response } from 'express';
 import cors from 'cors';
-import { createServer } from 'node:http';
+import { createServer, get } from 'node:http';
 import { Server } from 'socket.io';
 import { join } from 'path';
 import mysql from 'mysql';
-// const fetch = require('node-fetch');
+import { start } from 'node:repl';
 
 const app = express();
 
 var lobbies = [];
-var lastRoom = 0;
-
+var pinga = 0;
 app.use(cors());
 const server = createServer(app);
 const URL = "http://127.0.0.1:8000/api/preguntes/random";
@@ -48,6 +47,17 @@ function makeid(length) {
     return result;
 }
 
+function findGameIndex(gameRooms, room) {
+    console.log(gameRooms);
+    for (let i = 0; i < gameRooms.length; i++) {
+
+        if (gameRooms[i].idGame === room.idGame) {
+            return i;
+        }
+    }
+    return index;
+}
+
 function findOpenGame(lobby) {
     let returnData = null;
     if (lobby) {
@@ -62,6 +72,19 @@ function findOpenGame(lobby) {
     return returnData;
 }
 
+function findLobbieByGameroomId(idGame) {
+    let returnData = null;
+    lobbies.forEach(lobby => {
+        lobby.games.forEach(game => {
+            if (game.idGame === idGame) {
+                returnData = lobby;
+            }
+        });
+    });
+    return returnData;
+
+}
+
 function findFirstPublicLobby() {
     let returnData = null;
     lobbies.forEach(lobby => {
@@ -74,8 +97,11 @@ function findFirstPublicLobby() {
 
 function createLobby(data, socket) {
     console.log("createLobby");
-    let publicLobby = data.private == "false" ? false : true;
-    lobbies.push({ "id": makeid(6), "nameLobby": data.name, "games": [], "mode": data.mode, "private": publicLobby, "leader": socket.id, "WaitUntilFull": data.WaitUntilFull, "uniqueIndicator": 0 });
+    let publicLobby = false;
+    if (typeof data.private === 'string' || data.private instanceof String) { publicLobby = data.private == "false" ? false : true; } else { publicLobby = data.private; }
+
+    lobbies.push({ "id": makeid(6), "nameLobby": data.name, "games": [], "mode": data.mode, "private": publicLobby, "leader": socket.id, "WaitUntilFull": data.WaitUntilFull, "uniqueIndicator": 0, "users": [] });
+    console.log("games", lobbies);
     return lobbies[lobbies.length - 1];
 }
 
@@ -90,6 +116,7 @@ function joinLobby(lobby, socket, data) {
         lobby.games.push({ idGame: lobby.id + lobby.uniqueIndicator, users: [], started: false, pregunta: "", timer: 1, timerAnterior: 0, shieldUser: "" })
         lobby.games[lobby.games.length - 1].users.push({ "id": socket.id, "username": data.username, "image": data.image, "tutorial": data.tutorial, "bomba": true, "hasClickedStart": false, "lives": 3, "email": data.email });
         lobby.uniqueIndicator++;
+        lobby.users.push(socket.id);
         theGame = lobby.games[lobby.games.length - 1];
     }
     return theGame;
@@ -182,6 +209,7 @@ function findGameByUserId(lobbyGames, socket) {
     lobbyGames.forEach(game => {
         game.users.forEach(user => {
             if (user.id === socket) {
+                console.log("user.id", user.id, "==", socket);
                 returnData = game;
             }
         });
@@ -230,52 +258,54 @@ function newPregunta(room) {
     room.pregActual = id_pregunta;
     io.to(room.idGame).emit('pregunta', { "id": room.pregActual, "pregunta": room.pregunta });
 }
-function getUserWithBomb(room, gameRooms) {
+function getUserWithBomb(room) {
 
-    for (let i = 0; i < gameRooms[room].users.length; i++) {
-        if (gameRooms[room].users[i].bomba) {
+    for (let i = 0; i < room.users.length; i++) {
+        if (room.users[i].bomba) {
             return i;
         }
     }
 }
-function respostaCorrecta(roomIndex, userWithBomb, gameRooms, socket) {
-    gameRooms[roomIndex].pregActual++;
-    console.log(gameRooms[roomIndex].users[userWithBomb]);
-    if (socket.id == gameRooms[roomIndex].users[userWithBomb].id) {
-        respostaCorrectaUsuariCorrecte(roomIndex, userWithBomb, gameRooms);
+function respostaCorrecta(game, socket) {
+    game.pregActual++;
+    console.log(game.users[getUserWithBomb(game)]);
+    if (socket.id == game.users[getUserWithBomb(game)].id) {
+        respostaCorrectaUsuariCorrecte(game);
     } else {
-        if (!gameRooms[roomIndex].shieldUser) {
-            respostaCorrectaUsuariIncorrecte(roomIndex, userWithBomb, gameRooms);
+        if (!game.shieldUser) {
+            respostaCorrectaUsuariIncorrecte(game);
         }
     }
 }
 
-function respostaCorrectaUsuariCorrecte(roomIndex, userWithBomb, gameRooms) {
-    gameRooms[roomIndex].users[userWithBomb].bomba = false;
-    console.log("user bomba: " + gameRooms[roomIndex].users[userWithBomb].bomba);
-    if (userWithBomb == gameRooms[roomIndex].users.length - 1) {
-        gameRooms[roomIndex].users[0].bomba = true;
-        if (gameRooms[roomIndex].timerAnterior > 20) {
-            gameRooms[roomIndex].timerAnterior = gameRooms[roomIndex].timerAnterior - 5;
+function respostaCorrectaUsuariCorrecte(game) {
+    let userWithBomb = getUserWithBomb(game);
+    game.users[getUserWithBomb(game)].bomba = false;
+
+    console.log("user bomba: " + game.users[userWithBomb].bomba);
+    if (userWithBomb == game.users.length - 1) {
+        game.users[0].bomba = true;
+        if (game.timerAnterior > 20) {
+            game.timerAnterior = game.timerAnterior - 5;
         } else {
-            if (gameRooms[roomIndex].timerAnterior > 5) {
-                gameRooms[roomIndex].timerAnterior = gameRooms[roomIndex].timerAnterior - 2;
+            if (game.timerAnterior > 5) {
+                game.timerAnterior = game.timerAnterior - 2;
             }
         }
     } else {
-        gameRooms[roomIndex].users[userWithBomb + 1].bomba = true;
+        game.users[userWithBomb + 1].bomba = true;
     }
-    gameRooms[roomIndex].timer = gameRooms[roomIndex].timerAnterior;
-    console.log("users in room -> ", gameRooms[roomIndex].users);
-    io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes": false });
+    game.timer = game.timerAnterior;
+    console.log("users in room -> ", game.users);
+    io.to(game.idGame).emit('changeBomb', { "arrayUsers": game.users, "bombChange": true, "explodes": false });
 }
 
-function respostaCorrectaUsuariIncorrecte(roomIndex, userWithBomb, gameRooms) {
+function respostaCorrectaUsuariIncorrecte(game) {
 
     console.log("resposta correcta!");
-    gameRooms[roomIndex].users[userWithBomb].bomba = true;
-    gameRooms[roomIndex].timer -= 10;
-    io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes": false });
+    game.users[getUserWithBomb(game)].bomba = true;
+    game.timer -= 10;
+    io.to(game.idGame).emit('changeBomb', { "arrayUsers": game.users, "bombChange": true, "explodes": false });
 }
 
 async function addToRanking(email) {
@@ -307,69 +337,80 @@ async function updateVictorias(roomIndex, gameRooms) {
 //     return room;
 // }
 
-function UserHasNoLives(roomIndex, userWithBomb, roomToEliminate, gameRooms) {
-    if (gameRooms[roomIndex].users[userWithBomb].email !== 'none') {
-        var email = gameRooms[roomIndex].users[userWithBomb].email;
+function UserHasNoLives(userThatDied, game) {
+    if (userThatDied.email !== 'none') {
+        var email = userThatDied.email;
         addToRanking(email);
     }
-    if (userWithBomb == gameRooms[roomIndex].users.length - 1) {
-        gameRooms[roomIndex].users[0].bomba = true;
+
+    let socket = io.sockets.sockets.get(userThatDied.id);
+    socket.leave(game.idGame);
+    socket.emit('userLost', userThatDied);
+    let userIndex = game.users.findIndex(user => user.id === userThatDied.id);
+    if (getUserWithBomb(game) == game.users.length - 1) {
+        console.log("ILLO")
+        game.users[0].bomba = true;
     }
     else {
-        gameRooms[roomIndex].users[userWithBomb + 1].bomba = true;
+        game.users[getUserWithBomb(game) + 1].bomba = true;
     }
-    let socket = io.sockets.sockets.get(gameRooms[roomIndex].users[userWithBomb].id);
-    socket.leave(gameRooms[roomIndex].idGame);
-    socket.emit('userLost', gameRooms[roomIndex].users[userWithBomb]);
-    gameRooms[roomIndex].users.splice(userWithBomb, 1);
-    console.log("USERS -> " + gameRooms[roomIndex].users);
-    if (gameRooms[roomIndex].users.length == 1 && gameRooms[roomIndex].started == true) {
-        updateVictorias(roomIndex, gameRooms);
-        io.to(gameRooms[roomIndex].idGame).emit('finishGame', ({ gameStarted: false, timer: 0, username: gameRooms[roomIndex].users[0].username, image: gameRooms[roomIndex].users[0].image, email: gameRooms[roomIndex].users[0].email }));
-        io.sockets.sockets.get(gameRooms[roomIndex].users[0].id).leave(gameRooms[roomIndex].idGame);
-        gameRooms.splice(roomToEliminate, 1);
+    game.users.splice(userIndex, 1);
+    console.log("USERS -> " + game.users);
+    if (game.users.length == 1 && game.started == true) {
+        let gameRooms = findLobbieByGameroomId(game.idGame);
+        let roomIndex = findGameIndex(gameRooms.games, game);
+        updateVictorias(roomIndex, gameRooms.games);
+        io.to(game.idGame).emit('finishGame', ({ gameStarted: false, timer: 0, username: game.users[0].username, image: game.users[0].image, email: game.users[0].email }));
+        io.sockets.sockets.get(game.users[0].id).leave(game.idGame);
+        gameRooms.games.splice(roomIndex, 1);
+
     } else {
-        if (gameRooms[roomIndex].users.length > 1) {
-            io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes": false });
+        if (game.users.length > 1) {
+            io.to(game.idGame).emit('changeBomb', { "arrayUsers": game.users, "bombChange": true, "explodes": false });
+            if (game.timer <= 0) {
+                startTimer(game.idGame, getSocketWithBomb(game));
+            }
         }
 
     }
 }
-function respostaIncorrectaUsuariCorrecte(roomIndex, userWithBomb, gameRooms) {
-    gameRooms[roomIndex].timer = gameRooms[roomIndex].timerAnterior;
-    gameRooms[roomIndex].pregActual++;
-    gameRooms[roomIndex].users[userWithBomb].lives--;
-    let check = gameRooms[roomIndex].idGame;
-    console.log("lives restantes -> " + gameRooms[roomIndex].users[userWithBomb].lives);
+function respostaIncorrectaUsuariCorrecte(game) {
+    game.timer = game.timerAnterior;
+    game.pregActual++;
+    game.users[getUserWithBomb(game)].lives--;
+    console.log("lives restantes -> ", game.users[getUserWithBomb(game)].lives);
+    let userThatDied = game.users[getUserWithBomb(game)];
+    if (userThatDied.lives == 0) {
 
-    if (gameRooms[roomIndex].users[userWithBomb].lives == 0) {
-        UserHasNoLives(roomIndex, userWithBomb, gameRooms[roomIndex], gameRooms);
+        UserHasNoLives(userThatDied, game);
     }
-    if (gameRooms[roomIndex] && gameRooms[roomIndex].users.length > 1 && gameRooms[roomIndex].idGame == check) {
-        io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes": true });
-    }
-}
-
-function respostaIncorrectaUsuariIncorrecte(roomIndex, userWithBomb, roomEnviada, gameRooms, socket) {
-
-    if (gameRooms[roomIndex].idGame == roomEnviada) {
-        console.log("resposta incorrecta!");
-        gameRooms[roomIndex].pregActual++;
-        gameRooms[roomIndex].users[userWithBomb].bomba = false;
-
-        console.log(gameRooms[roomIndex].users[userWithBomb].bomba);
-        let userBombN = gameRooms[roomIndex].users.findIndex(user => user.id === socket.id);
-        gameRooms[roomIndex].users[userBombN].bomba = true;
-        io.to(gameRooms[roomIndex].idGame).emit('changeBomb', { "arrayUsers": gameRooms[roomIndex].users, "bombChange": true, "explodes": false });
+    if (game && game.users.length > 1) {
+        io.to(game.idGame).emit('changeBomb', { "arrayUsers": game.users, "bombChange": true, "explodes": true });
+        if (game.timer <= 0) {
+            let socket = io.sockets.sockets.get(game.users[getUserWithBomb(game)].id);
+            startTimer(game.idGame, socket);
+        }
     }
 }
-function respostaIncorrecta(roomIndex, userWithBomb, gameRooms, socket) {
+
+function respostaIncorrectaUsuariIncorrecte(game, socket) {
+
+
     console.log("resposta incorrecta!");
-    if (gameRooms[roomIndex].users[userWithBomb].id == socket.id) {
-        respostaIncorrectaUsuariCorrecte(roomIndex, userWithBomb, gameRooms);
+    game.pregActual++;
+    game.users[getUserWithBomb(game)].bomba = false;
+    let userBombN = game.users.findIndex(user => user.id === socket.id);
+    game.users[userBombN].bomba = true;
+    io.to(game.idGame).emit('changeBomb', { "arrayUsers": game.users, "bombChange": true, "explodes": false });
+
+}
+function respostaIncorrecta(game, socket) {
+    console.log("resposta incorrecta!");
+    if (game.users[getUserWithBomb(game)].id == socket.id) {
+        respostaIncorrectaUsuariCorrecte(game);
     } else {
-        if (!gameRooms[roomIndex].shieldUser) {
-            respostaIncorrectaUsuariIncorrecte(roomIndex, userWithBomb, gameRooms[roomIndex].idGame, gameRooms, socket);
+        if (!game.shieldUser) {
+            respostaIncorrectaUsuariIncorrecte(game, socket);
         }
     }
 
@@ -415,39 +456,44 @@ async function startTimer(idRoom, socket) {
     let gameRooms = findLobbieBySocketId(socket.id);
     if (gameRooms.length > 0) {
         // console.log("Hay estas rooms", gameRooms);
-        let roomPosition = gameRooms.findIndex(room => room.idGame === idRoom);
-        if (roomPosition !== -1) {
+        let game = findGameByUserId(gameRooms, socket.id);
+        if (game != null) {
             // console.log("timer --> ", gameRooms[roomPosition]);
-            if (gameRooms[roomPosition].timer > 0 && gameRooms[roomPosition].started == true) {
+            if (game.timer > 0 && game.started == true) {
                 setTimeout(() => {
                     // console.log("Aqui", gameRooms[roomPosition]);
-                    if (roomPosition !== -1 && gameRooms[roomPosition] !== undefined) {
-                        if (gameRooms[roomPosition].idGame == idRoom) {
-                            gameRooms[roomPosition].timer--;
-                            io.to(gameRooms[roomPosition].idGame).emit('timer', gameRooms[roomPosition].timer);
+                    game = findGameByUserId(gameRooms, socket.id);
+                    if (game != null) {
+                        if (game.idGame == idRoom) {
+                            game.timer--;
+                            io.to(game.idGame).emit('timer', game.timer);
                             // console.log("tiempo --> ", gameRooms[roomPosition].timer);
                         }
 
 
-                        if (gameRooms[roomPosition].users.length == 1 && gameRooms[roomPosition].started == true) {
+                        if (game.users.length == 1 && game.started == true) {
                             console.log(gameRooms)
 
                         } else {
-                            if (gameRooms[roomPosition].users.length > 1) {
+                            if (game.users.length > 1) {
+
                                 startTimer(idRoom, socket);
                             }
                         }
                     }
                 }, 1000);
             } else {
-                if (gameRooms[roomPosition].started == true && gameRooms[roomPosition].timer <= 0) {
-                    let userWithBomb = getUserWithBomb(roomPosition, gameRooms);
-                    respostaIncorrectaUsuariCorrecte(roomPosition, userWithBomb, gameRooms);
-                    if (gameRooms[roomPosition] && gameRooms[roomPosition].users.length > 1 && gameRooms[roomPosition].idGame == idRoom) {
-                        newPregunta(gameRooms[roomPosition]);
+                if (game.started == true && game.timer <= 0) {
+                    let lobby = findLobbieByGameroomId(idRoom);
+                    console.log("DALOBBY", lobby);
+                    respostaIncorrectaUsuariCorrecte(game);
+                    if (game && game.users.length > 1 && game.idGame == idRoom) {
+                        newPregunta(game);
                     }
-                    console.log("timer acabado");
-                    startTimer(idRoom, socket);
+                    console.log("timer acabado en", game);
+
+                    game.timerAnterior = game.timer;
+                    startTimer(game.idGame, socket);
                 }
             }
         }
@@ -467,7 +513,11 @@ function findLobbieBySocketId(socketId) {
     });
     return rooms;
 }
+function getLobbieByUserOnUserList(socket) {
+    let room = lobbies.find(lobby => lobby.users.includes(socket.id));
+    return room;
 
+}
 io.on('connection', (socket) => {
     console.log("User connected.");
     console.log(socket.id);
@@ -476,33 +526,64 @@ io.on('connection', (socket) => {
 
     socket.on('createGame', (data) => {
         if (data.MaxPlayers >= 3) {
-            createLobby(data, socket);
-            console.log("create game: ", data);
-            socket.emit('roomDone', lobbies[lobbies.length - 1]);
+            let lobbyToJoin = createLobby(data, socket);
+
+            socket.emit('roomDone', lobbyToJoin);
+            let openLobbies = lobbies.filter(lobby => !lobby.private);
+            socket.broadcast.emit('salas', openLobbies);
             return false;
         } else {
             socket.emit('error', 'Minim 3 jugadors');
             return true;
         }
     });
+    socket.on('outOfRoom', () => {
+        let lobby = getLobbieByUserOnUserList(socket);
+        if (lobby) {
+            let userIndex = "";
+            do {
+                userIndex = lobby.users.findIndex(user => user === socket.id);
+                if (userIndex != -1) {
 
+                    lobby.users.splice(userIndex, 1);
+                }
+            } while (userIndex != -1);
+
+        }
+    });
     socket.on('join', (data) => {
         let game;
         let lobby = null;
         console.log("Soy", data);
-        console.log("tutorial", data.tutorial);
         let error = false;
         if (data.idLobby || data.password) {
+
             if (data.idLobby) {
                 lobby = lobbies.find(lobby => lobby.id === data.idLobby);
-                if ((lobby.private && lobby.password === data.password) || !lobby.private) {
-                    game = joinLobby(lobby, socket, data);
+                console.log(lobby);
+                if (lobby && ((lobby.private && lobby.password === data.password) || !lobby.private)) {
+                    let check = false;
+                    for (let i = 0; i < lobby.users.length; i++) {
+                        if (lobby.users[i] === socket.id) {
+                            check = true;
+                        }
+                    }
+                    if (!check) {
+                        game = joinLobby(lobby, socket, data);
+                        lobby.users.push(socket.id);
+                        console.log("game", game);
+                        socket.emit('userJoined');
+                    } else {
+                        console.log("ESTA PINGA")
+                        socket.emit('joinError', 'Ya estas en esta sala');
+                        error = true;
+                    }
                 } else {
-                    socket.emit('error', 'Contrasenya incorrecta');
+                    socket.emit('joinError', 'Contrasenya incorrecta');
                     error = true;
                 }
             } else {
-                socket.emit('error', 'No existeix aquesta sala');
+                socket.emit('joinError', 'No existeix aquesta sala');
                 error = true;
             }
         } else {
@@ -510,7 +591,23 @@ io.on('connection', (socket) => {
             console.log(lobby);
             if (lobby) {
                 console.log("Hi");
-                game = joinLobby(lobby, socket, data);
+                let check = false;
+                for (let i = 0; i < lobbies.length; i++) {
+                    for (let j = 0; j < lobbies[i].users.length; j++) {
+                        if (lobbies[i].users[j] === socket.id) {
+                            console.log(lobbies[i].users[j], "===", socket.id);
+                            check = true;
+                        }
+                    }
+                }
+                if (!check) {
+                    game = joinLobby(lobby, socket, data);
+                    lobby.users.push(socket.id);
+                    socket.emit('userJoined');
+                } else {
+                    console.log("PINGATAS")
+                    socket.emit('joinError', 'Ya estas en una sala');
+                }
             } else {
                 console.log("No hi");
                 let config = {
@@ -519,20 +616,60 @@ io.on('connection', (socket) => {
                     private: false,
                     WaitUntilFull: false
                 }
-                createLobby(config, socket);
-                lobby = lobbies[lobbies.length - 1];
-                game = joinLobby(lobby, socket, data);
+                let check = false;
+                for (let i = 0; i < lobbies.length; i++) {
+                    for (let j = 0; i < lobbies[i].users.length; j++) {
+                        if (lobbies[i].users[j] === socket.id) {
+                            check = true;
+                        }
+                    }
+                }
+                if (!check) {
+                    createLobby(config, socket);
+                    let openLobbies = lobbies.filter(lobby => !lobby.private);
+                    socket.broadcast.emit('salas', openLobbies);
+                    lobby = lobbies[lobbies.length - 1];
+                    game = joinLobby(lobby, socket, data);
+                    lobby.users.push(socket.id);
+                    socket.emit('userJoined');
+                }
+                else {
+                    socket.emit('joinError', 'Ya estas en una sala');
+                }
             }
 
         }
         if (!error) {
-            console.log("game", lobby);
+            console.log("game", game);
             socket.join(game.idGame);
             socket.emit('userDataUpdate', { "user": game.users[game.users.length - 1], "game": lobby.id });
             console.log(game.users);
-            io.to(game.idGame).emit('usersConnected', game.users);
+            io.to(game.idGame).emit('usersConnected', { 'users': game.users, 'public': lobby.private });
             console.log('Salas: ', io.sockets.adapter.rooms);
+            console.log('Salas: ', lobbies[0].games[0].users);
         }
+    });
+
+    socket.on('newGameSameRoom', (data) => {
+        let lobby = lobbies.find(lobby => lobby.id === data.idLobby);
+        if (lobby) {
+            let check = false;
+            console.log(lobby.users);
+            for (let i = 0; i < lobby.users.length; i++) {
+                if (lobby.users[i] === socket.id) {
+                    check = true;
+                }
+            }
+            if (check) {
+                let game = joinLobby(lobby, socket, data);
+                socket.emit('userJoined');
+                socket.join(game.idGame);
+                socket.emit('userDataUpdate', { "user": game.users[game.users.length - 1], "game": lobby.id });
+                io.to(game.idGame).emit('usersConnected', { "users": game.users, "public": lobby.private });
+            }
+        }
+
+
     });
 
     // if (gameRooms.length == 0) {
@@ -592,7 +729,7 @@ io.on('connection', (socket) => {
 
     socket.on('sugerencias', async (data) => {
         console.log("sugerencia", data);
-        try{
+        try {
             const response = await fetch('http://localhost:8000/api/createSugerencia', {
                 method: 'POST',
                 body: JSON.stringify(data),
@@ -603,13 +740,13 @@ io.on('connection', (socket) => {
 
             const responseData = await response.json();
             console.log("sugerencias data", responseData);
-            if(responseData.status === 1){
+            if (responseData.status === 1) {
                 let returnDataSend = responseData;
                 returnDataSend.status = 1;
                 socket.emit('sugerenciasSuccess', returnDataSend);
                 console.log("sugerencia creada correctamente", responseData);
             }
-        }catch(error){
+        } catch (error) {
             console.log("error sugerencias", error);
         }
     });
@@ -665,7 +802,6 @@ io.on('connection', (socket) => {
                         if (checkAllPlayersClickedStart(room) && index == 0) {
                             console.log(room);
                             console.log("startGame");
-                            let roomPosition = room.roomPosition;
                             newPregunta(room);
                             iniciarTimer(room);
                             startTimer(room.idGame, socket);
@@ -698,42 +834,41 @@ io.on('connection', (socket) => {
         let gameRooms = findLobbieBySocketId(socket.id);
         console.log("gameRooms --> ", gameRooms);
         console.log("data --> ", data);
-        let roomIndex = findIndexRoomBySocketId(socket.id, gameRooms);
-        console.log("Room index --> ", roomIndex);
-        console.log(gameRooms);
-        console.log("Pregunta: ", gameRooms[roomIndex].pregunta);
-
-        const preguntaParaEvaluar = gameRooms[roomIndex].pregunta.replace('x', '*');
+        let game = findGameByUserId(gameRooms, socket.id);
+        let control = game.idGame;
+        const preguntaParaEvaluar = game.pregunta.replace('x', '*');
         const resultatPregunta = eval(preguntaParaEvaluar);
         console.log("Result correct --> ", resultatPregunta);
         console.log(data.resposta);
-        let userWithBomb = getUserWithBomb(roomIndex, gameRooms);
+        let userWithBomb = getUserWithBomb(game);
         if (data.resposta !== "") {
             if (resultatPregunta == data.resposta) {
                 console.log("Correcte", userWithBomb);
-                respostaCorrecta(roomIndex, userWithBomb, gameRooms, socket);
+                respostaCorrecta(game, socket);
             } else {
-                respostaIncorrecta(roomIndex, userWithBomb, gameRooms, socket);
+                respostaIncorrecta(game, socket);
 
             }
-            console.log(gameRooms[roomIndex].users[userWithBomb].id, "==", socket.id);
-            if (socket.id == gameRooms[roomIndex].users[userWithBomb].id) {
-                console.log("NEWPREGUNTA")
-                if (gameRooms[roomIndex] && gameRooms[roomIndex].users.length > 1) {
+            game = findGameByUserId(gameRooms, socket.id);
+            if (game != undefined && game.idGame == control && game.users.length > 1) {
+                if (socket.id == game.users[getUserWithBomb(game)].id) {
+                    console.log("NEWPREGUNTA")
+                    if (game && game.users.length > 1) {
 
-                    newPregunta(gameRooms[roomIndex]);
-                }
-            } else {
-                console.log("NEWPREGUNTA2")
-                if (gameRooms[roomIndex] && gameRooms[roomIndex].users.length > 1 && !gameRooms[roomIndex].shieldUser) {
-                    newPregunta(gameRooms[roomIndex]);
+                        newPregunta(game);
+                    }
+                } else {
+                    console.log("NEWPREGUNTA2")
+                    if (game && game.users.length > 1) {
+                        newPregunta(game);
+                    }
                 }
             }
+
         }
 
 
     });
-
 
     socket.on('leaveRoom', () => {
         let gameRooms = findLobbieBySocketId(socket.id);
@@ -767,6 +902,7 @@ io.on('connection', (socket) => {
                     let usuarioDesconectado = room.users.splice(usuarioDesconectadoIndex, 1);
                     socket.leave(room.roomName);
                     io.to(room.roomName).emit('usersDesconectados', room.users, room.roomName);
+                    // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
                     if (room.users.length == 1 && room.started == true) {
                         room.gameStarted = false;
                         room.timer = 0;
@@ -781,7 +917,6 @@ io.on('connection', (socket) => {
                             });
                             // console.log("entrooo????? --> ", email);
                         }
-                        gameRooms[room.idRoom].gameStarted = false;
                         io.to(room.roomName).emit('finishGame', ({ gameStarted: false, timer: 0, username: room.users[0].username, image: room.users[0].image, email: room.users[0].email }));
                         gameRooms.splice(room.idRoom, 1);
                         io.sockets.sockets.get(room.users[0].id).leave(room.roomName);
@@ -837,7 +972,6 @@ io.on('connection', (socket) => {
                         socket.leave(room.idGame);
                         io.to(room.idGame).emit('usersDesconectados', room.users, room.idGame);
                         if (room.users.length == 1 && room.started == true) {
-                            room.gameStarted = false;
                             room.timer = 0;
                             let email = room.users[0].email;
                             if (email != 'none') {
@@ -851,9 +985,26 @@ io.on('connection', (socket) => {
                                 // console.log("entrooo????? --> ", email);
                             }
                             io.to(room.idGame).emit('finishGame', ({ gameStarted: false, timer: 0, username: room.users[0].username, image: room.users[0].image, email: room.users[0].email }));
-                            gameRooms.splice(room.idGame, 1);
+
+
                             io.sockets.sockets.get(room.users[0].id).leave(room.idGame);
 
+                        } else {
+                            console.log("USERS", room.users);
+                            if (room.users.length < 1) {
+                                let lobbyToEliminate = findLobbieByGameroomId(room.idGame);
+                                console.log('roomToEliminate', room);
+
+                                let roomIndex = lobbyToEliminate.games.findIndex(room => room.roomName === room.idGame);
+                                lobbyToEliminate.games.splice(roomIndex, 1);
+                                console.log(lobbyToEliminate.games);
+                                if (lobbyToEliminate.games.length < 1) {
+                                    let lobbyIndex = lobbies.findIndex(lobby => lobby.id === lobbyToEliminate.id);
+                                    console.log('lobbyIndex', lobbyIndex);
+                                    lobbies.splice(lobbyIndex, 1);
+
+                                }
+                            }
                         }
                         // console.log('Usuario desconectado: ', usuarioDesconectado);
 
