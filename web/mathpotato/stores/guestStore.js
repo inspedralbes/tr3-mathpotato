@@ -96,10 +96,10 @@ export const useAppStore = defineStore('app', {
 
         },
         setOpen(data) {
-            this.open = data;
+            this.public = data.public;
         },
         getOpen() {
-            return this.open;
+            return this.public;
         },
         setModes(modes) {
             this.lobbies[0].mode = modes;

@@ -8,8 +8,9 @@ const URL = "localhost:5175";
 export const socket = io(URL);
 
 socket.on("usersConnected", (data) => {
-    console.log("*Conectado al servidor*", usersConnected);
-    console.log('Sala de juego: ', roomName);
+    console.log("data",data);
+    // console.log("*Conectado al servidor*", usersConnected);
+    // console.log('Sala de juego: ', roomName);
     const store = useAppStore();
 
     // Establece el array de usuarios en Pinia

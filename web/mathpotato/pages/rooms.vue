@@ -145,22 +145,8 @@
     <div class="container-principal">
         <div class="rooms-container">
             <div class="container-public-room">
-                <div class="header-public-room">
-                    <div class="container-svg">
-                        <div class="flex justify-content-start">
-
-                        </div>
-                    </div>
-                    <div class="container-select">
-                        <div class="card flex justify-content-center select-modes">
-                            <FloatLabel class="w-full md:w-20rem">
-                                <MultiSelect id="ms-cities" v-model="selectedModes" :options="modes" optionLabel="name"
-                                    :maxSelectedLabels="3" class="w-full" />
-                                <label for="ms-cities">Modos</label>
-                            </FloatLabel>
-                        </div>
-
-                    </div>
+                <div>
+                    <Message :closable="false">Puedes unirte a las salas publicas que han creado otros usuarios</Message>
                 </div>
                 <div class="content-public-room">
                     <div class="card">
@@ -230,10 +216,10 @@
 
 
         <div class="card flex justify-content-center">
-            <Dialog v-model:visible="visible" modal header="Configuracion de sala" :style="{ width: '25rem' }">
+            <Dialog v-model:visible="visible" modal header="Configuración de sala" :style="{ width: '25rem' }">
                 <Divider type="solid" />
                 <div class="flex align-items-center gap-3 mb-3">
-                    <label for="nameRoom" class="font-semibold w-6rem">Nombre de la sala</label>
+                    <label for="nameRoom" class="font-semibold w-6rem ">Nombre de la sala</label>
                     <InputText v-model="nameRoom" id="name" class="flex-auto" autocomplete="off" />
                 </div>
                 <Divider type="solid" />
@@ -246,7 +232,7 @@
                 <Divider type="solid" />
                 <div class="flex justify-content-end gap-2 button-modal">
                     <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
-                    <Button type="button" label="Create" @click="createGame()"></Button>
+                    <Button type="button" label="Crear" @click="createGame()"></Button>
 
                 </div>
             </Dialog>
@@ -449,7 +435,6 @@ export default {
     watch: {
         ranking(){
             console.log('ranking:', this.ranking.ranking[0].username);
-
         }
 
     },
@@ -847,12 +832,12 @@ input[type="radio"]:checked + label>.avatar-edit{
 }
 
 .container-public-room {
-    border-right: 10px solid #6C5CE7;
+    border-right: 10px solid #f0af4e;
     /* Color representativo de MathPotato */
 }
 
 .container-join-room {
-    border-left: 10px solid #6C5CE7;
+    border-left: 10px solid #f0af4e;
     justify-content: center;
     align-items: center;
     margin-top: 60px;
