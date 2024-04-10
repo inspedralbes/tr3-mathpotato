@@ -39,6 +39,7 @@ export const useAppStore = defineStore('app', {
         sugerencia: 0,
         gameStarted: false,
         gameWinner: false,
+        open: false,
         error: "",
         ranking: [],
         countdown: -2,
@@ -76,7 +77,7 @@ export const useAppStore = defineStore('app', {
                 this.gameWinner = false,
                 this.error = "",
                 this.ranking = [],
-                this.public = false,
+                this.open = false,
                 this.countdown = -2,
                 this.shieldUser = {
                     activated: false,
@@ -96,10 +97,10 @@ export const useAppStore = defineStore('app', {
 
         },
         setOpen(data) {
-            this.public = data.public;
+            this.open = data;
         },
         getOpen() {
-            return this.public;
+            return this.open;
         },
         setModes(modes) {
             this.lobbies[0].mode = modes;

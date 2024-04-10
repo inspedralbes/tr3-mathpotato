@@ -618,13 +618,18 @@ io.on('connection', (socket) => {
                 }
                 let check = false;
                 for (let i = 0; i < lobbies.length; i++) {
-                    for (let j = 0; i < lobbies[i].users.length; j++) {
+                    console.log("JULIOOOOOOOOOO")
+                    for (let j = 0; j < lobbies[i].users.length; j++) {
+                        console.log("BORAAAAAAAAAAAASHO")
                         if (lobbies[i].users[j] === socket.id) {
+                            console.log("PINGA")
                             check = true;
                         }
                     }
                 }
+                console.log("check", check);
                 if (!check) {
+
                     createLobby(config, socket);
                     let openLobbies = lobbies.filter(lobby => !lobby.private);
                     socket.broadcast.emit('salas', openLobbies);

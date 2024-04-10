@@ -16,7 +16,8 @@ socket.on("usersConnected", (data) => {
     // Establece el array de usuarios en Pinia
     store.setUsers(data.users);
     store.setUsersInRoom(data.users);
-    store.setOpen(data.public);
+    console.log("PENEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",data.public);
+    store.setOpen(!data.public);
     store.setRespostaAnterior(true);
 });
 
