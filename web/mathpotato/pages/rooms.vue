@@ -298,12 +298,12 @@ export default {
             avatarHeight: '350px',
             showEditbtn: false,
             text: null,
-            selectedLobby: {},
             showModalConfig: false,
             btnRefresh: false,
             option: '',
             imatgeSeleccionada: '1',
             visibleRightprofile: false,
+            selectedLobby: null,
             selectedModecreate: '',
             showJoinLobby: false,
             visible: false,
@@ -330,7 +330,7 @@ export default {
             let store = useAppStore();
             return store.updateLobbies();
         },
-        guest() {
+        guest() {   
             let store = useAppStore();
             return store.getGuestInfo();
         },
@@ -342,12 +342,6 @@ export default {
             let store = useAppStore();
             return store.getUpdateProfile();
         },
-    },
-    watch: {
-        selectedLobby() {
-            console.log(this.selectedLobby.id);
-            this.joinRoomByCode(this.selectedLobby.id);
-        }
     },
     methods: {
         RankingView(){
@@ -429,7 +423,10 @@ export default {
             if (this.guest.email === 'none') {
                 this.username = 'guest_' + Math.floor(Math.random() * 1000000);
                 this.username = this.username.slice(0, 20);
-                socket.emit('join', { username: this.username, image: 1, email: 'none', tutorial: true }) 
+                socket.emit('join', { username: this.username, image: 1, email: 'none', tutorial: this.guest.tutorial }) 
+                this.$router.push({ path: '/play'});
+            } else{
+                socket.emit('join', { username: this.guest.username, image: this.guest.image, email: this.guest.email, tutorial: this.guest.tutorial }) 
                 this.$router.push({ path: '/play'});
             }
         },
@@ -476,6 +473,10 @@ export default {
     watch: {
         ranking(){
             console.log('ranking:', this.ranking.ranking[0].username);
+        },
+        selectedLobby() {
+            console.log("PENE"+ this.selectedLobby.id);
+            this.joinRoomByCode(this.selectedLobby.id);
         }
 
     },
