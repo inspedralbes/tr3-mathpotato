@@ -66,14 +66,60 @@
                     <Message :closable="false">Para obtener recompensas debes logearte!</Message>
                     <div class="card flex justify-content-center">
                         <div class="flex justify-center items-center">
-                            
+                           
                         </div>
                     </div>
                 </div>
                 <div v-else>
-                    <div>
-
-                    </div> 
+                    <div class="card flex justify-content-center">
+                        <div class="card flex justify-content-center tags-logros">
+                            <div style="justify-content: center; align-items: center; display: flex;">
+                                <Tag style="width: 100px" value="Ganar" severity="warning"></Tag>
+                            </div>
+                            <div style="justify-content: center; align-items: center; display: flex;">
+                                <Tag style="width: 100px" value="Jugar" severity="info"></Tag>
+                            </div>
+                            <div style="justify-content: center; align-items: center; display: flex;">
+                                <Tag style="width: 100px" value="Ganar" severity="warning"></Tag>
+                            </div>
+                        </div>
+                        <div class="flex justify-center items-center container-image-logros">
+                            <div class="card flex justify-center items-center container-logro1">
+                                
+                                <img :src="'./_nuxt/assets/Icon_1.png'" style="width: 350px; height: 350px">
+                                <div class="span-logro">
+                                    <span>¡Debes ganar 3 partidas seguidas!</span>
+                                </div>
+                                <div class="card">
+                                    <Toast></Toast>
+                                    <ProgressBar :value="calculateConsecutiveVictory(guest.consecutiveVictories)" />
+                                </div>
+                            </div>
+                            
+                            <div class="card flex justify-center items-center container-logro2">
+                                <img :src="'./_nuxt/assets/Icon_2.png'" style="width: 350px; height: 350px">
+                                <div class="span-logro">
+                                    <span>¡Debes jugar 20 partidas!</span>
+                                </div>
+                                <div class="card">
+                                    <Toast></Toast>
+                                    <ProgressBar :value="calculateTotalGames(guest.wins, guest.losses)" />
+                                </div>
+                            </div>
+                            <div class="card flex justify-center items-center container-logro3">
+                                <img :src="'./_nuxt/assets/Icon_3.png'" style="width: 350px; height: 350px">
+                                <div class="span-logro">
+                                    <span>¡Debes ganar 15 partidas!</span>
+                                    
+                                </div>
+                                <div class="card">
+                                    <Toast></Toast>
+                                    <ProgressBar :value="calculateTotalWins(guest.wins)" />
+                                    
+                                </div>
+                            </div>
+                        </div> 
+                    </div>
                 </div>
             </div>
             <div class="flex justify-content-end gap-2 button-modal">
@@ -295,6 +341,7 @@ export default {
             value_sugerencias: '',
             selectedModes: null,
             showbtn: false,
+            value1: 0,
             avatarHeight: '350px',
             showEditbtn: false,
             text: null,
@@ -302,6 +349,7 @@ export default {
             showModalConfig: false,
             btnRefresh: false,
             option: '',
+            interval: null,
             imatgeSeleccionada: '1',
             visibleRightprofile: false,
             selectedModecreate: '',
@@ -342,6 +390,7 @@ export default {
             let store = useAppStore();
             return store.getUpdateProfile();
         },
+
     },
     watch: {
         selectedLobby() {
@@ -350,6 +399,15 @@ export default {
         }
     },
     methods: {
+        calculateConsecutiveVictory(consecutiveVictories) {
+            return Math.round(consecutiveVictories / 3 * 100);
+        },
+        calculateTotalGames(wins, losses) {
+            return Math.round((wins + losses) / 20 * 100);
+        },
+        calculateTotalWins(wins) {
+            return Math.round(wins / 15 * 100);
+        },
         RankingView(){
             this.visibleRanking = true;
 
@@ -471,7 +529,22 @@ export default {
         async logout(){
             console.log(this.guest.email);
             socket.emit('logout', { email: this.guest.email, token: this.guest.token });
-        },               
+        },   
+        startProgress(){
+                let newValue= this.value1 + Math.floor(Math.random() * 10) + 1;
+    
+                if(newValue >= 100){
+                    newValue = 100;
+                    this.$toast.add({ severity: 'info', summary: 'Logro desbloqueado', detail: '¡Has desbloqueado un nuevo logro!', life: 3000 });
+                }
+
+                this.value1 = newValue;
+            
+        }, 
+        endProgress(){
+            clearInterval(this.interval);
+            this.interval = null;
+        },            
     },
     watch: {
         ranking(){
@@ -496,9 +569,12 @@ export default {
             this.setCheckedOnUserImage();
         }
         socket.emit('getRanking');
-
+        this.startProgress();
         // this.getRanking();
         setInterval(this.data, 60000);
+    },
+    beforeUnmount() {
+        this.endProgress();
     },
     beforeDestroy(){
         clearInterval(this.intervalId);
@@ -527,7 +603,49 @@ body {
     gap: 2px;
 }
 
+.container-image-logros{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    gap: 10px;
+    margin-left: auto;
+    margin-right: auto;
+}
 
+.tags-logros{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 10px;
+}
+
+.span-logro{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 5px;
+    font-size: 18px;
+
+}
+
+.container-logro1,
+    .container-logro2,
+    .container-logro3 {
+        border-radius: 20px; /* Ajusta el radio del borde según tu preferencia */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ajusta la sombra según tu preferencia */
+        overflow: hidden; /* Para asegurarse de que las imágenes no sobresalgan de la tarjeta */
+        height: 45vh;
+    }
+
+    .container-logro1 img,
+    .container-logro2 img,
+    .container-logro3 img {
+        width: 100%; /* Para que la imagen ocupe todo el espacio del contenedor */
+        height: auto; /* Para mantener la proporción de la imagen */
+    }
 
 
 .data-ranking {

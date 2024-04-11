@@ -8,7 +8,7 @@ const URL = "localhost:5175";
 export const socket = io(URL);
 
 socket.on("usersConnected", (data) => {
-    console.log("data",data);
+    console.log("data", data);
     // console.log("*Conectado al servidor*", usersConnected);
     // console.log('Sala de juego: ', roomName);
     const store = useAppStore();
@@ -16,7 +16,7 @@ socket.on("usersConnected", (data) => {
     // Establece el array de usuarios en Pinia
     store.setUsers(data.users);
     store.setUsersInRoom(data.users);
-    console.log("PENEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",data.public);
+    console.log("PENEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE", data.public);
     store.setOpen(!data.public);
     store.setRespostaAnterior(true);
 });
@@ -107,8 +107,20 @@ socket.on("loginSuccess", (data) => {
     const store = useAppStore();
     store.setError(data.status);
     console.log(data);
-    let user = { username: data.username, id: data.id, image: data.image, email: data.email, tutorial: data.tutorial, token: data.token };
+    let user = { username: data.username, id: data.id, image: data.image, email: data.email, tutorial: data.tutorial, token: data.token, wins: data.wins, losses: data.losses, consecutiveVictories: data.consecutiveVictories };
+    console.log(user);
     store.setGuestInfo(user);
+});
+
+socket.on("statUpdate", (data) => {
+    console.log('Actualización de stats: ', data.consecutiveVictories);
+    let dataFormated
+
+    dataFormated = { wins: data.wins, losses: data.losses, consecutiveVictories: data.consecutiveVictories };
+
+
+    const store = useAppStore();
+    store.setGuestInfo(dataFormated);
 });
 
 socket.on("logoutSuccess", (data) => {
@@ -139,7 +151,6 @@ socket.on("updateRanking", (ranking) => {
 
 socket.on("userDataUpdate", (data) => {
     const store = useAppStore();
-    console.log("XOMINO", data.game)
     store.setGuestInfo(data.user);
     store.setRoomName(data.game);
     console.log();

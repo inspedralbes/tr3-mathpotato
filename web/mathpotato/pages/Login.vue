@@ -4,11 +4,11 @@
             <h2>Log In</h2>
                 <div class="form-group">
                     <label for="email">Email:</label>
-                    <input type="email" id="email" v-model="email" required>
+                    <InputText v-tooltip.top="'Pon tu email'" type="email" id="email" v-model="email" required />
                 </div>
                 <div class="form-group">
                     <label for="password">Contraseña:</label>
-                    <input type="password" id="password" v-model="password" required>
+                    <InputText v-tooltip.top="'Contraseña'" type="password" id="password" v-model="password" required />
                 </div>
                 <Button severity="warning" @click="login" label="Log In" icon="pi pi-user" class="w-full" />
                 <Button severity="contrast" @click="register" label="Sign In" icon="pi pi-user" class="w-full" />

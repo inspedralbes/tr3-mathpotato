@@ -72,7 +72,10 @@ class usuariosController extends Controller
                     'foto_perfil' => $usuario->foto_perfil,
                     'tutorial' => $usuario->tutorial,
                     'message' => 'Usuario logeado correctamente',
-                    'token' => $token
+                    'token' => $token,
+                    'wins' => $usuario->num_victorias,
+                    'losses' => $usuario->num_derrotas,
+                    'consecutiveVictories' => $usuario->victorias_seguidas,
                 ]);
             } else {
                 return response()->json([
@@ -104,13 +107,16 @@ class usuariosController extends Controller
             'username' => 'required|string|max:50',
             'foto_perfil' => [
                 'required',
-                Rule::in(['1', '2', '3', '4', '5', '6', '7', '8', '9']),
+                Rule::in(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', 'alvaro', 'Ermengol', 'Poltata']),
             ],
         ]);
 
+
         $usuario = Usuarios::where("email", "=", $request->email)->first();
         $usuario->username = $request->username;
-        $usuario->foto_perfil = $request->foto_perfil;
+        if (($request->foto_perfil == 'alvaro' && $usuario->se_llama_alvaro == true) || ($request->foto_perfil == 'Ermengol' && $usuario->se_llama_ermengol == true) || ($request->foto_perfil == 'Poltata' && $usuario->se_llama_pol == true) || ($request->foto_perfil == '10' && $usuario->has_ganado_15_partidas == true) || ($request->foto_perfil == '11' && $usuario->has_ganado_3_partidas_seguidas == true) || ($request->foto_perfil == '12' && $usuario->has_jugado_20_partidas == true) || (intval($request->foto_perfil) >= 1 && intval($request->foto_perfil) <= 9)) {
+            $usuario->foto_perfil = $request->foto_perfil;
+        }
 
         $usuario->save();
 
@@ -118,6 +124,7 @@ class usuariosController extends Controller
             'status' => 1,
             'username' => $usuario->username,
             'foto_perfil' => $usuario->foto_perfil,
+
 
         ]);
     }
@@ -149,11 +156,17 @@ class usuariosController extends Controller
         if ($usuario->tutorial == 1) {
             $usuario->tutorial = 0;
         }
+        $usuario->victorias_seguidas = 0;
         $usuario->num_derrotas = $usuario->num_derrotas + 1;
+        if ($usuario->num_victorias + $usuario->num_derrotas == 20) {
+            $usuario->has_jugado_20_partidas = true;
+        }
         $usuario->save();
         return response()->json([
             'status' => 1,
-            'num_derrotas' => $usuario->num_derrotas
+            'losses' => $usuario->num_derrotas,
+            'consecutiveVictories' => '0',
+            'wins' => $usuario->num_victorias
         ]);
     }
 
@@ -166,11 +179,24 @@ class usuariosController extends Controller
         if ($usuario->tutorial == 1) {
             $usuario->tutorial = 0;
         }
+        $usuario->victorias_seguidas = $usuario->victorias_seguidas + 1;
         $usuario->num_victorias = $usuario->num_victorias + 1;
+
+        if ($usuario->victorias_seguidas == 3) {
+            $usuario->has_ganado_3_partidas_seguidas = true;
+        }
+        if ($usuario->num_victorias == 15) {
+            $usuario->has_ganado_15_partidas = true;
+        }
+        if ($usuario->num_victorias + $usuario->num_derrotas == 20) {
+            $usuario->has_jugado_20_partidas = true;
+        }
         $usuario->save();
         return response()->json([
             'status' => 1,
-            'num_victorias' => $usuario->num_victorias
+            'wins' => $usuario->num_victorias,
+            'consecutiveVictories' => $usuario->victorias_seguidas,
+            'losses' => $usuario->num_derrotas
         ]);
     }
 
@@ -189,7 +215,7 @@ class usuariosController extends Controller
             'se llama ermengol' => $usuario->username == 'ermengol',
             'se llama alvaro' => $usuario->username == 'alvaro',
         ];
-        
+
         return response()->json([
             'logros' => $logros
         ]);
