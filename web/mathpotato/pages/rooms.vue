@@ -315,7 +315,7 @@
                         </template>
                     </InputOtp>
                     <div class="flex justify-content-between mt-5 align-self-stretch">
-                        <Button label="Submit Code" @click="joinRoomByCode(value)"></Button>
+                        <Button label="Enviar" @click="joinRoomByCode(value)"></Button>
                     </div>
                 </div>
             </div>

@@ -1,28 +1,28 @@
 <template>
   <div class="tutorial">
-    <div id="page1" class="explain" v-if="page === 1">
+    <div id="page1" style="padding-bottom: 50px;" class="explain" v-if="page === 1">
       Benvingut a Mathpotato! Aquest joc consisteix en respondre preguntes de matemàtiques per passar la patata, evitant
       explotar
     </div>
-    <div id="page2" class="explain" v-else-if="page === 2">
+    <div id="page2" style="padding-bottom: 50px;" class="explain" v-else-if="page === 2">
       Tú ets el personatge amb el nombre taronga, tens la bomba! pero no et preocupis tens un temps marcat a la bomba
       per passar-la
     </div>
-    <div id="page3" class="explain" v-else-if="page === 3">
+    <div id="page3" style="padding-bottom: 80px;" class="explain" v-else-if="page === 3">
       Per passar la bomba, has de respondre correctament la pregunta que et mostrem a la pantalla
     </div>
-    <div id="page4" class="explain" v-else-if="page === 4">
+    <div id="page4" style="padding-bottom: 50px;" class="explain" v-else-if="page === 4">
       Encara que no tinguis la bomba pots respondre la pregunta per restar-li temps a la bomba (Durant la partida el
       temps baixarà sol)
     </div>
-    <div id="page5" class="explain" v-else-if="page === 5">
+    <div id="page5" style="padding-bottom: 80px;" class="explain" v-else-if="page === 5">
       Si no respons la pregunta o la resposta és incorrecta, la bomba explotarà i perdràs una vida
     </div>
-    <div id="page6" class="explain" v-else-if="page === 6">
+    <div id="page6" style="padding-bottom: 50px;" class="explain" v-else-if="page === 6">
       Quan la preugnta canvia la pregunta, el jugador amb la bomba rebrà un escut de 5 segons, si no tens la bomba no
       podràs respondre
     </div>
-    <div id="page7" class="explain" v-else-if="page === 7">
+    <div id="page7" style="padding-bottom: 70px;" class="explain" v-else-if="page === 7">
       Si perds totes les vides, perdràs la partida, si ets l'ultim en peu guanyaras la partida.
     </div>
     <div class="explanationSection">
@@ -92,8 +92,9 @@
           </div>
         </div>
       </div>
-      <div><Button v-if="page < 7" icon="pi pi-arrow-right" severity="success" text raised rounded
-          aria-label="Arrow rigth" @click="nextPage()" /></div>
+      <div>
+        <Button v-if="page < 7" icon="pi pi-arrow-right" severity="success" outlined text raised rounded @click="nextPage()" />
+      </div>
 
     </div>
     <div>
@@ -599,8 +600,8 @@ html:lang(ar) {
 
 
 button {
-  background-color: green;
-  color: white;
+  /* background-color: green; */
+  /* color: white; */
   padding: 10px 20px;
   font-size: 1.5rem;
   border: none;

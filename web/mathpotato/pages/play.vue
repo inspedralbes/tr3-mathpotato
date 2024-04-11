@@ -29,7 +29,9 @@
                         <div class="tutorialContent">
                             <tutorial @hButton="hideButton" @sButton="showButton" />
                         </div>
-                        <Button @click="ocultarModal" id="ocultarModal" v-if="showStartButton">ACEPTAR!</Button>
+                        <div style="display: flex; margin-right: auto; margin-left: auto; justify-content: center; align-items: center;">
+                            <Button @click="ocultarModal" id="ocultarModal" v-if="showStartButton">ACEPTAR!</Button>
+                        </div>
                     </div>
 
                 </div>
@@ -44,25 +46,30 @@
                 </div>
                 <div id="modal-victory" class="modal-victoria" v-show="userPantalla.win">
                     <div class="modal-victoria-content">
-                        <img src="@/assets/Victoria_win.png" alt="Patata Ganadora" style="width: 250px; height: 200px;">
+                        <img src="@/assets/Victoria_win.png" alt="Patata Ganadora" style="width: 300px; height: 250px;">
                         <!-- <p class="victory-text">Victoria</p> -->
-                        <Button @click="replay">Volver a jugar</Button>
-                        <Button @click="BackToRoom">Volver al menú</Button>
+                        <div class="btn-volverMenu-volverJugar">
+                            <Button severity="success" @click="replay" label="Volver a jugar" />
+                            <Button severity="danger" @click="BackToRoom" label="Volver al menú" />
+                        </div>
                     </div>
                 </div>
                 <div id="modal-victory" class="modal-victoria" v-show="userPantalla.lost">
                     <div class="modal-victoria-content">
-                        <img src="@/assets/defeat.png" alt="Patata Perdedora" style="width: 250px; height: 200px;">
+                        <img src="@/assets/Derrota_lose.png" alt="Patata Perdedora" style="width: 300px; height: 200px;">
                         <!-- <p class="victory-text">Derrota</p> -->
-                        <Button @click="replay">Volver a Jugar</Button>
-                        <Button @click="BackToRoom">Volver al menú</Button>
+                        <div class="btn-volverMenu-volverJugar">
+                            <Button severity="success" @click="replay" label="Volver a jugar" />
+                            <Button severity="danger" @click="BackToRoom" label="Volver al menú" />
+                        </div>
                     </div>
                 </div>
                 <div id="ModalWaiting" class="modal-tutorial"
                     v-show="!gameStarted && !userPantalla.tutorial && this.showWaitingModal">
                     <div class="modal-tutorial-content ">
 
-                        <div class="code">
+                        <div class="code" style="display: flex; margin-left: auto; margin-left: auto; justify-content: center; align-items: center;">
+                            <div class="shadow" style="border-radius: 20% solid 1px; width: 15vw; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);">
                             <svg v-if="open" xmlns="http://www.w3.org/2000/svg"
                                 class="icon-unlock icon-tabler icon-tabler-lock-open" width="44" height="44"
                                 viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none"
@@ -84,8 +91,7 @@
                                 <path d="M8 11v-4a4 4 0 1 1 8 0v4" />
                             </svg>
                             {{ roomName }}
-
-
+                            </div>
                         </div>
                         <Divider type="solid" />
                         <div class="List">
@@ -94,8 +100,8 @@
                                     <img :src="'./_nuxt/assets/Icon_' + user.image + '.png'" alt="image" class="icon"
                                         :style="{ 'background-color': user.background }">
                                     <div>{{ user.username }}</div>
-                                    <div v-if="user.hasClickedStart">Ready</div>
-                                    <div v-else>NotReady</div>
+                                    <div v-if="user.hasClickedStart">Listo</div>
+                                    <div v-else>En espera</div>
                                 </div>
                             </div>
                         </div>
@@ -248,7 +254,7 @@ export default {
         },
         replay() {
             document.getElementById("startGameButton").classList.remove("buttonRed");
-            document.getElementById("startGameButton").innerHTML = "Ready!";
+            document.getElementById("startGameButton").innerHTML = "LISTO!";
             useAppStore().setCountdown(-2);
             this.hasClickedStart = false;
             this.showWaitingModal = true;
@@ -278,11 +284,11 @@ export default {
             this.hasClickedStart = !this.hasClickedStart;
             let gameButton = document.getElementById("startGameButton");
             if (this.hasClickedStart) {
-                gameButton.innerHTML = "Cancel";
+                gameButton.innerHTML = "CANCELAR";
                 gameButton.classList.add("buttonRed");
                 gameButton.classList.remove("buttonGreen");
             } else {
-                gameButton.innerHTML = "Ready!";
+                gameButton.innerHTML = "LISTO!";
                 gameButton.classList.add("buttonGreen");
                 gameButton.classList.remove("buttonRed");
             }
@@ -470,11 +476,18 @@ export default {
 }
 
 .buttonGreen {
-    background-color: #4CAF50;
+    background-color: #14B8A6;
 }
 
 .hidden {
     display: none;
+}
+
+.btn-volverMenu-volverJugar{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding-top: 40px;
 }
 
 .name {
@@ -863,7 +876,7 @@ html:lang(ar) {
 }
 
 button {
-    background-color: green;
+    /* background-color: green; */
     color: white;
     padding: 10px 20px;
     font-size: 1.5rem;
@@ -987,7 +1000,6 @@ button {
 
 #goBackButton {
     margin-top: 2vh;
-    background-color: #ED1C2F;
     padding: 15px 25px;
     font-size: 1.2em;
     border: none;

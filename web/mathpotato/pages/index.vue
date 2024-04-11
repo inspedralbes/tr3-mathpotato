@@ -1,19 +1,28 @@
 <template>
     <div>
-      <div id="background_page" class="flex flex-row justify-content-between h-100vh">
+      <div id="background" style="display: flex; width: 100vw; height: 100vh;">
         <!-- Logo a la izquierda -->
-        <div class="flex flex-column align-items-center ">
+        <div id="table">
+            <div class="flex flex-column align-items-center " style="opacity: 1">
+                <div class="image-banner" style="width: 100vw; height: 35vh; display: grid; grid-template-columns: 1fr 1fr 1fr; justify-content: center; align-items: center;">
+                    <div>
+                        <img> 
+                    </div>
+                    <div>
+                        <img src="../assets/Banner.png">
+                        
+                    </div>
+                
+                </div>
+                <div class="" style="opacity: 1; display: flex; height: 30vh; width: 100vw; justify-content: center; align-items: center;">
+                    <img src="../assets/slogan.png">
+                </div>
+                <div class="btn-jugar" style="display: flex; width: 100vw; height: 10vh; justify-content: center; align-items: center; margin-left: auto; margin-right: auto;" >
+                    <Button style="width: 10%; " @click="jugar()" class="button_game" label="JUGAR!" size="large" />
+                </div>
+            </div>
         </div>
-        <div class="flex flex-column align-items-center justify-content-center">
-          <img v-show="currentLogo === 'logo1'" src="../assets/LePotata.png" alt="logo" class="logo_pos move-forward" />
-          <img v-show="currentLogo === 'logo2'" src="../assets/animationPotato.png" alt="logo" class="logo_pos" />
-  
-          <!-- <span class="text-3xl font-bold">Math Potato</span> -->
-        </div>
-        <!-- Botón "JUGAR!" a la derecha -->
-        <div class="flex flex-column align-items-center justify-content-center">
-          <Button @click="jugar()" class="button_game" label="JUGAR!" size="large" />
-        </div>
+        
       </div>
       
     </div>
@@ -126,22 +135,13 @@
     animation: movePotato 2s ease-in-out infinite;
 } */
 
-.button_game {
-    position: absolute;
-    top: 60%;
-    left: 75%;
-    transform: translate(-50%, -50%);
-    background-image: radial-gradient(#2ecc71, #27ae60); /* Cambiado a verde */
-    color: var(--primary-color-text); /* Cambiado a verde */
-    font-size: 2rem;
-    font-weight: bold;
-    border-radius: 1rem;
-    padding: 1rem 2rem;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
+#table{
+    background-image: url("../assets/table.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    
 }
-
 .button_login {
     position: absolute;
     top: 5%;
@@ -157,7 +157,15 @@
     cursor: pointer;
     transition: all 0.3s ease-in-out;
 }
-
+#background{
+    background-image: url("../assets/backround2.png");
+    background-repeat: no-repeat;
+    height: 100vh;
+    width: 100vw;
+    background-size: cover;
+    background-position: center;
+    opacity: 1;
+}
 .button_ranking {
     position: absolute;
     top: 5%;
