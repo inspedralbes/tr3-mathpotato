@@ -103,7 +103,7 @@ export default {
             if (this.error == 1) {
                 this.$router.push({ path: '/rooms' });
             } else if(this.error == 0){
-                alert("pinga");
+                alert("bad credentials!!");
             }
         },
     },
