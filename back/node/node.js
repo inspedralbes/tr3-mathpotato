@@ -5,6 +5,7 @@ import { Server } from 'socket.io';
 import { join } from 'path';
 import mysql from 'mysql';
 import { start } from 'node:repl';
+import { Socket } from 'node:dgram';
 
 const app = express();
 
@@ -737,7 +738,35 @@ io.on('connection', (socket) => {
         // console.log("data to send...", data)
         await getUser(data, socket);
     });
+    socket.on('checkAchivements', async (data) => {
+        console.log("checkAchivements", data);
+        
+            const response = await fetch('http://localhost:8000/api/checkAchivements/' + data.email, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const responseData = await response.json();
 
+
+            let returnData={};
+            returnData.image10Unlocked = false;
+            returnData.image11Unlocked = false;
+            returnData.image12Unlocked = false;
+            if (responseData.image10Unlocked == 1) {
+                returnData.image10Unlocked = true;
+            }
+            if (responseData.image11Unlocked == 1) {
+                returnData.image11Unlocked = true;
+            } 
+            if (responseData.image12Unlocked == 1) {
+                returnData.image12Unlocked = true;
+            } 
+            console.log("checkAchivements data", returnData);
+            socket.emit('checkAchivementsSuccess', returnData);
+
+        });
     socket.on('logout', async (data) => {
         await logoutUser(data, socket);
     });
@@ -1028,6 +1057,7 @@ io.on('connection', (socket) => {
                                     let lobbyIndex = lobbies.findIndex(lobby => lobby.id === lobbyToEliminate.id);
                                     console.log('lobbyIndex', lobbyIndex);
                                     lobbies.splice(lobbyIndex, 1);
+                                    socket.broadcast.emit('salas', lobbies);
 
                                 }
                             }
@@ -1044,6 +1074,8 @@ io.on('connection', (socket) => {
     socket.on('eliminarPartida', (roomName) => {
         let roomIndex = gameRooms.findIndex(room => room.roomName === roomName);
         gameRooms.splice(roomIndex, 1);
+        socket.broadcast.emit('salas', gameRooms);
+        socket.emit('salas', gameRooms);
     });
 
     socket.on('getRanking', async () => {

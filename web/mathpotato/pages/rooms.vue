@@ -111,7 +111,7 @@
                         <div class="flex justify-center items-center container-image-logros">
                             <div class="card flex justify-center items-center container-logro">
                                 
-                                <img :src="'./_nuxt/assets/Icon_11.png'" class="card-logro" style="width: 350px; height: 350px">
+                                <img :src="'./_nuxt/assets/Icon_11.png'" :class="{ 'card-logro-done': guest.image11Unlocked===true ,'card-logro': guest.image11Unlocked===false }" style="width: 350px; height: 350px">
                                 <div class="span-logro">
                                     <span>¡Debes ganar 3 partidas seguidas!</span>
                                 </div>
@@ -122,7 +122,7 @@
                             </div>
                             
                             <div class="card flex justify-center items-center container-logro">
-                                <img :src="'./_nuxt/assets/Icon_10.png'" class="card-logro" style="width: 350px; height: 350px">
+                                <img :src="'./_nuxt/assets/Icon_12.png'" :class="{ 'card-logro-done': guest.image12Unlocked===true ,'card-logro': guest.image12Unlocked===false }" style="width: 350px; height: 350px">
                                 <div class="span-logro">
                                     <span>¡Debes jugar 20 partidas!</span>
                                 </div>
@@ -132,7 +132,7 @@
                                 </div>
                             </div>
                             <div class="card flex justify-center items-center container-logro">
-                                <img :src="'./_nuxt/assets/Icon_12.png'" class="card-logro" style="width: 350px; height: 350px">
+                                <img :src="'./_nuxt/assets/Icon_10.png'" :class="{ 'card-logro-done': guest.image10Unlocked===true ,'card-logro': guest.image10Unlocked===false }" style="width: 350px; height: 350px">
                                 <div class="span-logro">
                                     <span>¡Debes ganar 15 partidas!</span>
                                     
@@ -196,7 +196,18 @@
                                     <input type="radio" name="image" id="9" value="9" v-model="imatgeSeleccionada">
                                     <label for="9"><Avatar :image="'./_nuxt/assets/Icon_9.png'" shape="circle" class="avatar-edit" style="width: 65px; height: 65px; margin-left: auto; margin-right: auto; display: block;" /></label>
                                 </div>
-                            
+                                <div v-if="guest.image10Unlocked">
+                                    <input type="radio" name="image" id="10" value="10" v-model="imatgeSeleccionada">
+                                    <label for="10"><Avatar :image="'./_nuxt/assets/Icon_10.png'" shape="circle" class="avatar-edit" style="width: 65px; height: 65px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                </div>
+                                <div v-if="guest.image11Unlocked">
+                                    <input type="radio" name="image" id="11" value="11" v-model="imatgeSeleccionada">
+                                    <label for="11"><Avatar :image="'./_nuxt/assets/Icon_11.png'" shape="circle" class="avatar-edit" style="width: 65px; height: 65px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                </div>
+                                <div v-if="guest.image12Unlocked">
+                                    <input type="radio" name="image" id="12" value="12" v-model="imatgeSeleccionada">
+                                    <label for="12"><Avatar :image="'./_nuxt/assets/Icon_12.png'" shape="circle" class="avatar-edit" style="width: 65px; height: 65px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                </div>
                             </div>
                             <Button label="save" @click="updateSkin" class="buttonSave" />
                         </p>
@@ -228,13 +239,13 @@
                     <Textarea v-model="value_sugerencias" autoResize rows="5" cols="28" style="width: 100%;"/>
                     <Button v-if="value_sugerencias != ''" label="enviar" @click="enviarSugerencias" />
                     <div class="card flex justify-content-center logros" style="padding-top: 20px;">
-                        <div class="lg1">
+                        <div class="lg1" v-if="guest.image11Unlocked">
                             <Tag value="15 partidas ganadas" severity="danger"></Tag>
                         </div>
-                        <div class="lg2">
+                        <div class="lg2" v-if="guest.image12Unlocked">
                             <Tag value="20 partidas jugadas" severity="warning"></Tag>
                         </div>
-                        <div class="lg3">
+                        <div class="lg3" v-if="guest.image10Unlocked">
                             <Tag value="3 partidas seguidas ganadas" severity="info"></Tag>
                         </div>
                     </div>
@@ -425,13 +436,27 @@ export default {
     },
     methods: {
         calculateConsecutiveVictory(consecutiveVictories) {
-            return Math.round(consecutiveVictories / 3 * 100);
+            if(consecutiveVictories >= 3||this.guest.image11Unlocked==true){
+                return 100;
+            } else {
+                return Math.round(consecutiveVictories / 3 * 100);
+            }
+            
         },
         calculateTotalGames(wins, losses) {
-            return Math.round((wins + losses) / 20 * 100);
+            if(wins + losses >= 20 || this.guest.image12Unlocked==true){
+                return 100;
+            } else {
+                return Math.round((wins + losses) / 20 * 100);
+            }
+             
         },
         calculateTotalWins(wins) {
-            return Math.round(wins / 15 * 100);
+            if(wins >= 15 || this.guest.image10Unlocked==true){
+                return 100;
+            } else {
+                return Math.round(wins / 15 * 100);
+            }
         },
         RankingView(){
             this.visibleRanking = true;
@@ -823,12 +848,17 @@ body {
         /* background-color: #cd7f32;  */
     }
 
-    .container-logro:nth-child(-n+3) .card-logro{
+    .card-logro{
         opacity: 0.6;
         background-image: url('../assets/lock_logro.png');
         background-size: 150px;
         background-repeat: no-repeat;
         background-position: top right;
+    }
+
+    .card-logro-done{
+        opacity: 1;
+        background-image:none;
     }
 
 .container-ranking{

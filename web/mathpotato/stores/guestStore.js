@@ -29,6 +29,9 @@ export const useAppStore = defineStore('app', {
             consecutiveVictories: 0,
             wins: 0,
             losses: 0,
+            image10Unlocked: false,
+            image11Unlocked: false,
+            image12Unlocked: false
         },
         users: [],
         pregunta: {
@@ -98,6 +101,11 @@ export const useAppStore = defineStore('app', {
             this.lobbies[0].mode = lobbies;
             this.lobbies[0].numUser = 20;
 
+        },
+        setAchivements(data) {
+            this.guestInfo.image10Unlocked = data.image10Unlocked;
+            this.guestInfo.image11Unlocked = data.image11Unlocked;
+            this.guestInfo.image12Unlocked = data.image12Unlocked;
         },
         setOpen(data) {
             this.open = data;
@@ -227,6 +235,15 @@ export const useAppStore = defineStore('app', {
             this.guestInfo.id = '';
             this.guestInfo.bomba = false;
             this.guestInfo.email = 'none';
+            this.guestInfo.image = 1;
+            this.guestInfo.lives = 2;
+            this.guestInfo.lost = false;
+            this.guestInfo.win = false;
+            this.guestInfo.tutorial = true;
+            this.guestInfo.token = '';
+            this.guestInfo.consecutiveVictories = 0;
+            this.guestInfo.wins = 0;
+            this.guestInfo.losses = 0;
         },
         setShieldUser(shieldUser) {
             this.shieldUser.activated = shieldUser.activated;

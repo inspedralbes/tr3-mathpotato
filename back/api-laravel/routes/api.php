@@ -13,6 +13,7 @@ Route::get('/ranking', [UsuariosController::class, 'ranking']);
 Route::post('/createSugerencia', [SugerenciasUsuarioController::class, 'createSugerencia']);
 Route::post('/updateDerrotas', [UsuariosController::class, 'updateDerrotas']);
 Route::post('/updateVictorias', [UsuariosController::class, 'updateVictorias']);
+Route::get('/checkAchivements/{email}', [UsuariosController::class, 'checkAchivements']);
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('logout', [UsuariosController::class, 'logout']);
     Route::get('PerfilUsuari', [UsuariosController::class, 'PerfilUsuari']);

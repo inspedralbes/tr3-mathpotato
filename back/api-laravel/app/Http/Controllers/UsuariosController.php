@@ -129,6 +129,17 @@ class usuariosController extends Controller
         ]);
     }
 
+    public function checkAchivements(string $email){
+
+        $usuario = Usuarios::where("email", "=", $email)->first();
+
+        return response()->json([
+            'image10Unlocked' => $usuario->has_ganado_15_partidas,
+            'image11Unlocked' => $usuario->has_ganado_3_partidas_seguidas,
+            'image12Unlocked' => $usuario->has_jugado_20_partidas,
+        ]);
+    }
+
     public function ranking()
     {
         $usuarios = Usuarios::orderBy('num_victorias', 'desc')->limit(20)->get();
@@ -197,27 +208,6 @@ class usuariosController extends Controller
             'wins' => $usuario->num_victorias,
             'consecutiveVictories' => $usuario->victorias_seguidas,
             'losses' => $usuario->num_derrotas
-        ]);
-    }
-
-    public function checkLogros(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|string|email',
-        ]);
-
-        $usuario = Usuarios::where("email", "=", $request->email)->first();
-        $logros = [
-            'has jugado 10 partidas' => $usuario->num_victorias + $usuario->num_derrotas >= 10,
-            'has ganado 5 partidas' => $usuario->num_victorias >= 5,
-            'has ganado 15 partidas' => $usuario->num_victorias >= 15,
-            'se llama pol' => $usuario->username == 'pol',
-            'se llama ermengol' => $usuario->username == 'ermengol',
-            'se llama alvaro' => $usuario->username == 'alvaro',
-        ];
-
-        return response()->json([
-            'logros' => $logros
         ]);
     }
 }

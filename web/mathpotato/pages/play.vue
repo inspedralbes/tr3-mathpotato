@@ -1,5 +1,5 @@
 <template>
-     <div id="background">
+    <div id="background">
         <div id="grid">
             <div v-for="(user, index) in users" :id="getId(index)">
                 <div class="user" :id="'user' + index">
@@ -26,7 +26,7 @@
                 <div id="myModal" class="modal-tutorial" v-show="!gameStarted && userPantalla.tutorial">
                     <div class="modal-tutorial-content">
                         <div class="tutorialContent">
-                            <tutorial @hButton="hideButton" @sButton="showButton"/>
+                            <tutorial @hButton="hideButton" @sButton="showButton" />
                         </div>
                         <Button @click="ocultarModal" id="ocultarModal" v-if="showStartButton">ACEPTAR!</Button>
                     </div>
@@ -60,23 +60,31 @@
                 <div id="ModalWaiting" class="modal-tutorial"
                     v-show="!gameStarted && !userPantalla.tutorial && this.showWaitingModal">
                     <div class="modal-tutorial-content ">
-                        
+
                         <div class="code">
-                            <svg v-if="open" xmlns="http://www.w3.org/2000/svg" class="icon-unlock icon-tabler icon-tabler-lock-open" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                <path d="M5 11m0 2a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2z" />
+                            <svg v-if="open" xmlns="http://www.w3.org/2000/svg"
+                                class="icon-unlock icon-tabler icon-tabler-lock-open" width="44" height="44"
+                                viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path
+                                    d="M5 11m0 2a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2z" />
                                 <path d="M12 16m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
                                 <path d="M8 11v-5a4 4 0 0 1 8 0" />
                             </svg>
-                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="icon-lock icon-tabler icon-tabler-lock" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                <path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6z" />
+                            <svg v-else xmlns="http://www.w3.org/2000/svg"
+                                class="icon-lock icon-tabler icon-tabler-lock" width="44" height="44"
+                                viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path
+                                    d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6z" />
                                 <path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" />
                                 <path d="M8 11v-4a4 4 0 1 1 8 0v4" />
                             </svg>
                             {{ roomName }}
-                           
-                            
+
+
                         </div>
                         <Divider type="solid" />
                         <div class="List">
@@ -90,18 +98,19 @@
                                 </div>
                             </div>
                         </div>
-                        
+                        <div v-if="countdown > -2"
+                            style="display: block; color: blue; opacity: 0.6; margin-left: auto; margin-right: auto;">
+                            <div style="margin-left: 50%">{{ countdown }}</div>
+                        </div>
                         <Button @click="startGame" id="startGameButton" :disabled="users.length <= 2"
-                            :class="[gameStarted ? 'hidden' : '']">READY!</Button> 
+                            :class="[gameStarted ? 'hidden' : '']">READY!</Button>
+                    </div>
+
                 </div>
-                
+
+
             </div>
-            <div v-if="countdown > -2" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; color: blue; justify-content: center; align-items: center; opacity: 0.6; z-index: 1;">
-                <div>{{ countdown }}</div>
-            </div>
-            
         </div>
-    </div>
 
     </div>
 </template>
@@ -167,11 +176,11 @@ export default {
             let store = useAppStore();
             return store.getExplodes();
         },
-        roomName(){
+        roomName() {
             let store = useAppStore();
             return store.getRoomName();
         },
-        open(){
+        open() {
             let store = useAppStore();
             return store.getOpen();
         }
@@ -230,7 +239,7 @@ export default {
             this.hasClickedStart = false;
             this.showWaitingModal = true;
             this.showStartButton = true;
-            socket.emit('newGameSameRoom', {"idLobby": this.roomName, "username": this.userPantalla.username, "image": this.userPantalla.image, "email": this.userPantalla.email, "tutorial": this.userPantalla.tutorial });
+            socket.emit('newGameSameRoom', { "idLobby": this.roomName, "username": this.userPantalla.username, "image": this.userPantalla.image, "email": this.userPantalla.email, "tutorial": this.userPantalla.tutorial });
 
         },
         goBack() {
@@ -411,7 +420,7 @@ export default {
             }
         },
         findUsersWithBomb() {
-            let user=this.users.findIndex(user => user.bomba === true);
+            let user = this.users.findIndex(user => user.bomba === true);
             console.log(user);
             return user;
         },
@@ -428,8 +437,6 @@ export default {
 </script>
 
 <style scoped>
-
-
 :root {
     --xPositionAnt: 0;
     --yPositionAnt: 0;
@@ -441,7 +448,7 @@ export default {
     display: block;
     width: 100%;
     height: 90%;
-    
+
 }
 
 .buttonRed {
@@ -485,7 +492,7 @@ html:lang(ar) {
 
 }
 
-.icon-i{
+.icon-i {
     justify-content: center;
     align-items: center;
 
@@ -571,9 +578,10 @@ html:lang(ar) {
 
 }
 
-#explosion{
+#explosion {
     width: 10vw;
 }
+
 .imageContainer {
     display: flex;
 

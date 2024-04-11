@@ -109,18 +109,23 @@ socket.on("loginSuccess", (data) => {
     console.log(data);
     let user = { username: data.username, id: data.id, image: data.image, email: data.email, tutorial: data.tutorial, token: data.token, wins: data.wins, losses: data.losses, consecutiveVictories: data.consecutiveVictories };
     console.log(user);
+    socket.emit("checkAchivements",{"email":data.email});
     store.setGuestInfo(user);
 });
-
+socket.on("checkAchivementsSuccess", (data) => {
+    console.log('Achivements: ', data);
+    const store = useAppStore();
+    store.setAchivements(data);
+});
 socket.on("statUpdate", (data) => {
     console.log('Actualización de stats: ', data.consecutiveVictories);
     let dataFormated
 
     dataFormated = { wins: data.wins, losses: data.losses, consecutiveVictories: data.consecutiveVictories };
 
-
     const store = useAppStore();
     store.setGuestInfo(dataFormated);
+    socket.emit("checkAchivements",{"email":store.guestInfo.email});
 });
 
 socket.on("logoutSuccess", (data) => {
