@@ -13,6 +13,7 @@ var pinga = 0;
 app.use(cors());
 const server = createServer(app);
 const URL = "http://127.0.0.1:8000/api/preguntes/random";
+// const token = localStorage.getItem('token');
 
 const io = new Server(server, {
     cors: {
@@ -133,6 +134,8 @@ function findIndexRoomBySocketId(socketId, gameRooms) {
 }
 
 async function getUser(data, socket) {
+
+
     try {
         // console.log("data to send...", data)
         const response = await fetch('http://localhost:8000/api/login', {
@@ -144,13 +147,17 @@ async function getUser(data, socket) {
         }
         );
         const responseData = await response.json();
+        console.log("login data", responseData);
         console.log(responseData.status, "==", 1);
-        if (responseData.status === 1) {
+        if (responseData.token && responseData.status === 1) {
+            // console.log("token", responseData.token);
+            // localStorage.setItem('tokeeeeeeeen', responseData.token);
             let returnData = responseData;
             returnData.id = socket.id;
             returnData.image = responseData.foto_perfil;
             returnData.username = responseData.username;
             returnData.email = responseData.email;
+            returnData.token = responseData.token;
             if (responseData.tutorial === 1) {
                 returnData.tutorial = true;
             }
@@ -537,11 +544,11 @@ io.on('connection', (socket) => {
             do {
                 userIndex = lobby.users.findIndex(user => user === socket.id);
                 if (userIndex != -1) {
-                    
+
                     lobby.users.splice(userIndex, 1);
                 }
             } while (userIndex != -1);
-            
+
         }
     });
     socket.on('join', (data) => {
@@ -611,13 +618,18 @@ io.on('connection', (socket) => {
                 }
                 let check = false;
                 for (let i = 0; i < lobbies.length; i++) {
-                    for (let j = 0; i < lobbies[i].users.length; j++) {
+                    console.log("JULIOOOOOOOOOO")
+                    for (let j = 0; j < lobbies[i].users.length; j++) {
+                        console.log("BORAAAAAAAAAAAASHO")
                         if (lobbies[i].users[j] === socket.id) {
+                            console.log("PINGA")
                             check = true;
                         }
                     }
                 }
+                console.log("check", check);
                 if (!check) {
+
                     createLobby(config, socket);
                     let openLobbies = lobbies.filter(lobby => !lobby.private);
                     socket.broadcast.emit('salas', openLobbies);
@@ -637,7 +649,7 @@ io.on('connection', (socket) => {
             socket.join(game.idGame);
             socket.emit('userDataUpdate', { "user": game.users[game.users.length - 1], "game": lobby.id });
             console.log(game.users);
-            io.to(game.idGame).emit('usersConnected', game.users);
+            io.to(game.idGame).emit('usersConnected', { 'users': game.users, 'public': lobby.private });
             console.log('Salas: ', io.sockets.adapter.rooms);
             console.log('Salas: ', lobbies[0].games[0].users);
         }
@@ -658,7 +670,7 @@ io.on('connection', (socket) => {
                 socket.emit('userJoined');
                 socket.join(game.idGame);
                 socket.emit('userDataUpdate', { "user": game.users[game.users.length - 1], "game": lobby.id });
-                io.to(game.idGame).emit('usersConnected', game.users);
+                io.to(game.idGame).emit('usersConnected', { "users": game.users, "public": lobby.private });
             }
         }
 
@@ -686,7 +698,7 @@ io.on('connection', (socket) => {
 
 
     socket.on('register', async (userData) => {
-        console.log(userData);
+        console.log("register", userData);
         const response = await fetch('http://localhost:8000/api/register', {
             method: 'POST',
             body: JSON.stringify(userData),
@@ -698,7 +710,9 @@ io.on('connection', (socket) => {
         if (responseData.status === 1) {
             userData.status = 1;
             userData.id = socket.id;
+            userData.token = responseData.token;
             userData.image = userData.foto_perfil;
+            console.log("register...ok", userData);
             // console.log("userData", userData);
             socket.emit('loginSuccess', userData);
             return responseData;
@@ -713,6 +727,62 @@ io.on('connection', (socket) => {
         // console.log("data to send...", data)
         await getUser(data, socket);
     });
+
+    socket.on('logout', async (data) => {
+        await logoutUser(data, socket);
+    });
+
+    socket.on('sugerencias', async (data) => {
+        console.log("sugerencia", data);
+        try {
+            const response = await fetch('http://localhost:8000/api/createSugerencia', {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const responseData = await response.json();
+            console.log("sugerencias data", responseData);
+            if (responseData.status === 1) {
+                let returnDataSend = responseData;
+                returnDataSend.status = 1;
+                socket.emit('sugerenciasSuccess', returnDataSend);
+                console.log("sugerencia creada correctamente", responseData);
+            }
+        } catch (error) {
+            console.log("error sugerencias", error);
+        }
+    });
+
+    async function logoutUser(data, socket) {
+        console.log("data logout", data);
+        console.log("logout email", data.email);
+        console.log("logout token", data.token);
+        try {
+            const response = await fetch('http://localhost:8000/api/logout', {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + data.token
+                }
+            });
+
+            const responseData = await response.json();
+            // console.log("login data", responseData);
+            if (responseData.status === 1) {
+                let returnDataLogout = responseData;
+                returnDataLogout.status = 1;
+                // console.log("response returnData ", returnDataLogout);
+                socket.emit('logoutSuccess', returnDataLogout);
+                console.log("response.ok....logout complete", responseData);
+            }
+        } catch (error) {
+            console.log("error logout", error);
+        }
+    }
 
 
 
@@ -954,35 +1024,36 @@ io.on('connection', (socket) => {
         let roomIndex = gameRooms.findIndex(room => room.roomName === roomName);
         gameRooms.splice(roomIndex, 1);
     });
-    socket.on('login', (data) => {
-        // console.log(data);
-    });
+
     socket.on('getRanking', async () => {
-        let response = await fetch('http://localhost:8000/api/ranking', {
+        const response = await fetch('http://localhost:8000/api/ranking', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             },
         });
-        let ranking = await response.json();
-        // console.log(ranking);
+        const ranking = await response.json();
+        console.log(ranking);
         socket.emit('updateRanking', await ranking);
 
     });
-    socket.on('changeSkin', async (data) => {
-        // console.log(data);
-        let response = await fetch('http://localhost:8000/api/changeIcon', {
+
+    socket.on('updateProfile', async (data) => {
+        console.log("change skin...", data);
+
+        const response = await fetch('http://localhost:8000/api/changeProfile', {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {
                 'Content-Type': 'application/json'
             }
         });
-        let responseData = await response.json();
-        if (responseData.status == 1) {
-            // console.log("Icono cambiado correctamente");
+        const responseData = await response.json();
+
+        if (responseData.status === 1) {
+            console.log("Icono cambiado correctamente");
             // console.log(data.foto_perfil);
-            socket.emit('changeSkinSuccess', data.foto_perfil);
+            socket.emit('changeProfile', data);
         }
     });
 });

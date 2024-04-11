@@ -25,6 +25,7 @@ export const useAppStore = defineStore('app', {
             lost: false,
             win: false,
             tutorial: true,
+            token: '',
         },
         users: [],
         pregunta: {
@@ -35,8 +36,10 @@ export const useAppStore = defineStore('app', {
         respostaAnterior: true,
         explodes: false,
         timer: 0,
+        sugerencia: 0,
         gameStarted: false,
         gameWinner: false,
+        open: false,
         error: "",
         ranking: [],
         countdown: -2,
@@ -66,19 +69,20 @@ export const useAppStore = defineStore('app', {
                     id_pregunta: "",
                     pregunta: "",
                 },
-                this.actualRoomName= '',
-                this.respostaAnterior= true,
-                this.explodes= false,
-                this.timer= 0,
-                this.gameStarted= false,
-                this.gameWinner= false,
-                this. error= "",
-                this.ranking= [],
-                this. countdown= -2,
-                this.shieldUser= {
-                activated: false,
+                this.actualRoomName = '',
+                this.respostaAnterior = true,
+                this.explodes = false,
+                this.timer = 0,
+                this.gameStarted = false,
+                this.gameWinner = false,
+                this.error = "",
+                this.ranking = [],
+                this.open = false,
+                this.countdown = -2,
+                this.shieldUser = {
+                    activated: false,
                     sec: 0
-            }
+                }
         },
         setCountdown(countdown) {
             this.countdown = countdown;
@@ -91,6 +95,12 @@ export const useAppStore = defineStore('app', {
             this.lobbies[0].mode = lobbies;
             this.lobbies[0].numUser = 20;
 
+        },
+        setOpen(data) {
+            this.open = data;
+        },
+        getOpen() {
+            return this.open;
         },
         setModes(modes) {
             this.lobbies[0].mode = modes;
@@ -118,6 +128,12 @@ export const useAppStore = defineStore('app', {
         setGameStarted(gameStarted) {
             this.gameStarted = gameStarted;
 
+        },
+        setSugerenciaCompletada(data) {
+            this.sugerencia = data.sugerencia;
+        },
+        getSugerencias() {
+            return this.sugerencia;
         },
         getGameStarted() {
             return this.gameStarted;
@@ -170,6 +186,7 @@ export const useAppStore = defineStore('app', {
             this.guestInfo.win = false;
             this.guestInfo.lost = false;
             this.guestInfo.tutorial = data.tutorial;
+            this.guestInfo.token = data.token;
             // this.guestInfo.shieldUser.activated = data.shieldUser.activated;
             // this.guestInfo.shieldUser.sec = data.shieldUser.sec;
 
@@ -184,6 +201,8 @@ export const useAppStore = defineStore('app', {
         clearGuestInfo() {
             this.guestInfo.username = '';
             this.guestInfo.id = '';
+            this.guestInfo.bomba = false;
+            this.guestInfo.email = 'none';
         },
         setShieldUser(shieldUser) {
             this.shieldUser.activated = shieldUser.activated;
@@ -220,6 +239,15 @@ export const useAppStore = defineStore('app', {
         setGuestImage(image) {
             console.log('Imagen: ', image);
             this.guestInfo.image = image;
+        },
+        setUpdateProfile(data) {
+            console.log("data updateProfile", data);
+            this.guestInfo.image = data.foto_perfil;
+            this.guestInfo.email = data.email;
+            this.guestInfo.username = data.username;
+        },
+        getUpdateProfile() {
+            return this.guestInfo;
         },
         setRanking(ranking) {
             this.ranking = ranking;

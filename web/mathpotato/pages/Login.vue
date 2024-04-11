@@ -1,46 +1,84 @@
 <template>
     <div id="Background">
-        <div class="surface-card p-4 shadow-2 border-round w-full lg:w-6 middle">
-            <div class="text-center mb-5">
-                <img src="../assets/LePotata.png" alt="Image" height="50" class="mb-3" />
-                <div class="text-900 text-3xl font-medium mb-3">Benvingut!</div>
-                <span class="text-600 font-medium line-height-3">Don't have an account?</span>
-                <a class="font-medium no-underline ml-2 text-blue-500 cursor-pointer" @click="Register">Create today!</a>
-            </div>
-
-            <div>
-                <label for="email1" class="block text-900 font-medium mb-2">Email</label>
-                <InputText id="email1" type="text" class="w-full mb-3" v-model="email" />
-
-                <label for="password1" class="block text-900 font-medium mb-2">Password</label>
-                <InputText id="password1" type="password" class="w-full mb-3" v-model="password" />
-
-                <div class="flex align-items-center justify-content-between mb-6">
-                    <a class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">Forgot password?</a>
+        <div class="middle">
+            <h2>Log In</h2>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" v-model="email" required>
                 </div>
-
-                <Button @click="Loggin" label="Sign In" icon="pi pi-user" class="w-full"></Button>
-            </div>
+                <div class="form-group">
+                    <label for="password">Contraseña:</label>
+                    <input type="password" id="password" v-model="password" required>
+                </div>
+                <Button severity="warning" @click="login" label="Log In" icon="pi pi-user" class="w-full" />
+                <Button severity="contrast" @click="register" label="Sign In" icon="pi pi-user" class="w-full" />
         </div>
     </div>
 </template>
-<style scoped> #Background {
-     background-image: url(../assets/landing_background.png);
-     background-repeat: no-repeat;
-     background-size: cover;
-     background-position: center;
-     height: 100vh;
-     opacity: 80%;
-     width: 100vw;
-     z-index: -1;
- }
 
- .middle {
-     margin: auto;
-     width: 50%;
-     padding: 10px;
- }
+<style scoped>
+    #Background {
+        background-image: url(../assets/back-login-form.jpg);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-color: #f0f0f0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .middle {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    form {
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+    input[type="email"],
+    input[type="password"],
+    button {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
+
+    button {
+        /* background-color: #007bff; */
+        color: #ffffff;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    .success-message {
+        color: #4caf50;
+    }
+
+    .error-message {
+        color: #ef0f0f;
+    }
 </style>
+
 <script>
 import { useAppStore } from '../stores/guestStore.js';
 import { socket } from '../socket';
@@ -61,28 +99,22 @@ export default {
     },
     watch: {
         error() {
+            console.log(this.error);
             if (this.error == 1) {
                 this.$router.push({ path: '/rooms' });
-                
-            } else {
-                alert('Invalid credentials. Please try again.');
+            } else if(this.error == 0){
+                alert("pinga");
             }
         },
     },
     methods: {
-        Register() {
-
+        register() {
             this.$router.push({ path: '/register' });
-
         },
-        handleUserList(users) {
-            this.users = users;
-            console.log(this.users);
-        },
-        Loggin() {
+        login() {
             console.log(this.email);
             const encryptedPassword = CryptoJS.SHA256(this.password).toString();
-            socket.emit('login', { email: this.email, password: encryptedPassword });
+            socket.emit('login', { email: this.email, password: encryptedPassword});
         }
     },
 };

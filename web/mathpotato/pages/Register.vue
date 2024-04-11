@@ -1,87 +1,183 @@
 <template>
     <div id="Background">
-        <div class="surface-card p-4 shadow-2 border-round w-full lg:w-6 middle">
-            <div class="text-center mb-5">
-                <img src="../assets/LePotata.png" alt="Image" height="50" class="mb-3" />
-                <div class="text-900 text-3xl font-medium mb-3">Benvingut!</div>
-                <span class="text-600 font-medium line-height-3">Ja tens compte?</span>
-                <a class="font-medium no-underline ml-2 text-blue-500 cursor-pointer" @click="Login">Inicia sessió!</a>
+        <div class="middle">
+            <h2>Sign In</h2>
+            <div class="form-group">
+                <label for="username">Usuario: <InlineMessage>Usuario requerido</InlineMessage></label>
+                <input id="username" type="text" v-model="username" required>
+                
             </div>
-
-            <div>
-                <label for="username" class="block text-900 font-medium mb-2">Username</label>
-                <InputText id="username" type="text" class="w-full mb-3" v-model="username" />
-
-                <label for="email1" class="block text-900 font-medium mb-2">Email</label>
-                <InputText id="email1" type="text" class="w-full mb-3" v-model="email" />
-
-                <label for="password1" class="block text-900 font-medium mb-2">Password</label>
-                <InputText id="password1" type="password" class="w-full mb-3" v-model="password" />
-
-
-                <label for="passwordC" class="block text-900 font-medium mb-2">Password Confirmation</label>
-                <InputText id="passwordC" type="password" class="w-full mb-3" v-model="passwordConfirmation" />
-                <p>Selecciona icona</p>
-                <div id="Image_gallery">
-                    <div><input type="radio" name="image" id="1" value="1" checked v-model="imatgeSeleccionada"><label
-                            for="1"><img src="../assets/Icon_1.png" alt="" class="icon"></label></div>
-                    <div><input type="radio" name="image" id="2" value="2" v-model="imatgeSeleccionada"><label for="2"><img
-                                src="../assets/Icon_2.png" alt="" class="icon"></label></div>
-                    <div><input type="radio" name="image" id="3" value="3" v-model="imatgeSeleccionada"><label for="3"><img
-                                src="../assets/Icon_3.png" alt="" class="icon"></label></div>
-                    <div><input type="radio" name="image" id="4" value="4" v-model="imatgeSeleccionada"><label for="4"><img
-                                src="../assets/Icon_4.png" alt="" class="icon"></label></div>
-                    <div><input type="radio" name="image" id="5" value="5" v-model="imatgeSeleccionada"><label for="5"><img
-                                src="../assets/Icon_5.png" alt="" class="icon"></label></div>
-                    <div><input type="radio" name="image" id="6" value="6" v-model="imatgeSeleccionada"><label for="6"><img
-                                src="../assets/Icon_6.png" alt="" class="icon"></label></div>
-                    <div><input type="radio" name="image" id="7" value="7" v-model="imatgeSeleccionada"><label for="7"><img
-                                src="../assets/Icon_7.png" alt="" class="icon"></label></div>
-                    <div><input type="radio" name="image" id="8" value="8" v-model="imatgeSeleccionada"><label for="8"><img
-                                src="../assets/Icon_8.png" alt="" class="icon"></label></div>
-                    <div><input type="radio" name="image" id="9" value="9" v-model="imatgeSeleccionada"><label for="9"><img
-                                src="../assets/Icon_9.png" alt="" class="icon"></label></div>
-                </div>
-
-                <Button label="Sign In" icon="pi pi-user" class="w-full" @click="register"></Button>
+            <div class="form-group">
+                <label for="email">Email: <InlineMessage>Email requerido</InlineMessage></label>
+                <input id="email" type="email" v-model="email" required >
+                
+            </div>
+            <div class="form-group">
+                <label for="password">Contraseña: <InlineMessage>Contraseña requerida</InlineMessage></label>
+                <input id="password" type="password" v-model="password" required>
+                
+            </div>
+            <div class="form-group">
+                <label for="password">Confirmación contraseña: <InlineMessage>Confirmación de usuario requerida</InlineMessage></label>
+                <input id="password" type="password" v-model="passwordConfirmation" required>
+                
+            </div>
+            <Divider type="solid" />
+            <div class="card flex justify-content-center btn-chooseSkin">
+                <Button label="Choose skin" @click="visibleChangeSkin = true" />
+                <Dialog v-model:visible="visibleChangeSkin" modal header="Elige Tu Skin!" :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+                    <Divider type="solid" />
+                    <div class="0">
+                        <p>Selecciona</p>
+                        <div id="image_gallery">
+                            <div>
+                                <input type="radio" name="image" id="1" value="1" checked v-model="imatgeSeleccionada">
+                                <label for="1"><Avatar :image="'./_nuxt/assets/Icon_1.png'" shape="circle" class="avatar-edit" style="width: 150px; height: 150px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                            </div>
+                            <div>
+                                <input type="radio" name="image" id="2" value="2" v-model="imatgeSeleccionada">
+                                <label for="2"><Avatar :image="'./_nuxt/assets/Icon_2.png'" shape="circle" class="avatar-edit" style="width: 150px; height: 150px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                            </div>
+                            <div>
+                                <input type="radio" name="image" id="3" value="3" v-model="imatgeSeleccionada">
+                                <label for="3"><Avatar :image="'./_nuxt/assets/Icon_3.png'" shape="circle" class="avatar-edit" style="width: 150px; height: 150px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                            </div>
+                            <div>
+                                <input type="radio" name="image" id="4" value="4" v-model="imatgeSeleccionada">
+                                <label for="4"><Avatar :image="'./_nuxt/assets/Icon_4.png'" shape="circle" class="avatar-edit" style="width: 150px; height: 150px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                            </div>
+                            <div>
+                                <input type="radio" name="image" id="5" value="5" v-model="imatgeSeleccionada">
+                                <label for="5"><Avatar :image="'./_nuxt/assets/Icon_5.png'" shape="circle" class="avatar-edit" style="width: 150px; height: 150px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                            </div>
+                            <div>
+                                <input type="radio" name="image" id="6" value="6" v-model="imatgeSeleccionada">
+                                <label for="6"><Avatar :image="'./_nuxt/assets/Icon_6.png'" shape="circle" class="avatar-edit" style="width: 150px; height: 150px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                            </div>
+                            <div>
+                                <input type="radio" name="image" id="7" value="7" v-model="imatgeSeleccionada">
+                                <label for="7"><Avatar :image="'./_nuxt/assets/Icon_7.png'" shape="circle" class="avatar-edit" style="width: 150px; height: 150px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                            </div>
+                            <div>
+                                <input type="radio" name="image" id="8" value="8" v-model="imatgeSeleccionada">
+                                <label for="8"><Avatar :image="'./_nuxt/assets/Icon_8.png'" shape="circle" class="avatar-edit" style="width: 150px; height: 150px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                            </div>
+                            <div>
+                                <input type="radio" name="image" id="9" value="9" v-model="imatgeSeleccionada">
+                                <label for="9"><Avatar :image="'./_nuxt/assets/Icon_9.png'" shape="circle" class="avatar-edit" style="width: 150px; height: 150px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                            </div>
+                            
+                        </div>
+                        <Button label="Guardar" icon="pi pi-save" @click="visibleChangeSkin = false" />
+                    </div>
+                    
+                </Dialog>
+            </div>
+            
+                
+            <div class="btn-div">
+                <Button severity="info" label="Sign In" icon="pi pi-user" class="w-full" @click="register" text raised></Button>
+            </div>
             </div>
         </div>
-    </div>
+
 </template>
-<style>
-#Image_gallery {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    width: 50vw;
-}
+<style scoped>
+    #Background {
+        background-image: url(../assets/back-register-form.png);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-color: #f0f0f0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
-.icon {
-    width: 14vw;
-}
+    .middle {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
 
-input[type="radio"] {
-    display: none;
-}
+    #image_gallery{
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2px;
+    }
 
-input[type="radio"]:checked+label>img {
-    border: 2px solid #000;
-}
+    input[type="radio"]{
+        display: none;
+    }
+    .avatar-edit{
+        background-color: blanchedalmond;
+        border: 1px solid black;
+        cursor: pointer;
+        box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+    }
 
-#Background {
-    background-image: url(../assets/landing_background.png);
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    opacity: 80%;
-    width: 99vw;
-    z-index: -1;
-}
+    input[type="radio"]:checked + label>.avatar-edit{
+        border: 2px solid #007bff;
+    }
+    
+    form {
+        margin-bottom: 20px;
+    }
 
-.middle {
-    margin: auto;
-    width: 50%;
-    padding: 10px;
-}
+    .btn-chooseSkin{
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+    .btn-div{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 4px;
+        /* border: 1px solid #ccc; */
+        box-sizing: border-box;
+    }
+
+    button {
+        width: 50%;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 4px;
+        /* border: 1px solid #ccc; */
+        box-sizing: border-box;
+        cursor: pointer;
+    }
+
+    .success-message {
+        color: #4caf50;
+    }
+
+    .error-message {
+        color: #ef0f0f;
+    }
+
+    
 </style>
 
 <script>
@@ -98,8 +194,10 @@ export default {
             email: '',
             password: '',
             passwordConfirmation: '',
+            token: '',
             imatgeSeleccionada: '1',
             tutorial: true,
+            visibleChangeSkin: false,
 
         };
     },

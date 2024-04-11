@@ -3,8 +3,6 @@
       <div id="background_page" class="flex flex-row justify-content-between h-100vh">
         <!-- Logo a la izquierda -->
         <div class="flex flex-column align-items-center ">
-            <Button @click="login()" class="button_login" label="LOG IN" />
-            <Button @click="RankingView()" class="button_ranking" label="RANKING"></Button>
         </div>
         <div class="flex flex-column align-items-center justify-content-center">
           <img v-show="currentLogo === 'logo1'" src="../assets/LePotata.png" alt="logo" class="logo_pos move-forward" />

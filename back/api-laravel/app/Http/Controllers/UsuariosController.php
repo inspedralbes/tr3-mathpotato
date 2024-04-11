@@ -31,9 +31,11 @@ class usuariosController extends Controller
 
                 $usuario->save();
 
+                $token = $usuario->createToken('myapptoken')->plainTextToken;
                 return response()->json([
                     'status' => 1,
-                    'message' => 'usuari creat correctament'
+                    'message' => 'usuari creat correctament',
+                    'token' => $token,
                 ]);
             }
         } catch (\Exception $e) {
@@ -56,15 +58,25 @@ class usuariosController extends Controller
 
         if ($usuario) {
             if (Hash::check($request->password, $usuario->password)) {
+                // dd([
+                //     'password' => $request->password,
+                //     'hashed_password' => Hash::make($request->password),
+                //     'stored_password' => $usuario->password
+                // ]);
+                $token = $usuario->createToken('myapptoken')->plainTextToken;
+
                 return response()->json([
                     'status' => 1,
                     'username' => $usuario->username,
                     'email' => $usuario->email,
                     'foto_perfil' => $usuario->foto_perfil,
-                    'tutorial' => $usuario->tutorial
+                    'tutorial' => $usuario->tutorial,
+                    'message' => 'Usuario logeado correctamente',
+                    'token' => $token
                 ]);
             } else {
                 return response()->json([
+
                     'status' => 0,
                     'message' => 'Contrasenya incorrecta'
                 ]);
@@ -76,24 +88,37 @@ class usuariosController extends Controller
             ]);
         }
     }
-    public function logout()
+    public function logout(Request $request)
     {
+        auth()->user()->tokens()->delete();
+
+        return response()->json([
+            'status' => 1,
+            'message' => 'Sesión cerrada correctamente'
+        ]);
     }
-    public function changeIcon(Request $request)
+    public function changeProfile(Request $request)
     {
         $request->validate([
+            'email' => 'required|string|email',
+            'username' => 'required|string|max:50',
             'foto_perfil' => [
                 'required',
                 Rule::in(['1', '2', '3', '4', '5', '6', '7', '8', '9']),
             ],
-            'email' => 'required|string|email',
         ]);
+
         $usuario = Usuarios::where("email", "=", $request->email)->first();
+        $usuario->username = $request->username;
         $usuario->foto_perfil = $request->foto_perfil;
+
         $usuario->save();
+
         return response()->json([
             'status' => 1,
-            'foto_perfil' => $usuario->foto_perfil
+            'username' => $usuario->username,
+            'foto_perfil' => $usuario->foto_perfil,
+
         ]);
     }
 
@@ -119,9 +144,9 @@ class usuariosController extends Controller
         $request->validate([
             'email' => 'required|string|email',
         ]);
-        
+
         $usuario = Usuarios::where("email", "=", $request->email)->first();
-        if($usuario->tutorial == 1){
+        if ($usuario->tutorial == 1) {
             $usuario->tutorial = 0;
         }
         $usuario->num_derrotas = $usuario->num_derrotas + 1;
@@ -138,7 +163,7 @@ class usuariosController extends Controller
             'email' => 'required|string|email',
         ]);
         $usuario = Usuarios::where("email", "=", $request->email)->first();
-        if($usuario->tutorial == 1){
+        if ($usuario->tutorial == 1) {
             $usuario->tutorial = 0;
         }
         $usuario->num_victorias = $usuario->num_victorias + 1;
@@ -146,6 +171,27 @@ class usuariosController extends Controller
         return response()->json([
             'status' => 1,
             'num_victorias' => $usuario->num_victorias
+        ]);
+    }
+
+    public function checkLogros(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|string|email',
+        ]);
+
+        $usuario = Usuarios::where("email", "=", $request->email)->first();
+        $logros = [
+            'has jugado 10 partidas' => $usuario->num_victorias + $usuario->num_derrotas >= 10,
+            'has ganado 5 partidas' => $usuario->num_victorias >= 5,
+            'has ganado 15 partidas' => $usuario->num_victorias >= 15,
+            'se llama pol' => $usuario->username == 'pol',
+            'se llama ermengol' => $usuario->username == 'ermengol',
+            'se llama alvaro' => $usuario->username == 'alvaro',
+        ];
+        
+        return response()->json([
+            'logros' => $logros
         ]);
     }
 }

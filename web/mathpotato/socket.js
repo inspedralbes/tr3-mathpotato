@@ -7,14 +7,17 @@ const URL = "localhost:5175";
 
 export const socket = io(URL);
 
-socket.on("usersConnected", (usersConnected, roomName) => {
-    console.log("*Conectado al servidor*", usersConnected);
-    console.log('Sala de juego: ', roomName);
+socket.on("usersConnected", (data) => {
+    console.log("data",data);
+    // console.log("*Conectado al servidor*", usersConnected);
+    // console.log('Sala de juego: ', roomName);
     const store = useAppStore();
 
     // Establece el array de usuarios en Pinia
-    store.setUsers(usersConnected);
-    store.setUsersInRoom(usersConnected);
+    store.setUsers(data.users);
+    store.setUsersInRoom(data.users);
+    console.log("PENEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",data.public);
+    store.setOpen(!data.public);
     store.setRespostaAnterior(true);
 });
 
@@ -104,14 +107,28 @@ socket.on("loginSuccess", (data) => {
     const store = useAppStore();
     store.setError(data.status);
     console.log(data);
-    let user = { username: data.username, id: data.id, image: data.image, email: data.email, tutorial: data.tutorial };
+    let user = { username: data.username, id: data.id, image: data.image, email: data.email, tutorial: data.tutorial, token: data.token };
     store.setGuestInfo(user);
 });
 
-socket.on("changeSkinSuccess", (data) => {
+socket.on("logoutSuccess", (data) => {
+    console.log('Logout correcto: ', data);
+    const store = useAppStore();
+    store.clearGuestInfo();
+    location.reload();
+});
+
+socket.on("changeProfile", (data) => {
     console.log('Cambio de skin correcto: ', data);
     const store = useAppStore();
-    store.setGuestImage(data);
+    store.setUpdateProfile(data);
+
+});
+
+socket.on("sugerencias", (data) => {
+    console.log('Sugerencia: ', data);
+    const store = useAppStore();
+    store.setSugerenciaCompletada(data);
 });
 
 socket.on("updateRanking", (ranking) => {
