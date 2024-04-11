@@ -61,23 +61,31 @@
                 <div id="ModalWaiting" class="modal-tutorial"
                     v-show="!gameStarted && !userPantalla.tutorial && this.showWaitingModal">
                     <div class="modal-tutorial-content ">
-                        
+
                         <div class="code">
-                            <svg v-if="open" xmlns="http://www.w3.org/2000/svg" class="icon-unlock icon-tabler icon-tabler-lock-open" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                <path d="M5 11m0 2a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2z" />
+                            <svg v-if="open" xmlns="http://www.w3.org/2000/svg"
+                                class="icon-unlock icon-tabler icon-tabler-lock-open" width="44" height="44"
+                                viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path
+                                    d="M5 11m0 2a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2z" />
                                 <path d="M12 16m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
                                 <path d="M8 11v-5a4 4 0 0 1 8 0" />
                             </svg>
-                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="icon-lock icon-tabler icon-tabler-lock" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                <path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6z" />
+                            <svg v-else xmlns="http://www.w3.org/2000/svg"
+                                class="icon-lock icon-tabler icon-tabler-lock" width="44" height="44"
+                                viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path
+                                    d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6z" />
                                 <path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" />
                                 <path d="M8 11v-4a4 4 0 1 1 8 0v4" />
                             </svg>
                             {{ roomName }}
-                           
-                            
+
+
                         </div>
                         <Divider type="solid" />
                         <div class="List">
@@ -91,11 +99,17 @@
                                 </div>
                             </div>
                         </div>
-                        <div v-if="countdown > -2">{{ countdown }}</div>
+                        <div v-if="countdown > -2"
+                            style="display: block; color: blue; opacity: 0.6; margin-left: auto; margin-right: auto;">
+                            <div style="margin-left: 50%">{{ countdown }}</div>
+                        </div>
                         <Button @click="startGame" id="startGameButton" :disabled="users.length <= 2"
                             :class="[gameStarted ? 'hidden' : '']">READY!</Button>
                     </div>
+
                 </div>
+
+
             </div>
         </div>
 
@@ -180,7 +194,7 @@ export default {
             let store = useAppStore();
             return store.getRoomName();
         },
-        open(){
+        open() {
             let store = useAppStore();
             return store.getOpen();
         }
@@ -492,11 +506,13 @@ html:lang(ar) {
 
 }
 
-.icon-i{
+.icon-i {
     justify-content: center;
     align-items: center;
 
 }
+
+
 
 .gameContainer {
     background-color: #6d5c3d;

@@ -66,14 +66,85 @@
                     <Message :closable="false">Para obtener recompensas debes logearte!</Message>
                     <div class="card flex justify-content-center">
                         <div class="flex justify-center items-center">
-                            
+                           
                         </div>
                     </div>
                 </div>
                 <div v-else>
-                    <div>
-
-                    </div> 
+                    <div class="card flex justify-content-center">
+                        <div class="card flex justify-content-center tags-logros">
+                            <div style="justify-content: center; align-items: center; display: flex;">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-award" width="34" height="34" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M12 9m-6 0a6 6 0 1 0 12 0a6 6 0 1 0 -12 0" />
+                                    <path d="M12 15l3.4 5.89l1.598 -3.233l3.598 .232l-3.4 -5.889" />
+                                    <path d="M6.802 12l-3.4 5.89l3.598 -.233l1.598 3.232l3.4 -5.889" />
+                                </svg>
+                                <Tag style="width: 200px" value="3 partidas seguidas ganadas" severity="warning">
+                                    
+                                </Tag>
+                            </div>
+                            <div style="justify-content: center; align-items: center; display: flex;">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-device-gamepad-2" width="34" height="34" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M12 5h3.5a5 5 0 0 1 0 10h-5.5l-4.015 4.227a2.3 2.3 0 0 1 -3.923 -2.035l1.634 -8.173a5 5 0 0 1 4.904 -4.019h3.4z" />
+                                    <path d="M14 15l4.07 4.284a2.3 2.3 0 0 0 3.925 -2.023l-1.6 -8.232" />
+                                    <path d="M8 9v2" />
+                                    <path d="M7 10h2" />
+                                    <path d="M14 10h2" />
+                                </svg>
+                                <Tag style="width: 200px" value="20 partidas jugadas!" severity="info"></Tag>
+                            </div>
+                            <div style="justify-content: center; align-items: center; display: flex;">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trophy" width="34" height="34" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M8 21l8 0" />
+                                    <path d="M12 17l0 4" />
+                                    <path d="M7 4l10 0" />
+                                    <path d="M17 4v8a5 5 0 0 1 -10 0v-8" />
+                                    <path d="M5 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                                    <path d="M19 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                                </svg>
+                                <Tag style="width: 200px" value="15 partidas ganadas" severity="warning"></Tag>
+                            </div>
+                        </div>
+                        <div class="flex justify-center items-center container-image-logros">
+                            <div class="card flex justify-center items-center container-logro">
+                                
+                                <img :src="'./_nuxt/assets/Icon_11.png'" :class="{ 'card-logro-done': guest.image11Unlocked===true ,'card-logro': guest.image11Unlocked===false }" style="width: 350px; height: 350px">
+                                <div class="span-logro">
+                                    <span>¡Debes ganar 3 partidas seguidas!</span>
+                                </div>
+                                <div class="card progressbar">
+                                    <Toast></Toast>
+                                    <ProgressBar :value="calculateConsecutiveVictory(guest.consecutiveVictories)" />
+                                </div>
+                            </div>
+                            
+                            <div class="card flex justify-center items-center container-logro">
+                                <img :src="'./_nuxt/assets/Icon_12.png'" :class="{ 'card-logro-done': guest.image12Unlocked===true ,'card-logro': guest.image12Unlocked===false }" style="width: 350px; height: 350px">
+                                <div class="span-logro">
+                                    <span>¡Debes jugar 20 partidas!</span>
+                                </div>
+                                <div class="card progressbar">
+                                    <Toast></Toast>
+                                    <ProgressBar :value="calculateTotalGames(guest.wins, guest.losses)" />
+                                </div>
+                            </div>
+                            <div class="card flex justify-center items-center container-logro">
+                                <img :src="'./_nuxt/assets/Icon_10.png'" :class="{ 'card-logro-done': guest.image10Unlocked===true ,'card-logro': guest.image10Unlocked===false }" style="width: 350px; height: 350px">
+                                <div class="span-logro">
+                                    <span>¡Debes ganar 15 partidas!</span>
+                                    
+                                </div>
+                                <div class="card progressbar">
+                                    <Toast></Toast>
+                                    <ProgressBar :value="calculateTotalWins(guest.wins)" />
+                                    
+                                </div>
+                            </div>
+                        </div> 
+                    </div>
                 </div>
             </div>
             <div class="flex justify-content-end gap-2 button-modal">
@@ -125,7 +196,18 @@
                                     <input type="radio" name="image" id="9" value="9" v-model="imatgeSeleccionada">
                                     <label for="9"><Avatar :image="'./_nuxt/assets/Icon_9.png'" shape="circle" class="avatar-edit" style="width: 65px; height: 65px; margin-left: auto; margin-right: auto; display: block;" /></label>
                                 </div>
-                            
+                                <div v-if="guest.image10Unlocked">
+                                    <input type="radio" name="image" id="10" value="10" v-model="imatgeSeleccionada">
+                                    <label for="10"><Avatar :image="'./_nuxt/assets/Icon_10.png'" shape="circle" class="avatar-edit" style="width: 65px; height: 65px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                </div>
+                                <div v-if="guest.image11Unlocked">
+                                    <input type="radio" name="image" id="11" value="11" v-model="imatgeSeleccionada">
+                                    <label for="11"><Avatar :image="'./_nuxt/assets/Icon_11.png'" shape="circle" class="avatar-edit" style="width: 65px; height: 65px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                </div>
+                                <div v-if="guest.image12Unlocked">
+                                    <input type="radio" name="image" id="12" value="12" v-model="imatgeSeleccionada">
+                                    <label for="12"><Avatar :image="'./_nuxt/assets/Icon_12.png'" shape="circle" class="avatar-edit" style="width: 65px; height: 65px; margin-left: auto; margin-right: auto; display: block;" /></label>
+                                </div>
                             </div>
                             <Button label="save" @click="updateSkin" class="buttonSave" />
                         </p>
@@ -157,13 +239,13 @@
                     <Textarea v-model="value_sugerencias" autoResize rows="5" cols="28" style="width: 100%;"/>
                     <Button v-if="value_sugerencias != ''" label="enviar" @click="enviarSugerencias" />
                     <div class="card flex justify-content-center logros" style="padding-top: 20px;">
-                        <div class="lg1">
+                        <div class="lg1" v-if="guest.image11Unlocked">
                             <Tag value="15 partidas ganadas" severity="danger"></Tag>
                         </div>
-                        <div class="lg2">
+                        <div class="lg2" v-if="guest.image12Unlocked">
                             <Tag value="20 partidas jugadas" severity="warning"></Tag>
                         </div>
-                        <div class="lg3">
+                        <div class="lg3" v-if="guest.image10Unlocked">
                             <Tag value="3 partidas seguidas ganadas" severity="info"></Tag>
                         </div>
                     </div>
@@ -295,12 +377,14 @@ export default {
             value_sugerencias: '',
             selectedModes: null,
             showbtn: false,
+            value1: 0,
             avatarHeight: '350px',
             showEditbtn: false,
             text: null,
             showModalConfig: false,
             btnRefresh: false,
             option: '',
+            interval: null,
             imatgeSeleccionada: '1',
             visibleRightprofile: false,
             selectedLobby: null,
@@ -342,8 +426,32 @@ export default {
             let store = useAppStore();
             return store.getUpdateProfile();
         },
+
     },
     methods: {
+        calculateConsecutiveVictory(consecutiveVictories) {
+            if(consecutiveVictories >= 3||this.guest.image11Unlocked==true){
+                return 100;
+            } else {
+                return Math.round(consecutiveVictories / 3 * 100);
+            }
+            
+        },
+        calculateTotalGames(wins, losses) {
+            if(wins + losses >= 20 || this.guest.image12Unlocked==true){
+                return 100;
+            } else {
+                return Math.round((wins + losses) / 20 * 100);
+            }
+             
+        },
+        calculateTotalWins(wins) {
+            if(wins >= 15 || this.guest.image10Unlocked==true){
+                return 100;
+            } else {
+                return Math.round(wins / 15 * 100);
+            }
+        },
         RankingView(){
             this.visibleRanking = true;
 
@@ -468,7 +576,22 @@ export default {
         async logout(){
             console.log(this.guest.email);
             socket.emit('logout', { email: this.guest.email, token: this.guest.token });
-        },               
+        },   
+        startProgress(){
+                let newValue= this.value1 + Math.floor(Math.random() * 10) + 1;
+    
+                if(newValue >= 100){
+                    newValue = 100;
+                    this.$toast.add({ severity: 'info', summary: 'Logro desbloqueado', detail: '¡Has desbloqueado un nuevo logro!', life: 3000 });
+                }
+
+                this.value1 = newValue;
+            
+        }, 
+        endProgress(){
+            clearInterval(this.interval);
+            this.interval = null;
+        },            
     },
     watch: {
         ranking(){
@@ -497,9 +620,12 @@ export default {
             this.setCheckedOnUserImage();
         }
         socket.emit('getRanking');
-
+        this.startProgress();
         // this.getRanking();
         setInterval(this.data, 60000);
+    },
+    beforeUnmount() {
+        this.endProgress();
     },
     beforeDestroy(){
         clearInterval(this.intervalId);
@@ -528,9 +654,57 @@ body {
     gap: 2px;
 }
 
+.container-image-logros{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    gap: 10px;
+    margin-left: auto;
+    margin-right: auto;
+}
 
+.tags-logros{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 10px;
+}
 
+.span-logro{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 5px;
+    font-size: 18px;
 
+}
+
+.container-logro1,
+    .container-logro2,
+    .container-logro3 {
+        border-radius: 20px; /* Ajusta el radio del borde según tu preferencia */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ajusta la sombra según tu preferencia */
+        overflow: hidden; /* Para asegurarse de que las imágenes no sobresalgan de la tarjeta */
+        height: 45vh;
+    }
+
+    .container-logro1 img,
+    .container-logro2 img,
+    .container-logro3 img {
+        width: 100%; /* Para que la imagen ocupe todo el espacio del contenedor */
+        height: auto; /* Para mantener la proporción de la imagen */
+    }
+
+.progressbar{
+    padding-top: 20px;
+    width: 90%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
 .data-ranking {
         width: 100%;
         font-family: Arial, sans-serif;
@@ -673,6 +847,19 @@ body {
 
     .player-card:nth-child(3) .rank::before {
         /* background-color: #cd7f32;  */
+    }
+
+    .card-logro{
+        opacity: 0.6;
+        background-image: url('../assets/lock_logro.png');
+        background-size: 150px;
+        background-repeat: no-repeat;
+        background-position: top right;
+    }
+
+    .card-logro-done{
+        opacity: 1;
+        background-image:none;
     }
 
 .container-ranking{

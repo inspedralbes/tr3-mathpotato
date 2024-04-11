@@ -1,30 +1,31 @@
 <template>
     <div id="Background">
         <div class="middle">
+            <Button style="border-radius: 40%; width: 5%; height: 5%;" @click="Login()" icon="pi pi-chevron-left" text raised rounded aria-label="Filter" />
             <h2>Sign In</h2>
-            <div class="form-group">
-                <label for="username">Usuario: <InlineMessage>Usuario requerido</InlineMessage></label>
-                <input id="username" type="text" v-model="username" required>
+            <div class="form-group" >
+                <label for="username" style="display: flex; align-items: center;">Usuario: <InlineMessage v-tooltip="'Usuario requerido'" style="width: 15px; height: 15px;" severity="info"></InlineMessage></label>
+                <InputText id="username" type="text" v-model="username" required />
                 
             </div>
             <div class="form-group">
-                <label for="email">Email: <InlineMessage>Email requerido</InlineMessage></label>
-                <input id="email" type="email" v-model="email" required >
+                <label for="email" style="display: flex; align-items: center;">Email: <InlineMessage v-tooltip="'Email requerido'" style="width: 15px; height: 15px;" severity="info"></InlineMessage></label>
+                <InputText id="email" type="email" v-model="email" required />
                 
             </div>
             <div class="form-group">
-                <label for="password">Contraseña: <InlineMessage>Contraseña requerida</InlineMessage></label>
-                <input id="password" type="password" v-model="password" required>
+                <label for="password" style="display: flex; align-items: center;">Contraseña: <InlineMessage v-tooltip="'Contraseña requerida'" style="width: 15px; height: 15px;" severity="info"></InlineMessage></label>
+                <InputText id="password" type="password" v-model="password" required />
                 
             </div>
             <div class="form-group">
-                <label for="password">Confirmación contraseña: <InlineMessage>Confirmación de usuario requerida</InlineMessage></label>
-                <input id="password" type="password" v-model="passwordConfirmation" required>
+                <label for="password" style="display: flex; align-items: center;">Confirmación contraseña: <InlineMessage v-tooltip="'Confirmación requerida'" style="width: 15px; height: 15px;" severity="info"></InlineMessage></label>
+                <InputText id="password" type="password" v-model="passwordConfirmation" required />
                 
             </div>
             <Divider type="solid" />
             <div class="card flex justify-content-center btn-chooseSkin">
-                <Button label="Choose skin" @click="visibleChangeSkin = true" />
+                <Button text raised label="Elegir Skin" @click="visibleChangeSkin = true" />
                 <Dialog v-model:visible="visibleChangeSkin" modal header="Elige Tu Skin!" :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
                     <Divider type="solid" />
                     <div class="0">
@@ -68,15 +69,15 @@
                             </div>
                             
                         </div>
-                        <Button label="Guardar" icon="pi pi-save" @click="visibleChangeSkin = false" />
+                        <Button style="display: flex; justify-content: center; align-items: center; margin-left: auto; margin-right: auto; width: 20%;" label="Guardar" icon="pi pi-save" @click="visibleChangeSkin = false" />
                     </div>
                     
                 </Dialog>
             </div>
             
                 
-            <div class="btn-div">
-                <Button severity="info" label="Sign In" icon="pi pi-user" class="w-full" @click="register" text raised></Button>
+            <div class="btn-div" style="padding-top: 10px;">
+                <Button severity="info" label="Sign In" icon="pi pi-user" @click="register" text raised></Button>
             </div>
             </div>
         </div>
@@ -105,23 +106,28 @@
     #image_gallery{
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 2px;
+        gap: 10px;
+        padding-bottom: 20px;
     }
 
     input[type="radio"]{
         display: none;
     }
     .avatar-edit{
-        background-color: blanchedalmond;
-        border: 1px solid black;
+        /* border: 1px solid black; */
         cursor: pointer;
         box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
     }
 
-    input[type="radio"]:checked + label>.avatar-edit{
+    input[type="radio"]:checked + label > .avatar-edit {
         border: 2px solid #007bff;
+        opacity: 1;
     }
-    
+
+    input[type="radio"]:not(:checked) + label > .avatar-edit {
+        opacity: 0.7;
+    }
+
     form {
         margin-bottom: 20px;
     }
@@ -136,6 +142,7 @@
 
     .form-group {
         margin-bottom: 15px;
+        width: 30vw;
     }
 
     label {

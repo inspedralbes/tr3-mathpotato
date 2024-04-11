@@ -5,6 +5,7 @@ import { Server } from 'socket.io';
 import { join } from 'path';
 import mysql from 'mysql';
 import { start } from 'node:repl';
+import { Socket } from 'node:dgram';
 
 const app = express();
 
@@ -158,6 +159,9 @@ async function getUser(data, socket) {
             returnData.username = responseData.username;
             returnData.email = responseData.email;
             returnData.token = responseData.token;
+            returnData.wins = responseData.wins;
+            returnData.losses = responseData.losses;
+            returnData.consecutiveVictories = responseData.consecutiveVictories;
             if (responseData.tutorial === 1) {
                 returnData.tutorial = true;
             }
@@ -165,6 +169,7 @@ async function getUser(data, socket) {
                 returnData.tutorial = false;
             }
             returnData.status = 1;
+
             socket.emit('loginSuccess', returnData);
 
             // console.log("response.ok....", responseData);
@@ -308,7 +313,7 @@ function respostaCorrectaUsuariIncorrecte(game) {
     io.to(game.idGame).emit('changeBomb', { "arrayUsers": game.users, "bombChange": true, "explodes": false });
 }
 
-async function addToRanking(email) {
+async function addToRanking(email, socket) {
     let response = await fetch('http://localhost:8000/api/updateDerrotas', {
         method: 'POST',
         body: JSON.stringify({ email }),
@@ -316,8 +321,10 @@ async function addToRanking(email) {
             'Content-Type': 'application/json'
         }
     });
+    const responseData = await response.json();
+    socket.emit('statUpdate', responseData);
 }
-async function updateVictorias(roomIndex, gameRooms) {
+async function updateVictorias(roomIndex, gameRooms, socket) {
     let email = gameRooms[roomIndex].users[0].email;
     // console.log(email);
     if (email !== 'none') {
@@ -328,6 +335,8 @@ async function updateVictorias(roomIndex, gameRooms) {
                 'Content-Type': 'application/json'
             }
         });
+        const responseData = await response.json();
+        socket.emit('statUpdate', responseData);
         // console.log("entrooo????? --> ", email);
     }
 }
@@ -340,7 +349,8 @@ async function updateVictorias(roomIndex, gameRooms) {
 function UserHasNoLives(userThatDied, game) {
     if (userThatDied.email !== 'none') {
         var email = userThatDied.email;
-        addToRanking(email);
+        let socket = io.sockets.sockets.get(userThatDied.id);
+        addToRanking(email, socket);
     }
 
     let socket = io.sockets.sockets.get(userThatDied.id);
@@ -359,7 +369,8 @@ function UserHasNoLives(userThatDied, game) {
     if (game.users.length == 1 && game.started == true) {
         let gameRooms = findLobbieByGameroomId(game.idGame);
         let roomIndex = findGameIndex(gameRooms.games, game);
-        updateVictorias(roomIndex, gameRooms.games);
+        let socket = io.sockets.sockets.get(game.users[0].id);
+        updateVictorias(roomIndex, gameRooms.games, socket);
         io.to(game.idGame).emit('finishGame', ({ gameStarted: false, timer: 0, username: game.users[0].username, image: game.users[0].image, email: game.users[0].email }));
         io.sockets.sockets.get(game.users[0].id).leave(game.idGame);
         gameRooms.games.splice(roomIndex, 1);
@@ -727,7 +738,35 @@ io.on('connection', (socket) => {
         // console.log("data to send...", data)
         await getUser(data, socket);
     });
+    socket.on('checkAchivements', async (data) => {
+        console.log("checkAchivements", data);
+        
+            const response = await fetch('http://localhost:8000/api/checkAchivements/' + data.email, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const responseData = await response.json();
 
+
+            let returnData={};
+            returnData.image10Unlocked = false;
+            returnData.image11Unlocked = false;
+            returnData.image12Unlocked = false;
+            if (responseData.image10Unlocked == 1) {
+                returnData.image10Unlocked = true;
+            }
+            if (responseData.image11Unlocked == 1) {
+                returnData.image11Unlocked = true;
+            } 
+            if (responseData.image12Unlocked == 1) {
+                returnData.image12Unlocked = true;
+            } 
+            console.log("checkAchivements data", returnData);
+            socket.emit('checkAchivementsSuccess', returnData);
+
+        });
     socket.on('logout', async (data) => {
         await logoutUser(data, socket);
     });
@@ -901,6 +940,8 @@ io.on('connection', (socket) => {
                                 'Content-Type': 'application/json'
                             }
                         });
+                        const responseData = await response.json();
+                        socket.emit('statUpdate', responseData);
                         // console.log("entrooo????? --> ", email);
 
                     }
@@ -921,7 +962,11 @@ io.on('connection', (socket) => {
                                 }
                             });
                             // console.log("entrooo????? --> ", email);
+                            const responseData = await response.json();
+                            let socketWin = io.sockets.sockets.get(room.users[0].id);
+                            socketWin.emit('statUpdate', responseData);
                         }
+
                         io.to(room.roomName).emit('finishGame', ({ gameStarted: false, timer: 0, username: room.users[0].username, image: room.users[0].image, email: room.users[0].email }));
                         gameRooms.splice(room.idRoom, 1);
                         io.sockets.sockets.get(room.users[0].id).leave(room.roomName);
@@ -970,6 +1015,8 @@ io.on('connection', (socket) => {
                                     'Content-Type': 'application/json'
                                 }
                             });
+                            const responseData = await response.json();
+                            socket.emit('statUpdate', responseData);
                             // console.log("entrooo????? --> ", email);
 
                         }
@@ -987,6 +1034,9 @@ io.on('connection', (socket) => {
                                         'Content-Type': 'application/json'
                                     }
                                 });
+                                const responseData = await response.json();
+                                let socketWin = io.sockets.sockets.get(room.users[0].id);
+                                socketWin.emit('statUpdate', responseData);
                                 // console.log("entrooo????? --> ", email);
                             }
                             io.to(room.idGame).emit('finishGame', ({ gameStarted: false, timer: 0, username: room.users[0].username, image: room.users[0].image, email: room.users[0].email }));
@@ -1007,6 +1057,7 @@ io.on('connection', (socket) => {
                                     let lobbyIndex = lobbies.findIndex(lobby => lobby.id === lobbyToEliminate.id);
                                     console.log('lobbyIndex', lobbyIndex);
                                     lobbies.splice(lobbyIndex, 1);
+                                    socket.broadcast.emit('salas', lobbies);
 
                                 }
                             }
@@ -1023,6 +1074,8 @@ io.on('connection', (socket) => {
     socket.on('eliminarPartida', (roomName) => {
         let roomIndex = gameRooms.findIndex(room => room.roomName === roomName);
         gameRooms.splice(roomIndex, 1);
+        socket.broadcast.emit('salas', gameRooms);
+        socket.emit('salas', gameRooms);
     });
 
     socket.on('getRanking', async () => {

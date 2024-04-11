@@ -20,7 +20,9 @@ return new class extends Migration
             $table->string('password', 255);
             $table->integer('num_victorias')->default(0);
             $table->integer('num_derrotas')->default(0);
-            $table->enum ('foto_perfil', ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'alvaro', 'Ermengol', 'Poltata']);
+            $table->enum('foto_perfil', ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', 'alvaro', 'Ermengol', 'Poltata']);
+            $table->integer('victorias_seguidas')->default(0);
+            $table->timestamps();
         });
     }
 

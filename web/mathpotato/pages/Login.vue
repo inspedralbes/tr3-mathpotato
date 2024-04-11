@@ -3,15 +3,15 @@
         <div class="middle">
             <h2>Log In</h2>
                 <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" v-model="email" required>
+                    <label for="email" style="display: flex; align-items: center;">Email: <InlineMessage v-tooltip="'Email requerido'" style="width: 15px; height: 15px;" severity="info"></InlineMessage></label>
+                    <InputText type="email" id="email" v-model="email" required />
                 </div>
                 <div class="form-group">
-                    <label for="password">Contraseña:</label>
-                    <input type="password" id="password" v-model="password" required>
+                    <label for="password" style="display: flex; align-items: center;">Contraseña: <InlineMessage v-tooltip="'Contraseña requerida'" style="width: 15px; height: 15px;" severity="info"></InlineMessage></label>
+                    <InputText type="password" id="password" v-model="password" required />
                 </div>
-                <Button severity="warning" @click="login" label="Log In" icon="pi pi-user" class="w-full" />
-                <Button severity="contrast" @click="register" label="Sign In" icon="pi pi-user" class="w-full" />
+                <Button severity="warning" text raised @click="login" label="Log In" icon="pi pi-user" />
+                <Button severity="info" text raised @click="register" label="Sign In" icon="pi pi-user" class="w-full" />
         </div>
     </div>
 </template>
@@ -42,6 +42,7 @@
 
     .form-group {
         margin-bottom: 15px;
+        width: 20vw;
     }
 
     label {
@@ -49,25 +50,22 @@
     }
 
     input[type="email"],
-    input[type="password"],
-    button {
+    input[type="password"]{
         width: 100%;
         padding: 10px;
         font-size: 16px;
         border-radius: 4px;
-        border: 1px solid #ccc;
         box-sizing: border-box;
     }
 
     button {
-        /* background-color: #007bff; */
-        color: #ffffff;
+        width: 50%;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 4px;
+        /* border: 1px solid #ccc; */
+        box-sizing: border-box;
         cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-        background-color: #0056b3;
     }
 
     .success-message {

@@ -26,6 +26,12 @@ export const useAppStore = defineStore('app', {
             win: false,
             tutorial: true,
             token: '',
+            consecutiveVictories: 0,
+            wins: 0,
+            losses: 0,
+            image10Unlocked: false,
+            image11Unlocked: false,
+            image12Unlocked: false
         },
         users: [],
         pregunta: {
@@ -95,6 +101,11 @@ export const useAppStore = defineStore('app', {
             this.lobbies[0].mode = lobbies;
             this.lobbies[0].numUser = 20;
 
+        },
+        setAchivements(data) {
+            this.guestInfo.image10Unlocked = data.image10Unlocked;
+            this.guestInfo.image11Unlocked = data.image11Unlocked;
+            this.guestInfo.image12Unlocked = data.image12Unlocked;
         },
         setOpen(data) {
             this.open = data;
@@ -179,21 +190,42 @@ export const useAppStore = defineStore('app', {
             this.setUsers(users);
         },
         setGuestInfo(data) {
-            this.guestInfo.username = data.username;
-            this.guestInfo.id = data.id;
-            this.guestInfo.image = data.image;
-            this.guestInfo.email = data.email;
-            this.guestInfo.win = false;
-            this.guestInfo.lost = false;
-            this.guestInfo.tutorial = data.tutorial;
-            this.guestInfo.token = data.token;
-            // this.guestInfo.shieldUser.activated = data.shieldUser.activated;
-            // this.guestInfo.shieldUser.sec = data.shieldUser.sec;
-
+            if (data.hasOwnProperty('username')) {
+                this.guestInfo.username = data.username;
+            }
+            if (data.hasOwnProperty('id')) {
+                this.guestInfo.id = data.id;
+            }
+            if (data.hasOwnProperty('image')) {
+                this.guestInfo.image = data.image;
+            }
+            if (data.hasOwnProperty('email')) {
+                this.guestInfo.email = data.email;
+            }
+            if (data.hasOwnProperty('win')) {
+                this.guestInfo.win = data.win;
+            }
+            if (data.hasOwnProperty('lost')) {
+                this.guestInfo.lost = data.lost;
+            }
+            if (data.hasOwnProperty('tutorial')) {
+                this.guestInfo.tutorial = data.tutorial;
+            }
+            if (data.hasOwnProperty('token')) {
+                this.guestInfo.token = data.token;
+            }
+            if (data.hasOwnProperty('consecutiveVictories')) {
+                this.guestInfo.consecutiveVictories = data.consecutiveVictories;
+            }
+            if (data.hasOwnProperty('wins')) {
+                this.guestInfo.wins = data.wins;
+            }
+            if (data.hasOwnProperty('losses')) {
+                this.guestInfo.losses = data.losses;
+            }
             console.log('*infoGuest*');
             console.log(this.guestInfo.username);
             console.log(this.guestInfo.id);
-
         },
         getGuestInfo() {
             return this.guestInfo;
@@ -203,6 +235,15 @@ export const useAppStore = defineStore('app', {
             this.guestInfo.id = '';
             this.guestInfo.bomba = false;
             this.guestInfo.email = 'none';
+            this.guestInfo.image = 1;
+            this.guestInfo.lives = 2;
+            this.guestInfo.lost = false;
+            this.guestInfo.win = false;
+            this.guestInfo.tutorial = true;
+            this.guestInfo.token = '';
+            this.guestInfo.consecutiveVictories = 0;
+            this.guestInfo.wins = 0;
+            this.guestInfo.losses = 0;
         },
         setShieldUser(shieldUser) {
             this.shieldUser.activated = shieldUser.activated;
