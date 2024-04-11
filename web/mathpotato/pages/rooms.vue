@@ -74,45 +74,70 @@
                     <div class="card flex justify-content-center">
                         <div class="card flex justify-content-center tags-logros">
                             <div style="justify-content: center; align-items: center; display: flex;">
-                                <Tag style="width: 100px" value="Ganar" severity="warning"></Tag>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-award" width="34" height="34" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M12 9m-6 0a6 6 0 1 0 12 0a6 6 0 1 0 -12 0" />
+                                    <path d="M12 15l3.4 5.89l1.598 -3.233l3.598 .232l-3.4 -5.889" />
+                                    <path d="M6.802 12l-3.4 5.89l3.598 -.233l1.598 3.232l3.4 -5.889" />
+                                </svg>
+                                <Tag style="width: 200px" value="3 partidas seguidas ganadas" severity="warning">
+                                    
+                                </Tag>
                             </div>
                             <div style="justify-content: center; align-items: center; display: flex;">
-                                <Tag style="width: 100px" value="Jugar" severity="info"></Tag>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-device-gamepad-2" width="34" height="34" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M12 5h3.5a5 5 0 0 1 0 10h-5.5l-4.015 4.227a2.3 2.3 0 0 1 -3.923 -2.035l1.634 -8.173a5 5 0 0 1 4.904 -4.019h3.4z" />
+                                    <path d="M14 15l4.07 4.284a2.3 2.3 0 0 0 3.925 -2.023l-1.6 -8.232" />
+                                    <path d="M8 9v2" />
+                                    <path d="M7 10h2" />
+                                    <path d="M14 10h2" />
+                                </svg>
+                                <Tag style="width: 200px" value="20 partidas jugadas!" severity="info"></Tag>
                             </div>
                             <div style="justify-content: center; align-items: center; display: flex;">
-                                <Tag style="width: 100px" value="Ganar" severity="warning"></Tag>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trophy" width="34" height="34" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M8 21l8 0" />
+                                    <path d="M12 17l0 4" />
+                                    <path d="M7 4l10 0" />
+                                    <path d="M17 4v8a5 5 0 0 1 -10 0v-8" />
+                                    <path d="M5 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                                    <path d="M19 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                                </svg>
+                                <Tag style="width: 200px" value="15 partidas ganadas" severity="warning"></Tag>
                             </div>
                         </div>
                         <div class="flex justify-center items-center container-image-logros">
-                            <div class="card flex justify-center items-center container-logro1">
+                            <div class="card flex justify-center items-center container-logro">
                                 
-                                <img :src="'./_nuxt/assets/Icon_1.png'" style="width: 350px; height: 350px">
+                                <img :src="'./_nuxt/assets/Icon_11.png'" class="card-logro" style="width: 350px; height: 350px">
                                 <div class="span-logro">
                                     <span>¡Debes ganar 3 partidas seguidas!</span>
                                 </div>
-                                <div class="card">
+                                <div class="card progressbar">
                                     <Toast></Toast>
                                     <ProgressBar :value="calculateConsecutiveVictory(guest.consecutiveVictories)" />
                                 </div>
                             </div>
                             
-                            <div class="card flex justify-center items-center container-logro2">
-                                <img :src="'./_nuxt/assets/Icon_2.png'" style="width: 350px; height: 350px">
+                            <div class="card flex justify-center items-center container-logro">
+                                <img :src="'./_nuxt/assets/Icon_10.png'" class="card-logro" style="width: 350px; height: 350px">
                                 <div class="span-logro">
                                     <span>¡Debes jugar 20 partidas!</span>
                                 </div>
-                                <div class="card">
+                                <div class="card progressbar">
                                     <Toast></Toast>
                                     <ProgressBar :value="calculateTotalGames(guest.wins, guest.losses)" />
                                 </div>
                             </div>
-                            <div class="card flex justify-center items-center container-logro3">
-                                <img :src="'./_nuxt/assets/Icon_3.png'" style="width: 350px; height: 350px">
+                            <div class="card flex justify-center items-center container-logro">
+                                <img :src="'./_nuxt/assets/Icon_12.png'" class="card-logro" style="width: 350px; height: 350px">
                                 <div class="span-logro">
                                     <span>¡Debes ganar 15 partidas!</span>
                                     
                                 </div>
-                                <div class="card">
+                                <div class="card progressbar">
                                     <Toast></Toast>
                                     <ProgressBar :value="calculateTotalWins(guest.wins)" />
                                     
@@ -647,7 +672,13 @@ body {
         height: auto; /* Para mantener la proporción de la imagen */
     }
 
-
+.progressbar{
+    padding-top: 20px;
+    width: 90%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
 .data-ranking {
         width: 100%;
         font-family: Arial, sans-serif;
@@ -790,6 +821,14 @@ body {
 
     .player-card:nth-child(3) .rank::before {
         /* background-color: #cd7f32;  */
+    }
+
+    .container-logro:nth-child(-n+3) .card-logro{
+        opacity: 0.6;
+        background-image: url('../assets/lock_logro.png');
+        background-size: 150px;
+        background-repeat: no-repeat;
+        background-position: top right;
     }
 
 .container-ranking{

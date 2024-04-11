@@ -1,5 +1,5 @@
 <template>
-    <div id="background">
+     <div id="background">
         <div id="grid">
             <div v-for="(user, index) in users" :id="getId(index)">
                 <div class="user" :id="'user' + index">
@@ -90,13 +90,18 @@
                                 </div>
                             </div>
                         </div>
-                        <div v-if="countdown > -2">{{ countdown }}</div>
+                        
                         <Button @click="startGame" id="startGameButton" :disabled="users.length <= 2"
-                            :class="[gameStarted ? 'hidden' : '']">READY!</Button>
-                    </div>
+                            :class="[gameStarted ? 'hidden' : '']">READY!</Button> 
                 </div>
+                
             </div>
+            <div v-if="countdown > -2" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; color: blue; justify-content: center; align-items: center; opacity: 0.6; z-index: 1;">
+                <div>{{ countdown }}</div>
+            </div>
+            
         </div>
+    </div>
 
     </div>
 </template>
@@ -423,6 +428,8 @@ export default {
 </script>
 
 <style scoped>
+
+
 :root {
     --xPositionAnt: 0;
     --yPositionAnt: 0;
@@ -483,6 +490,8 @@ html:lang(ar) {
     align-items: center;
 
 }
+
+
 
 .gameContainer {
     background-color: #6d5c3d;
