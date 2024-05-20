@@ -37,7 +37,7 @@
                 </div>
                 <div :class="[gameStarted && userPantalla.tutorial ? '' : 'hidden']" class="gameContainer"
                     v-show="gameStarted">
-                    <h3>{{ message.pregunta }}</h3>
+                    <h3>{{ message.pregunta }} </h3>
                     <!-- <div>{{ socket }}</div> -->
                     <input :disabled="escudo.activated && user !== users[findUsersWithBomb()].id" type="text"
                         name="resposta" id="resposta" @keyup.enter="enviarResposta" v-model="respuesta"
@@ -210,7 +210,7 @@ export default {
     watch: {
         users: {
             handler(newVal) {
-                console.log(this.encertada);
+                console.log("PENEEEEEEE"+newVal);
                 if (newVal && newVal.length > 0 && this.encertada) {
                     console.log("change bomb");
                     this.changeBomb();
@@ -236,6 +236,7 @@ export default {
 
         }
     },
+    
     methods: {
         BackToRoom() {
             useAppStore().setDefaultValues();

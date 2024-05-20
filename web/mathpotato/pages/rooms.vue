@@ -239,14 +239,14 @@
                     <Textarea v-model="value_sugerencias" autoResize rows="5" cols="28" style="width: 100%;"/>
                     <Button v-if="value_sugerencias != ''" label="enviar" @click="enviarSugerencias" />
                     <div class="card flex justify-content-center logros" style="padding-top: 20px;">
-                        <div class="lg1" v-if="guest.image11Unlocked">
-                            <Tag value="15 partidas ganadas" severity="danger"></Tag>
+                        <div class="lg1" v-if="guest.image10Unlocked">
+                            <Tag value="15 partidas ganadas" severity="warning"></Tag>
                         </div>
                         <div class="lg2" v-if="guest.image12Unlocked">
-                            <Tag value="20 partidas jugadas" severity="warning"></Tag>
+                            <Tag value="20 partidas jugadas" severity="info"></Tag>
                         </div>
-                        <div class="lg3" v-if="guest.image10Unlocked">
-                            <Tag value="3 partidas seguidas ganadas" severity="info"></Tag>
+                        <div class="lg3" v-if="guest.image11Unlocked">
+                            <Tag value="3 partidas seguidas ganadas" severity="warning"></Tag>
                         </div>
                     </div>
                     <div class="card flex justify-content-center">
@@ -884,7 +884,6 @@ body {
 
 .btn-sign-out{
     display: flex;
-    position: absolute;
     justify-content: center;
     /* margin-top: auto; */
     margin-top: 25%;

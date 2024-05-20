@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 import { useAppStore } from '@/stores/guestStore';
 
 // "undefined" means the URL will be computed from the `window.location` object
-const URL = "localhost:5175";
+const URL = "mathpotato.duckdns.org:5175";
 
 export const socket = io(URL);
 
@@ -109,7 +109,7 @@ socket.on("loginSuccess", (data) => {
     console.log(data);
     let user = { username: data.username, id: data.id, image: data.image, email: data.email, tutorial: data.tutorial, token: data.token, wins: data.wins, losses: data.losses, consecutiveVictories: data.consecutiveVictories };
     console.log(user);
-    socket.emit("checkAchivements",{"email":data.email});
+    socket.emit("checkAchivements", { "email": data.email });
     store.setGuestInfo(user);
 });
 socket.on("checkAchivementsSuccess", (data) => {
@@ -125,7 +125,7 @@ socket.on("statUpdate", (data) => {
 
     const store = useAppStore();
     store.setGuestInfo(dataFormated);
-    socket.emit("checkAchivements",{"email":store.guestInfo.email});
+    socket.emit("checkAchivements", { "email": store.guestInfo.email });
 });
 
 socket.on("logoutSuccess", (data) => {
@@ -156,6 +156,7 @@ socket.on("updateRanking", (ranking) => {
 
 socket.on("userDataUpdate", (data) => {
     const store = useAppStore();
+    store.resetResult();
     store.setGuestInfo(data.user);
     store.setRoomName(data.game);
     console.log();

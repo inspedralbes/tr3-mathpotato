@@ -46,11 +46,14 @@ class usuariosController extends Controller
         }
     }
 
+
+
     public function login(Request $request)
     {
         $request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string|min:6',
+            
         ]);
 
         // Cambia la línea siguiente para asignar el resultado de la consulta a $usuario

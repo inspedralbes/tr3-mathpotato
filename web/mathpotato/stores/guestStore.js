@@ -89,6 +89,8 @@ export const useAppStore = defineStore('app', {
                     activated: false,
                     sec: 0
                 }
+            this.guestInfo.win = false;
+            this.guestInfo.lost = false;
         },
         setCountdown(countdown) {
             this.countdown = countdown;
@@ -139,6 +141,10 @@ export const useAppStore = defineStore('app', {
         setGameStarted(gameStarted) {
             this.gameStarted = gameStarted;
 
+        },
+        resetResult() {
+            this.guestInfo.win = false;
+            this.guestInfo.lost = false;
         },
         setSugerenciaCompletada(data) {
             this.sugerencia = data.sugerencia;
@@ -299,7 +305,7 @@ export const useAppStore = defineStore('app', {
         setWin() {
             this.guestInfo.win = true;
             this.setTutorial()
-            console.log('Ganador: ', this.guestInfo.tutorial);
+            console.log('Ganador: ', this.guestInfo.win);
         },
         getWin() {
             return this.guestInfo.win;

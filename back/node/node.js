@@ -30,7 +30,7 @@ app.get('/', (req, res) => {
 //--------------------------BASE DE DATOS----------------------------
 
 var con = mysql.createConnection({
-    host: "localhost",
+    host: "mathpotato.duckdns.org",
     user: "root",
     password: "",
     database: "potato"
@@ -139,7 +139,7 @@ async function getUser(data, socket) {
 
     try {
         // console.log("data to send...", data)
-        const response = await fetch('http://localhost:8000/api/login', {
+        const response = await fetch('http://mathpotato.duckdns.org:8000/api/login', {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {
@@ -314,7 +314,7 @@ function respostaCorrectaUsuariIncorrecte(game) {
 }
 
 async function addToRanking(email, socket) {
-    let response = await fetch('http://localhost:8000/api/updateDerrotas', {
+    let response = await fetch('http://mathpotato.duckdns.org:8000/api/updateDerrotas', {
         method: 'POST',
         body: JSON.stringify({ email }),
         headers: {
@@ -328,7 +328,7 @@ async function updateVictorias(roomIndex, gameRooms, socket) {
     let email = gameRooms[roomIndex].users[0].email;
     // console.log(email);
     if (email !== 'none') {
-        let response = await fetch('http://localhost:8000/api/updateVictorias', {
+        let response = await fetch('http://mathpotato.duckdns.org:8000/api/updateVictorias', {
             method: 'POST',
             body: JSON.stringify({ email }),
             headers: {
@@ -462,18 +462,18 @@ function iniciarTimer(room) {
     room.timerAnterior = room.timer;
 }
 
-async function startTimer(idRoom, socket) {
+async function startTimer(idRoom) {
     console.log("startTimer");
-    let gameRooms = findLobbieBySocketId(socket.id);
-    if (gameRooms.length > 0) {
+    let gameRooms = findLobbieByGameroomId(idRoom)
+    if (gameRooms && gameRooms.games != null && gameRooms.games.length > 0) {
         // console.log("Hay estas rooms", gameRooms);
-        let game = findGameByUserId(gameRooms, socket.id);
+        let game = gameRooms.games.find(game => game.idGame === idRoom);
         if (game != null) {
             // console.log("timer --> ", gameRooms[roomPosition]);
             if (game.timer > 0 && game.started == true) {
                 setTimeout(() => {
                     // console.log("Aqui", gameRooms[roomPosition]);
-                    game = findGameByUserId(gameRooms, socket.id);
+                    game = gameRooms.games.find(game => game.idGame === idRoom);
                     if (game != null) {
                         if (game.idGame == idRoom) {
                             game.timer--;
@@ -488,7 +488,7 @@ async function startTimer(idRoom, socket) {
                         } else {
                             if (game.users.length > 1) {
 
-                                startTimer(idRoom, socket);
+                                startTimer(idRoom);
                             }
                         }
                     }
@@ -504,7 +504,7 @@ async function startTimer(idRoom, socket) {
                     console.log("timer acabado en", game);
 
                     game.timerAnterior = game.timer;
-                    startTimer(game.idGame, socket);
+                    startTimer(game.idGame);
                 }
             }
         }
@@ -710,7 +710,7 @@ io.on('connection', (socket) => {
 
     socket.on('register', async (userData) => {
         console.log("register", userData);
-        const response = await fetch('http://localhost:8000/api/register', {
+        const response = await fetch('http://mathpotato.duckdns.org:8000/api/register', {
             method: 'POST',
             body: JSON.stringify(userData),
             headers: {
@@ -740,33 +740,33 @@ io.on('connection', (socket) => {
     });
     socket.on('checkAchivements', async (data) => {
         console.log("checkAchivements", data);
-        
-            const response = await fetch('http://localhost:8000/api/checkAchivements/' + data.email, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            const responseData = await response.json();
 
-
-            let returnData={};
-            returnData.image10Unlocked = false;
-            returnData.image11Unlocked = false;
-            returnData.image12Unlocked = false;
-            if (responseData.image10Unlocked == 1) {
-                returnData.image10Unlocked = true;
+        const response = await fetch('http://mathpotato.duckdns.org:8000/api/checkAchivements/' + data.email, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
             }
-            if (responseData.image11Unlocked == 1) {
-                returnData.image11Unlocked = true;
-            } 
-            if (responseData.image12Unlocked == 1) {
-                returnData.image12Unlocked = true;
-            } 
-            console.log("checkAchivements data", returnData);
-            socket.emit('checkAchivementsSuccess', returnData);
-
         });
+        const responseData = await response.json();
+
+
+        let returnData = {};
+        returnData.image10Unlocked = false;
+        returnData.image11Unlocked = false;
+        returnData.image12Unlocked = false;
+        if (responseData.image10Unlocked == 1) {
+            returnData.image10Unlocked = true;
+        }
+        if (responseData.image11Unlocked == 1) {
+            returnData.image11Unlocked = true;
+        }
+        if (responseData.image12Unlocked == 1) {
+            returnData.image12Unlocked = true;
+        }
+        console.log("checkAchivements data", returnData);
+        socket.emit('checkAchivementsSuccess', returnData);
+
+    });
     socket.on('logout', async (data) => {
         await logoutUser(data, socket);
     });
@@ -774,7 +774,7 @@ io.on('connection', (socket) => {
     socket.on('sugerencias', async (data) => {
         console.log("sugerencia", data);
         try {
-            const response = await fetch('http://localhost:8000/api/createSugerencia', {
+            const response = await fetch('http://mathpotato.duckdns.org:8000/api/createSugerencia', {
                 method: 'POST',
                 body: JSON.stringify(data),
                 headers: {
@@ -800,7 +800,7 @@ io.on('connection', (socket) => {
         console.log("logout email", data.email);
         console.log("logout token", data.token);
         try {
-            const response = await fetch('http://localhost:8000/api/logout', {
+            const response = await fetch('http://mathpotato.duckdns.org:8000/api/logout', {
                 method: 'POST',
                 body: JSON.stringify(data),
                 headers: {
@@ -933,7 +933,7 @@ io.on('connection', (socket) => {
                         var email = room.users[usuarioDesconectadoIndex].email;
 
 
-                        let response = await fetch('http://localhost:8000/api/updateDerrotas', {
+                        let response = await fetch('http://mathpotato.duckdns.org:8000/api/updateDerrotas', {
                             method: 'POST',
                             body: JSON.stringify({ email }),
                             headers: {
@@ -954,7 +954,7 @@ io.on('connection', (socket) => {
                         room.timer = 0;
                         let email = room.users[0].email;
                         if (email != 'none') {
-                            let response = await fetch('http://localhost:8000/api/updateVictorias', {
+                            let response = await fetch('http://mathpotato.duckdns.org:8000/api/updateVictorias', {
                                 method: 'POST',
                                 body: JSON.stringify({ email }),
                                 headers: {
@@ -1008,7 +1008,7 @@ io.on('connection', (socket) => {
 
 
                             // let response = await console.log("Connected!!!!!!!!!!");
-                            let response = await fetch('http://localhost:8000/api/updateDerrotas', {
+                            let response = await fetch('http://mathpotato.duckdns.org:8000/api/updateDerrotas', {
                                 method: 'POST',
                                 body: JSON.stringify({ email }),
                                 headers: {
@@ -1027,7 +1027,7 @@ io.on('connection', (socket) => {
                             room.timer = 0;
                             let email = room.users[0].email;
                             if (email != 'none') {
-                                let response = await fetch('http://localhost:8000/api/updateVictorias', {
+                                let response = await fetch('http://mathpotato.duckdns.org:8000/api/updateVictorias', {
                                     method: 'POST',
                                     body: JSON.stringify({ email }),
                                     headers: {
@@ -1079,7 +1079,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('getRanking', async () => {
-        const response = await fetch('http://localhost:8000/api/ranking', {
+        const response = await fetch('http://mathpotato.duckdns.org:8000/api/ranking', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -1094,7 +1094,7 @@ io.on('connection', (socket) => {
     socket.on('updateProfile', async (data) => {
         console.log("change skin...", data);
 
-        const response = await fetch('http://localhost:8000/api/changeProfile', {
+        const response = await fetch('http://mathpotato.duckdns.org:8000/api/changeProfile', {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {
@@ -1112,6 +1112,6 @@ io.on('connection', (socket) => {
 });
 
 server.listen(5175, () => {
-    console.log('Listening on http://localhost:5175');
+    console.log('Listening on http://mathpotato.duckdns.org:5175');
 
 });
